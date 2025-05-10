@@ -1,0 +1,10 @@
+{
+  "frames": {
+    "desktop": {
+      "frameUrl": "YOUR_DESKTOP_FRAME_URL"
+    },
+    "mobile": {
+      "frameUrl": "YOUR_MOBILE_FRAME_URL"
+    }
+  }
+}
