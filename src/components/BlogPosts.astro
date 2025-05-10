@@ -1,4 +1,6 @@
 ---
+import PostItem from './PostItem.astro';
+
 const postCount = 5; // Number of posts to fetch
 const WP_SITE = 'https://www.lucieslist.com/';
 const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
@@ -31,14 +33,6 @@ try {
 }
 
 const blogUrl = new URL('/blog', Astro.url.origin).pathname;
-
-function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-}
 ---
 
 <div class="blog-posts">
@@ -46,17 +40,7 @@ function formatDate(dateString) {
   {posts.length > 0 ? (
     <div class="space-y-8">
       {posts.map((post) => (
-        <article class="post bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-          <div class="text-sm text-gray-500 mb-2">{formatDate(post.date)}</div>
-          <a href={`${blogUrl}/${post.slug}`} class="block hover:text-blue-600 transition-colors">
-            <h2 class="text-xl font-semibold mb-4">{post.title.rendered}</h2>
-          </a>
-          <div class="prose mb-4" set:html={post.excerpt.rendered} />
-          <a href={`${blogUrl}/${post.slug}`} class="text-blue-600 hover:underline inline-flex items-center">
-            Read more
-            <span class="ml-1">→</span>
-          </a>
-        </article>
+        <PostItem post={post} blogUrl={blogUrl} />
       ))}
     </div>
   ) : (
