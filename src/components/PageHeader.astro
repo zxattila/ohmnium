@@ -13,12 +13,10 @@ const {
   backgroundImage = "https://images.pexels.com/photos/2387793/pexels-photo-2387793.jpeg",
 } = Astro.props;
 
-// Determine the class to use for the background
 const headerClass = useNoise
   ? "relative py-24 mb-12 background-noise"
   : "relative py-24 mb-12";
 
-// Only set inline style if not using noise
 const headerStyle = !useNoise
   ? `background-image: url(${backgroundImage}); background-size: cover; background-position: center;`
   : "";
