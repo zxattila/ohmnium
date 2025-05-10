@@ -1,0 +1,17 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../partials/PageHeader.astro";
+import ContactBot from "../components/ContactBot.astro";
+---
+
+<Layout>
+  <PageHeader
+    title="Contact Us"
+    description="Get in touch with our AI assistant"
+    useNoise={true}
+  />
+
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <ContactBot />
+  </div>
+</Layout>

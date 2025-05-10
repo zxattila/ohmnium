@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Pagination from '../../components/Pagination.astro';
+
+export async function getStaticPaths({ paginate }) {
+  const WP_SITE = 'https://www.lucieslist.com/';
+  const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+  const response = await fetch(`${WP_API_URL}/posts?per_page=100`);
+  const posts = await response.json();
+  
+  return posts.map((post, index) => {
+    const prevPost = posts[index - 1];
+    const nextPost = posts[index + 1];
+    
+    return {
+      params: { slug: post.slug },
+      props: { 
+        post,
+        prevPost,
+        nextPost,
+        page: {
+          url: {
+            prev: prevPost ? `/blog/${prevPost.slug}` : null,
+            next: nextPost ? `/blog/${nextPost.slug}` : null
+          },
+          currentPage: index + 1,
+          lastPage: posts.length,
+          total: posts.length
+        }
+      }
+    };
+  });
+}
+
+const { post, page, prevPost, nextPost } = Astro.props;
+---
+
+<Layout>
+  <article class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-6">{post.title.rendered}</h1>
+    <div class="prose prose-lg max-w-none" set:html={post.content.rendered}></div>
+    
+    <div class="mt-12">
+      <Pagination page={page} prevPost={prevPost} nextPost={nextPost} />
+    </div>
+    
+    <div class="text-center mt-8">
+      <a 
+        href="/blog" 
+        class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+      >
+        ← Back to All Posts
+      </a>
+    </div>
+  </article>
+</Layout>

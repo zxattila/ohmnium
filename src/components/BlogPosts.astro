@@ -1,0 +1,90 @@
+---
+const postCount = 5; // Number of posts to fetch
+const WP_SITE = 'https://www.lucieslist.com/';
+const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+
+async function fetchWithRetry(url, maxRetries = 3) {
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw new Error(`Failed to fetch after ${maxRetries} attempts: ${error.message}`);
+      }
+      console.log(`Attempt ${attempt} failed, retrying in ${attempt * 1000}ms...`);
+      await delay(attempt * 1000);
+    }
+  }
+}
+
+let posts = [];
+try {
+  posts = await fetchWithRetry(`${WP_API_URL}/posts?per_page=${postCount}&order=desc&orderby=date`);
+} catch (error) {
+  console.error('Failed to fetch blog posts:', error);
+}
+
+const blogUrl = new URL('/blog', Astro.url.origin).pathname;
+---
+
+<div class="blog-posts">
+  <h2 class="text-2xl font-bold mb-6">Latest Posts</h2>
+  {posts.length > 0 ? (
+    <div class="space-y-8">
+      {posts.map((post) => (
+        <article class="post">
+          <a href={`${blogUrl}/${post.slug}`} class="block hover:text-blue-600 transition-colors">
+            <h2 class="text-xl font-semibold mb-4">{post.title.rendered}</h2>
+          </a>
+          <div set:html={post.excerpt.rendered} />
+          <a href={`${blogUrl}/${post.slug}`} class="text-blue-600 hover:underline">Read more</a>
+        </article>
+      ))}
+    </div>
+  ) : (
+    <div class="error-message">
+      <p>Unable to load blog posts at this time. Please try again later.</p>
+    </div>
+  )}
+  
+  <div class="text-center mt-8">
+    <a href={blogUrl} class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+      View All Posts
+    </a>
+  </div>
+</div>
+
+<style>
+  .blog-posts {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .post {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    margin: 0 0 1rem;
+    color: #333;
+  }
+
+  .error-message {
+    text-align: center;
+    padding: 2rem;
+    background: #fff3f3;
+    border-radius: 8px;
+    color: #d83333;
+  }
+</style>

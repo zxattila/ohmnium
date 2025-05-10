@@ -1,0 +1,33 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  useNoise?: boolean;
+  backgroundImage?: string;
+}
+
+const {
+  title,
+  description,
+  useNoise = false,
+  backgroundImage = "https://images.pexels.com/photos/2387793/pexels-photo-2387793.jpeg",
+} = Astro.props;
+
+// Determine the class to use for the background
+const headerClass = useNoise
+  ? "relative py-24 mb-12 background-noise"
+  : "relative py-24 mb-12";
+
+// Only set inline style if not using noise
+const headerStyle = !useNoise
+  ? `background-image: url(${backgroundImage}); background-size: cover; background-position: center;`
+  : "";
+---
+
+<header class={headerClass} style={headerStyle}>
+  {!useNoise && <div class="absolute inset-0 bg-black opacity-50" />}
+  <div class="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
+    <p class="text-xl md:text-2xl">{description}</p>
+  </div>
+</header>

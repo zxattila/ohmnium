@@ -1,0 +1,75 @@
+@font-face {
+  font-family: 'Francois One';
+  src: url('../fonts/FrancoisOne-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  src: url('../fonts/SourceSans3-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-heading-family: 'Francois One', sans-serif;
+  --font-body-family: 'Source Sans 3', sans-serif;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-body bg-gray-50 text-gray-600;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-gray-900;
+  }
+
+  h1 {
+    @apply text-4xl font-bold mb-4;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold mb-3;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg transition-colors;
+
+    &-primary {
+      @apply bg-blue-600 text-white hover:bg-blue-700;
+    }
+
+    &-secondary {
+      @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+    }
+  }
+
+  .nav-link {
+    @apply px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors;
+
+    &.active {
+      @apply text-blue-600 font-medium;
+    }
+  }
+}
+
+.background-noise {
+  background-image: url('../assets/noisier.png'), radial-gradient(circle, rgba(26, 26, 26, 0.89), rgba(26, 26, 26, 0.96));
+  background-blend-mode: overlay;
+  background-size: auto, cover;
+}

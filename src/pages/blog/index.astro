@@ -1,0 +1,95 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { ViewTransitions } from 'astro:transitions';
+
+const WP_SITE = 'https://www.lucieslist.com/';
+const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+
+// Fetch initial 10 posts
+const response = await fetch(`${WP_API_URL}/posts?per_page=10&page=1`);
+const posts = await response.json();
+---
+
+<Layout>
+  <ViewTransitions />
+  
+  <div class="max-w-4xl mx-auto px-4">
+    <h1 class="text-3xl font-bold mb-8">Blog Posts</h1>
+    
+    <div id="posts-container" class="space-y-8">
+      {posts.map((post) => (
+        <article 
+          class="bg-white p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md"
+          transition:animate="slide"
+        >
+          <h2 class="text-2xl font-semibold mb-4">{post.title.rendered}</h2>
+          <div class="prose" set:html={post.excerpt.rendered} />
+          <a 
+            href={`/blog/${post.slug}`}
+            class="inline-block mt-4 text-blue-600 hover:underline"
+          >
+            Read more
+          </a>
+        </article>
+      ))}
+    </div>
+    
+    <div class="text-center mt-8 mb-12">
+      <button
+        id="load-more"
+        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+      >
+        View More
+      </button>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  let currentPage = 1;
+  const postsContainer = document.getElementById('posts-container');
+  const loadMoreButton = document.getElementById('load-more');
+  
+  async function loadMorePosts() {
+    currentPage++;
+    const WP_SITE = 'https://www.lucieslist.com/';
+    const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+    
+    try {
+      const response = await fetch(`${WP_API_URL}/posts?per_page=10&page=${currentPage}`);
+      const newPosts = await response.json();
+      
+      if (newPosts.length === 0) {
+        loadMoreButton.style.display = 'none';
+        return;
+      }
+      
+      newPosts.forEach(post => {
+        const article = document.createElement('article');
+        article.className = 'bg-white p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md opacity-0';
+        article.innerHTML = `
+          <h2 class="text-2xl font-semibold mb-4">${post.title.rendered}</h2>
+          <div class="prose">${post.excerpt.rendered}</div>
+          <a 
+            href="/blog/${post.slug}"
+            class="inline-block mt-4 text-blue-600 hover:underline"
+          >
+            Read more
+          </a>
+        `;
+        
+        postsContainer.appendChild(article);
+        
+        // Trigger animation after a small delay
+        setTimeout(() => {
+          article.style.transition = 'opacity 0.5s ease-in-out';
+          article.style.opacity = '1';
+        }, 50);
+      });
+    } catch (error) {
+      console.error('Error loading more posts:', error);
+    }
+  }
+  
+  loadMoreButton?.addEventListener('click', loadMorePosts);
+</script>

@@ -1,0 +1,21 @@
+---
+const { page, prevPost, nextPost } = Astro.props;
+---
+
+<nav class="flex justify-between items-center max-w-3xl mx-auto mt-8">
+  <div class="flex-1 text-left">
+    {page.url.prev && (
+      <a href={page.url.prev} class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">
+        ← {prevPost?.title?.rendered || 'Previous'}
+      </a>
+    )}
+  </div>
+  
+  <div class="flex-1 text-right">
+    {page.url.next && (
+      <a href={page.url.next} class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">
+        {nextPost?.title?.rendered || 'Next'} →
+      </a>
+    )}
+  </div>
+</nav>
