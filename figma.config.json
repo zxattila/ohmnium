@@ -1,10 +1,16 @@
 {
   "frames": {
     "desktop": {
-      "frameUrl": "YOUR_DESKTOP_FRAME_URL"
+      "frameUrl": "YOUR_DESKTOP_FRAME_URL",
+      "navStatesUrl": "YOUR_DESKTOP_NAV_STATES_URL"
+    },
+    "tablet": {
+      "frameUrl": "YOUR_TABLET_FRAME_URL",
+      "navStatesUrl": "YOUR_TABLET_NAV_STATES_URL"
     },
     "mobile": {
-      "frameUrl": "YOUR_MOBILE_FRAME_URL"
+      "frameUrl": "YOUR_MOBILE_FRAME_URL",
+      "navStatesUrl": "YOUR_MOBILE_NAV_STATES_URL"
     }
   }
 }
