@@ -1,4 +1,6 @@
 ---
+import PostItem from './PostItem.astro';
+
 const postCount = 5; // Number of posts to fetch
 const WP_SITE = 'https://www.lucieslist.com/';
 const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
@@ -38,13 +40,7 @@ const blogUrl = new URL('/blog', Astro.url.origin).pathname;
   {posts.length > 0 ? (
     <div class="space-y-8">
       {posts.map((post) => (
-        <article class="post">
-          <a href={`${blogUrl}/${post.slug}`} class="block hover:text-blue-600 transition-colors">
-            <h2 class="text-xl font-semibold mb-4">{post.title.rendered}</h2>
-          </a>
-          <div set:html={post.excerpt.rendered} />
-          <a href={`${blogUrl}/${post.slug}`} class="text-blue-600 hover:underline">Read more</a>
-        </article>
+        <PostItem post={post} blogUrl={blogUrl} />
       ))}
     </div>
   ) : (
@@ -65,19 +61,6 @@ const blogUrl = new URL('/blog', Astro.url.origin).pathname;
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
-  }
-
-  .post {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  h2 {
-    margin: 0 0 1rem;
-    color: #333;
   }
 
   .error-message {

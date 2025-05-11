@@ -1,16 +1,10 @@
 {
   "frames": {
     "desktop": {
-      "frameUrl": "https://www.figma.com/design/OE6FC3ew1hHyPgPHUlw2Xh/Project--ohmnium-wp?node-id=30-2&t=z51WxjSPrmWjJUUA-4",
-      "navStatesUrl": "YOUR_DESKTOP_NAV_STATES_URL"
-    },
-    "tablet": {
-      "frameUrl": "https://www.figma.com/design/OE6FC3ew1hHyPgPHUlw2Xh/Project--ohmnium-wp?node-id=176-411&t=bVmDWUsAcR9SiMXg-4",
-      "navStatesUrl": "YOUR_TABLET_NAV_STATES_URL"
+      "frameUrl": "YOUR_DESKTOP_FRAME_URL"
     },
     "mobile": {
-      "frameUrl": "https://www.figma.com/design/OE6FC3ew1hHyPgPHUlw2Xh/Project--ohmnium-wp?node-id=115-211&t=z51WxjSPrmWjJUUA-4",
-      "navStatesUrl": "YOUR_MOBILE_NAV_STATES_URL"
+      "frameUrl": "YOUR_MOBILE_FRAME_URL"
     }
   }
 }
