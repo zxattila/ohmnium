@@ -1,7 +1,7 @@
 ---
 import PostItem from './PostItem.astro';
 
-const postCount = 5; // Number of posts to fetch
+const postCount = 5;
 const WP_SITE = 'https://www.lucieslist.com/';
 const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
 
@@ -35,39 +35,35 @@ try {
 const blogUrl = new URL('/blog', Astro.url.origin).pathname;
 ---
 
-<div class="blog-posts">
-  <h2 class="text-2xl font-bold mb-6">Latest Posts</h2>
-  {posts.length > 0 ? (
-    <div class="space-y-8">
-      {posts.map((post) => (
-        <PostItem post={post} blogUrl={blogUrl} />
-      ))}
+<section class="section-post-feed py-10 md:py-20">
+  <div class="container">
+    <h2 class="text-2xl md:text-3xl font-heading text-brand-primary mb-10">Latest Posts</h2>
+    
+    {posts.length > 0 ? (
+      <div class="grid gap-5 md:gap-10">
+        {posts.map((post) => (
+          <PostItem post={post} blogUrl={blogUrl} />
+        ))}
+      </div>
+    ) : (
+      <div class="bg-surface-card rounded-lg p-5">
+        <p class="text-center text-base-gray">Unable to load blog posts at this time. Please try again later.</p>
+      </div>
+    )}
+    
+    <div class="text-center mt-10">
+      <a 
+        href={blogUrl} 
+        class="inline-block px-8 py-3 bg-brand-primary text-base-white rounded-lg hover:bg-brand-accent hover:text-brand-primary transition-colors"
+      >
+        View All Posts
+      </a>
     </div>
-  ) : (
-    <div class="error-message">
-      <p>Unable to load blog posts at this time. Please try again later.</p>
-    </div>
-  )}
-  
-  <div class="text-center mt-8">
-    <a href={blogUrl} class="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-      View All Posts
-    </a>
   </div>
-</div>
+</section>
 
 <style>
-  .blog-posts {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .error-message {
-    text-align: center;
-    padding: 2rem;
-    background: #fff3f3;
-    border-radius: 8px;
-    color: #d83333;
+  .section-post-feed {
+    background-color: theme(colors.base.lighter);
   }
 </style>

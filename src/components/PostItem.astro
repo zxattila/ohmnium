@@ -20,14 +20,24 @@ function formatDate(dateString: string) {
 }
 ---
 
-<article class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-  <div class="text-sm text-gray-500 mb-2">{formatDate(post.date)}</div>
-  <a href={`${blogUrl}/${post.slug}`} class="block hover:text-blue-600 transition-colors">
-    <h2 class="text-xl font-semibold mb-4">{post.title.rendered}</h2>
-  </a>
-  <div class="prose mb-4" set:html={post.excerpt.rendered} />
-  <a href={`${blogUrl}/${post.slug}`} class="text-blue-600 hover:underline inline-flex items-center">
-    Read more
-    <span class="ml-1">→</span>
-  </a>
+<article class="bg-base-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+  <div class="p-5 md:p-10">
+    <div class="text-sm text-state-muted mb-2.5">{formatDate(post.date)}</div>
+    <a 
+      href={`${blogUrl}/${post.slug}`} 
+      class="group block mb-5"
+    >
+      <h2 class="text-xl md:text-2xl font-heading text-brand-primary group-hover:text-brand-accent transition-colors">
+        {post.title.rendered}
+      </h2>
+    </a>
+    <div class="prose prose-base text-base-gray mb-5" set:html={post.excerpt.rendered} />
+    <a 
+      href={`${blogUrl}/${post.slug}`} 
+      class="inline-flex items-center text-brand-primary hover:text-brand-accent transition-colors"
+    >
+      Read more
+      <span class="ml-2 text-lg">→</span>
+    </a>
+  </div>
 </article>
