@@ -14,7 +14,7 @@ const currentPath = Astro.url.pathname;
 </a>
 
 <header
-  class="bg-base-white shadow-sm fixed w-full top-0 z-50 transition-transform duration-300"
+  class="bg-brand-primary fixed w-full top-0 z-50 transition-transform duration-300"
   x-data="{ 
     isOpen: false,
     lastScroll: 0,
@@ -47,13 +47,14 @@ const currentPath = Astro.url.pathname;
             src="/src/assets/logo.svg"
             alt="Logo"
             class="h-8 md:h-10 w-auto"
+            style="filter: brightness(0) invert(1);"
           />
         </a>
       </div>
 
       <button 
         @click="isOpen = !isOpen" 
-        class="lg:hidden p-2"
+        class="lg:hidden p-2 text-base-white"
         aria-label="Toggle menu"
       >
         <svg
@@ -84,7 +85,7 @@ const currentPath = Astro.url.pathname;
           <a
             href={item.href}
             class:list={[
-              "text-lg font-heading hover:text-brand-accent transition-colors",
+              "text-lg font-heading text-base-white hover:text-brand-accent transition-colors",
               { "text-brand-accent": currentPath === item.href }
             ]}
           >
@@ -106,11 +107,11 @@ const currentPath = Astro.url.pathname;
       @click.away="isOpen = false"
     >
       <div class="absolute inset-0 bg-overlay-70" @click="isOpen = false"></div>
-      <nav class="absolute top-0 left-0 bottom-0 w-5/6 max-w-sm bg-base-white">
+      <nav class="absolute top-0 left-0 bottom-0 w-5/6 max-w-sm bg-brand-primary">
         <div class="h-16 md:h-20 flex items-center px-5">
           <button 
             @click="isOpen = false"
-            class="ml-auto p-2"
+            class="ml-auto p-2 text-base-white"
             aria-label="Close menu"
           >
             <svg
@@ -133,7 +134,7 @@ const currentPath = Astro.url.pathname;
             <a
               href={item.href}
               class:list={[
-                "block py-3 text-lg font-heading hover:text-brand-accent transition-colors",
+                "block py-3 text-lg font-heading text-base-white hover:text-brand-accent transition-colors",
                 { "text-brand-accent": currentPath === item.href }
               ]}
             >
