@@ -2,7 +2,7 @@
 import PostItem from './PostItem.astro';
 
 const postCount = 5; // Number of posts to fetch
-const WP_SITE = 'https://techcrunch.com'; // Updated to a reliable WordPress site
+const WP_SITE = 'https://techcrunch.com';
 const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
 
 async function fetchWithRetry(url, maxRetries = 3) {
