@@ -1,8 +1,11 @@
 import OpenAI from "openai";
+import dotenv from "dotenv";
+
+dotenv.config();
+// Ensure you have the OPENAI_API_KEY in your .env file
 
 const openai = new OpenAI({
-  apiKey:
-    "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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function POST({ request }) {
@@ -16,12 +19,12 @@ export async function POST({ request }) {
 
     return new Response(
       JSON.stringify({ response: completion.choices[0].message.content }),
-      { headers: { "Content-Type": "application/json" } }
+      { headers: { "Content-Type": "application/json" } },
     );
   } catch (error) {
     return new Response(
       JSON.stringify({ error: "Failed to process request" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
 }

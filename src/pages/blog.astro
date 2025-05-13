@@ -1,10 +1,11 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import PostItem from '../components/PostItem.astro';
-import { ViewTransitions } from 'astro:transitions';
+import Layout from "../layouts/Layout.astro";
+import PostItem from "../components/PostItem.astro";
+import { ViewTransitions } from "astro:transitions";
+import { WP_API_URL } from "../config";
 
-const WP_SITE = 'https://techcrunch.com';
-const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+// const WP_SITE = "https://techcrunch.com";
+// const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
 
 let posts = [];
 try {
@@ -14,24 +15,22 @@ try {
   }
   posts = await response.json();
 } catch (error) {
-  console.error('Failed to fetch initial posts:', error);
+  console.error("Failed to fetch initial posts:", error);
 }
 
-const blogUrl = new URL('/blog', Astro.url.origin).pathname;
+const blogUrl = new URL("/blog", Astro.url.origin).pathname;
 ---
 
 <Layout>
   <ViewTransitions />
-  
+
   <div class="max-w-4xl mx-auto px-4">
     <h1 class="text-3xl font-bold mb-8">Blog Posts</h1>
-    
+
     <div id="posts-container" class="space-y-8">
-      {posts.map((post) => (
-        <PostItem post={post} blogUrl={blogUrl} />
-      ))}
+      {posts.map((post) => <PostItem post={post} blogUrl={blogUrl} />)}
     </div>
-    
+
     <div class="text-center mt-8 mb-12">
       <button
         id="load-more"
@@ -45,38 +44,41 @@ const blogUrl = new URL('/blog', Astro.url.origin).pathname;
 
 <script>
   let currentPage = 1;
-  const postsContainer = document.getElementById('posts-container');
-  const loadMoreButton = document.getElementById('load-more');
-  const blogUrl = new URL('/blog', window.location.origin).pathname;
-  
+  const postsContainer = document.getElementById("posts-container");
+  const loadMoreButton = document.getElementById("load-more");
+  const blogUrl = new URL("/blog", window.location.origin).pathname;
+
   async function loadMorePosts() {
     try {
       currentPage++;
-      const WP_SITE = 'https://techcrunch.com';
+      const WP_SITE = "https://techcrunch.com";
       const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
-      
-      const response = await fetch(`${WP_API_URL}/posts?per_page=10&page=${currentPage}`);
+
+      const response = await fetch(
+        `${WP_API_URL}/posts?per_page=10&page=${currentPage}`,
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const newPosts = await response.json();
-      
+
       if (newPosts.length === 0) {
-        loadMoreButton.style.display = 'none';
+        loadMoreButton.style.display = "none";
         return;
       }
-      
-      newPosts.forEach(post => {
-        const article = document.createElement('article');
-        article.className = 'bg-white p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md opacity-0';
-        
-        const date = new Date(post.date).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
+
+      newPosts.forEach((post) => {
+        const article = document.createElement("article");
+        article.className =
+          "bg-white p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md opacity-0";
+
+        const date = new Date(post.date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         });
-        
+
         article.innerHTML = `
           <div class="text-sm text-gray-500 mb-2">${date}</div>
           <a href="${blogUrl}/${post.slug}" class="block hover:text-blue-600 transition-colors">
@@ -88,22 +90,23 @@ const blogUrl = new URL('/blog', Astro.url.origin).pathname;
             <span class="ml-1">→</span>
           </a>
         `;
-        
+
         postsContainer.appendChild(article);
-        
+
         setTimeout(() => {
-          article.style.transition = 'opacity 0.5s ease-in-out';
-          article.style.opacity = '1';
+          article.style.transition = "opacity 0.5s ease-in-out";
+          article.style.opacity = "1";
         }, 50);
       });
     } catch (error) {
-      console.error('Error loading more posts:', error);
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'text-center p-4 text-red-600';
-      errorDiv.textContent = 'Failed to load more posts. Please try again later.';
+      console.error("Error loading more posts:", error);
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "text-center p-4 text-red-600";
+      errorDiv.textContent =
+        "Failed to load more posts. Please try again later.";
       postsContainer.appendChild(errorDiv);
     }
   }
-  
-  loadMoreButton?.addEventListener('click', loadMorePosts);
+
+  loadMoreButton?.addEventListener("click", loadMorePosts);
 </script>
