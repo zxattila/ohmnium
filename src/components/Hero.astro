@@ -1,0 +1,41 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<section class="relative bg-brand-primary rounded-xl">
+  <!-- Background Overlay -->
+  <div
+    class="absolute inset-0 bg-no-repeat bg-cover bg-center opacity-30"
+    style="background-image: url('/src/assets/noisier.png');"
+  >
+  </div>
+
+  <!-- Content -->
+  <div
+    class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto p-5 min-h-[300px] md:min-h-[400px]"
+  >
+    <!-- Column 1: Title -->
+    <div class="flex flex-col justify-start md:justify-end h-full">
+      <h1 class="self-start text-4xl md:text-5xl font-bold text-white">
+        {title}
+      </h1>
+    </div>
+
+    <!-- Column 2: Description -->
+    <div class="flex flex-col justify-end md:items-end text-left">
+      <p class="text-base md:text-lg text-white">{description}</p>
+    </div>
+  </div>
+
+  <!-- Absolute Positioned SVG -->
+  <img
+    src="/src/assets/flower-orange.svg"
+    alt="Decorative flower"
+    class="absolute top-5 right-5 w-20 h-20 md:w-24 md:h-24"
+  />
+</section>

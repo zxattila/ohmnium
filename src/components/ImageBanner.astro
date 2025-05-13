@@ -1,0 +1,18 @@
+---
+interface Props {
+  imageSrc: string;
+  altText: string;
+  height?: string; // Optional: Allows setting a custom height
+}
+
+const { imageSrc, altText, height = "auto" } = Astro.props;
+---
+
+<section class="w-full">
+  <img
+    src={imageSrc}
+    alt={altText}
+    class="w-full"
+    style={`height: ${height};`}
+  />
+</section>

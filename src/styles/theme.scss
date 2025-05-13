@@ -17,6 +17,25 @@
 :root {
   --font-heading-family: 'Francois One', sans-serif;
   --font-body-family: 'Source Sans 3', sans-serif;
+
+  --font-size-sm: 0.875rem;
+  /* 14px */
+  --font-size-base: 1rem;
+  /* 16px */
+  --font-size-lg: 1.125rem;
+  /* 18px */
+  --font-size-xl: 1.25rem;
+  /* 20px */
+  --font-size-2xl: 1.5rem;
+  /* 24px */
+  --font-size-3xl: 1.875rem;
+  /* 30px */
+  --font-size-4xl: 2.25rem;
+  /* 36px */
+  --font-size-5xl: 3rem;
+  /* 48px */
+  --font-size-6xl: 3.75rem;
+  /* 60px */
 }
 
 @tailwind base;
@@ -25,7 +44,7 @@
 
 @layer base {
   body {
-    @apply font-body bg-gray-50 text-gray-600;
+    @apply font-body bg-gray-50 text-gray-600 antialiased;
   }
 
   h1,
@@ -34,15 +53,35 @@
   h4,
   h5,
   h6 {
-    @apply font-heading text-gray-900;
+    @apply font-heading text-black uppercase antialiased;
   }
 
   h1 {
-    @apply text-4xl font-bold mb-4;
+    @apply text-4xl mb-4 leading-tight;
   }
 
   h2 {
-    @apply text-2xl font-semibold mb-3;
+    @apply text-2xl mb-3 leading-snug;
+  }
+
+  h3 {
+    @apply text-xl mb-2 leading-normal;
+  }
+
+  h4 {
+    @apply text-lg mb-2 leading-normal;
+  }
+
+  h5 {
+    @apply text-base mb-1 leading-relaxed;
+  }
+
+  h6 {
+    @apply text-sm mb-1 leading-relaxed capitalize;
+  }
+
+  p {
+    @apply text-gray-600 antialiased;
   }
 }
 
