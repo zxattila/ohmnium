@@ -2,15 +2,25 @@
 import Layout from '../../layouts/Layout.astro';
 import Pagination from '../../components/Pagination.astro';
 
-export async function getStaticPaths({ paginate }) {
-  const WP_SITE = 'https://www.lucieslist.com/';
+export async function getStaticPaths() {
+  const WP_SITE = 'https://techcrunch.com';
   const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
-  const response = await fetch(`${WP_API_URL}/posts?per_page=100`);
-  const posts = await response.json();
+  
+  let posts = [];
+  try {
+    const response = await fetch(`${WP_API_URL}/posts?per_page=100`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    posts = await response.json();
+  } catch (error) {
+    console.error('Failed to fetch posts:', error);
+    return [];
+  }
   
   return posts.map((post, index) => {
-    const prevPost = posts[index - 1];
-    const nextPost = posts[index + 1];
+    const prevPost = index > 0 ? posts[index - 1] : null;
+    const nextPost = index < posts.length - 1 ? posts[index + 1] : null;
     
     return {
       params: { slug: post.slug },
@@ -22,10 +32,7 @@ export async function getStaticPaths({ paginate }) {
           url: {
             prev: prevPost ? `/blog/${prevPost.slug}` : null,
             next: nextPost ? `/blog/${nextPost.slug}` : null
-          },
-          currentPage: index + 1,
-          lastPage: posts.length,
-          total: posts.length
+          }
         }
       }
     };
