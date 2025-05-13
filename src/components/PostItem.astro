@@ -5,7 +5,6 @@ interface Props {
     excerpt: { rendered: string };
     date: string;
     slug: string;
-    link: string;
   };
   blogUrl: string;
 }
@@ -19,24 +18,15 @@ function formatDate(dateString: string) {
     day: 'numeric'
   });
 }
-
-// Extract date components from the post date
-const postDate = new Date(post.date);
-const year = postDate.getFullYear();
-const month = String(postDate.getMonth() + 1).padStart(2, '0');
-const day = String(postDate.getDate()).padStart(2, '0');
-
-// Construct the post URL using date-based structure
-const postUrl = `/${year}/${month}/${day}/${post.slug}`;
 ---
 
 <article class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
   <div class="text-sm text-gray-500 mb-2">{formatDate(post.date)}</div>
-  <a href={postUrl} class="block hover:text-blue-600 transition-colors">
+  <a href={`${blogUrl}/${post.slug}`} class="block hover:text-blue-600 transition-colors">
     <h2 class="text-xl font-semibold mb-4">{post.title.rendered}</h2>
   </a>
   <div class="prose mb-4" set:html={post.excerpt.rendered} />
-  <a href={postUrl} class="text-blue-600 hover:underline inline-flex items-center">
+  <a href={`${blogUrl}/${post.slug}`} class="text-blue-600 hover:underline inline-flex items-center">
     Read more
     <span class="ml-1">→</span>
   </a>
