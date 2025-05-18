@@ -1,10 +1,13 @@
 ---
 interface Props {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 }
 
-const { title, description } = Astro.props;
+const {
+  title = "Welcome to Ohmnium",
+  description = "Your trusted partner for modern electrical solutions.",
+} = Astro.props;
 ---
 
 <section class="relative bg-brand-primary rounded-xl">
@@ -36,6 +39,6 @@ const { title, description } = Astro.props;
   <img
     src="/src/assets/flower-orange.svg"
     alt="Decorative flower"
-    class="absolute top-5 right-5 w-20 h-20 md:w-24 md:h-24"
+    class="absolute top-5 right-5 w-12 h-12 md:w-16 md:h-16"
   />
 </section>
