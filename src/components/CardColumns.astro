@@ -1,0 +1,33 @@
+---
+import Card from "./Card.astro";
+
+const cards = [
+  {
+    imgSrc: "../assets/electrician-abstract-01.jpg",
+    title: "Card 1",
+    description: "This is the description for Card 1.",
+  },
+  {
+    imgSrc:
+      "https://img.daisyui.com/images/stock/photo-1606107563948-0c8b4c635a1b.webp",
+    title: "Card 2",
+    description: "This is the description for Card 2.",
+  },
+  {
+    imgSrc:
+      "https://img.daisyui.com/images/stock/photo-1606107553948-0c8b4c635a1b.webp",
+    title: "Card 3",
+    description: "This is the description for Card 3.",
+  },
+  {
+    imgSrc:
+      "https://img.daisyui.com/images/stock/photo-1606107553948-0c8b4c635a1b.webp",
+    title: "Card 4",
+    description: "This is the description for Card 4.",
+  },
+];
+---
+
+<div class="grid gap-2.5 lg:grid-cols-4 sm:grid sm:grid-cols-2 py-5">
+  {cards.map((card) => <Card {...card} />)}
+</div>
