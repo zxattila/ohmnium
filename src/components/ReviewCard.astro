@@ -1,0 +1,60 @@
+---
+interface Review {
+  reviewId: string;
+  reviewer: {
+    displayName: string;
+  };
+  starRating: number;
+  comment: string;
+  createTime: string;
+}
+
+interface Props {
+  review: Review;
+  current?: number;
+  total?: number;
+  onNext?: string; // Alpine expression for next
+}
+
+const { review, onNext } = Astro.props;
+---
+
+<div
+  class="rounded-2xl shadow-md p-4 bg-white w-full h-72 flex flex-col justify-between relative"
+>
+  <div>
+    <div class="flex items-center justify-between mb-2">
+      <span class="font-semibold text-gray-800">
+        {review.reviewer.displayName}
+      </span>
+      <span class="text-yellow-500 text-sm">
+        {"★".repeat(review.starRating)}
+        {"☆".repeat(5 - review.starRating)}
+      </span>
+    </div>
+    <p class="text-gray-600 text-sm line-clamp-3">
+      {review.comment}
+    </p>
+  </div>
+  <div class="flex items-center justify-between mt-4">
+    <p class="text-xs text-gray-400">
+      {
+        new Date(review.createTime).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      }
+    </p>
+    <button
+      class="btn btn-circle btn-primary"
+      aria-label="Next review"
+      x-show={!!onNext}
+      x-on:click={onNext}
+      style="box-shadow: 0 2px 8px rgba(0,0,0,0.08);"
+      type="button"
+    >
+      ›
+    </button>
+  </div>
+</div>

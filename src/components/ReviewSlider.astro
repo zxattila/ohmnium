@@ -1,0 +1,113 @@
+---
+import ReviewCard from "./ReviewCard.astro";
+import electricianImage from "../assets/electrician-abstract-01.jpg";
+
+const {
+  image = electricianImage.src,
+  paragraph = "At Ohmnium, we help homeowners, landlords, and businesses with reliable electrical solutions across London & the Home Counties. We show up, get the job done properly, and keep you informed every step of the way—no unnecessary delays, no surprise costs.",
+} = Astro.props;
+
+interface Review {
+  reviewId: string;
+  reviewer: {
+    displayName: string;
+  };
+  starRating: number;
+  comment: string;
+  createTime: string;
+}
+
+interface Props {
+  reviews?: Review[];
+  image?: string;
+  paragraph?: string;
+}
+
+const mockReviews: Review[] = [
+  {
+    reviewId: "1",
+    reviewer: { displayName: "Alice Johnson" },
+    starRating: 5,
+    comment: "Absolutely fantastic service! Highly recommend this place.",
+    createTime: "2024-12-01T10:15:00Z",
+  },
+  {
+    reviewId: "2",
+    reviewer: { displayName: "Mark D." },
+    starRating: 4,
+    comment: "Great experience overall. A bit of a wait but worth it.",
+    createTime: "2024-11-23T08:42:00Z",
+  },
+  {
+    reviewId: "3",
+    reviewer: { displayName: "Samantha Lee" },
+    starRating: 5,
+    comment: "Super friendly staff and clean environment.",
+    createTime: "2024-10-15T14:30:00Z",
+  },
+  {
+    reviewId: "4",
+    reviewer: { displayName: "Tom Nguyen" },
+    starRating: 3,
+    comment: "Good service but a little pricey.",
+    createTime: "2024-09-28T11:05:00Z",
+  },
+  {
+    reviewId: "5",
+    reviewer: { displayName: "Elena G." },
+    starRating: 5,
+    comment: "Best experience I’ve had in a long time. Will return for sure!",
+    createTime: "2024-09-12T09:00:00Z",
+  },
+];
+
+const { reviews = mockReviews } = Astro.props;
+
+---
+
+<div class="flex w-full mx-auto gap-2.5">
+  <!-- Image column -->
+  <div class="hidden lg:w-1/4 lg:flex justify-center">
+    <img
+      src={image}
+      alt="Review illustration"
+      class="rounded-2xl object-cover h-72 w-full shadow-md"
+    />
+  </div>
+
+  <!-- Review slider column -->
+  <div class="w-full lg:w-1/2 flex justify-center">
+    <div
+      x-data={`{ current: 0, total: ${reviews.length} }`}
+      class="w-full"
+    >
+      {
+        reviews.map((review, idx) => (
+          <div
+            x-show={`current === ${idx}`}
+            :class="current === idx ? 'visible opacity-100 active' : 'invisible opacity-0'"
+            class="transition-opacity duration-300 w-full"
+            key={review.reviewId}
+          >
+            <ReviewCard
+              review={{ ...review, comment: review.comment.length > 120 ? review.comment.slice(0, 117) + '...' : review.comment }}
+              current={idx}
+              total={reviews.length}
+              onNext={`current = (current + 1) % total`}
+            />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Whitespace column -->
+  <!-- <div class="hidden lg:w-1/4"></div> -->
+</div>
+
+<!-- Text Row -->
+<div class="w-full sm:w-3/4 lg:w-1/2 mt-6">
+  <p class="text-base text-gray-700 font-base">
+    {paragraph}
+  </p>
+</div>
