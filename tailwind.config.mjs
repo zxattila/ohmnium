@@ -35,7 +35,8 @@ export default {
           lighter: "#E5E5E5",
         },
         brand: {
-          primary: "#1A1A1A",
+          primary: "#FFDE59", // primary color
+          secondary: "#1A1A1A", // secondary color
           accent: "#FFDE59",
           flower1: "#F69841", // hero flower
           flower2: "#7ACF0E", // gap flower
@@ -61,4 +62,4 @@ export default {
     },
   },
   plugins: [require("daisyui")],
-}
+};

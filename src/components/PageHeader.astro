@@ -14,8 +14,8 @@ const {
 } = Astro.props;
 
 const headerClass = useNoise
-  ? "relative py-24 mb-12 background-noise"
-  : "relative py-24 mb-12";
+  ? "relative py-24 mb-12 rounded-xl background-noise"
+  : "relative py-24 mb-12 rounded-xl";
 
 const headerStyle = !useNoise
   ? `background-image: url(${backgroundImage}); background-size: cover; background-position: center;`
@@ -23,9 +23,9 @@ const headerStyle = !useNoise
 ---
 
 <header class={headerClass} style={headerStyle}>
-  {!useNoise && <div class="absolute inset-0 bg-black opacity-50" />}
+  {!useNoise && <div class="absolute inset-0 bg-black opacity-50 rounded-xl" />}
   <div class="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
     <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">{title}</h1>
-    <p class="text-xl md:text-2xl">{description}</p>
+    <p class="text-base lg:text-xl text-white">{description}</p>
   </div>
 </header>

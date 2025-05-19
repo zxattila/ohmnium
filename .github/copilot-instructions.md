@@ -1,5 +1,9 @@
 # GitHub Copilot Instructions
 
+Do not make any changes until you have 95% confidence that you know what to build ask me follow up questions until you have the confidence to make the changes
+
+# If you are not sure about the changes, ask me to clarify
+
 ## Project Goal
 
 This is a component-based Astro project that uses best practices to render a modern, performant frontend. The project fetches dynamic content from a WordPress backend via the WordPress REST API v2. The WordPress site URL is set using the `WP_SITE` environment variable and accessed within Astro through environment variables prefixed with `WP_`.

@@ -56,18 +56,18 @@ const mockReviews: Review[] = [
     reviewId: "5",
     reviewer: { displayName: "Elena G." },
     starRating: 5,
-    comment: "Best experience I've had in a long time. Will return for sure!",
+    comment:
+      "Best experience I've had in a long time. Will return for sure! long text to test the overflow and see how it handles long comments in the review section.",
     createTime: "2024-09-12T09:00:00Z",
   },
 ];
 
 const { reviews = mockReviews } = Astro.props;
-
 ---
 
-<div class="flex w-full mx-auto gap-2.5">
+<div class="grid gap-2.5 lg:grid-cols-4 grid-rows-2 sm:grid-cols-3 py-5">
   <!-- Image column -->
-  <div class="hidden lg:w-1/4 lg:flex justify-center">
+  <div class="hidden lg:flex justify-center">
     <img
       src={image}
       alt="Review illustration"
@@ -76,11 +76,8 @@ const { reviews = mockReviews } = Astro.props;
   </div>
 
   <!-- Review slider column -->
-  <div class="w-full lg:w-1/2 flex justify-center">
-    <div
-      x-data={`{ current: 0, total: ${reviews.length} }`}
-      class="w-full"
-    >
+  <div class="col-span-3 lg:col-span-2 flex justify-center">
+    <div x-data={`{ current: 0, total: ${reviews.length} }`} class="w-full">
       {
         reviews.map((review, idx) => (
           <div
@@ -90,7 +87,13 @@ const { reviews = mockReviews } = Astro.props;
             key={review.reviewId}
           >
             <ReviewCard
-              review={{ ...review, comment: review.comment.length > 120 ? review.comment.slice(0, 117) + '...' : review.comment }}
+              review={{
+                ...review,
+                comment:
+                  review.comment.length > 120
+                    ? review.comment.slice(0, 117) + "..."
+                    : review.comment,
+              }}
               current={idx}
               total={reviews.length}
               onNext={`current = (current + 1) % total`}
@@ -101,13 +104,17 @@ const { reviews = mockReviews } = Astro.props;
     </div>
   </div>
 
-  <!-- Whitespace column -->
-  <!-- <div class="hidden lg:w-1/4"></div> -->
+  <!-- Text Row -->
+  <div class="sm:col-span-2 lg:col-span-2 mt-0">
+    <p class="text-base text-gray-700 font-base">
+      {paragraph}
+    </p>
+  </div>
 </div>
 
 <!-- Text Row -->
-<div class="w-full sm:w-3/4 lg:w-1/2 mt-6">
+<!-- <div class="w-full sm:w-3/4 lg:w-1/2 mt-6">
   <p class="text-base text-gray-700 font-base">
     {paragraph}
   </p>
-</div>
+</div> -->

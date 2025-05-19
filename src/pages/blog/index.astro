@@ -1,54 +1,65 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import PageHeader from "../../components/PageHeader.astro";
 import PostItem from "../../components/PostItem.astro";
 import { ViewTransitions } from "astro:transitions";
 import { WP_API_URL } from "../../config";
 
-// const WP_SITE = 'https://www.lucieslist.com/';
+// const WP_SITE = "https://techcrunch.com";
 // const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
 
-// Fetch initial 10 posts
-const response = await fetch(`${WP_API_URL}/posts?per_page=10&page=1`);
-const posts = await response.json();
+let posts = [];
+try {
+  const response = await fetch(`${WP_API_URL}/posts?per_page=10&page=1`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  posts = await response.json();
+} catch (error) {
+  console.error("Failed to fetch initial posts:", error);
+}
+
 const blogUrl = new URL("/blog", Astro.url.origin).pathname;
 ---
 
 <Layout>
+  <PageHeader
+    title="Blog Posts"
+    description="Find out about the latest news and updates in the Sparky world."
+    useNoise={true}
+  />
   <ViewTransitions />
 
   <div class="max-w-4xl mx-auto px-4">
-    <h1 class="text-3xl font-bold mb-8">Blog Posts</h1>
-
     <div id="posts-container" class="space-y-8">
       {posts.map((post) => <PostItem post={post} blogUrl={blogUrl} />)}
     </div>
 
     <div class="text-center mt-8 mb-12">
-      <button
-        id="load-more"
-        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
-      >
-        View More
-      </button>
+      <button id="load-more" class="button button-primary"> View More </button>
     </div>
   </div>
 </Layout>
 
 <script>
-  const WP_API_URL = `${JSON.stringify(WP_API_URL)}`; // Pass WP_API_URL from server-side to client-side
   let currentPage = 1;
   const postsContainer = document.getElementById("posts-container");
   const loadMoreButton = document.getElementById("load-more");
+  const blogUrl = new URL("/blog", window.location.origin).pathname;
 
   async function loadMorePosts() {
-    currentPage++;
-    // const WP_SITE = "https://www.lucieslist.com/";
-    // const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
-
     try {
+      currentPage++;
+      const WP_SITE = "https://techcrunch.com";
+      const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+
       const response = await fetch(
         `${WP_API_URL}/posts?per_page=10&page=${currentPage}`,
       );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const newPosts = await response.json();
 
       if (newPosts.length === 0) {
@@ -60,14 +71,20 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
         const article = document.createElement("article");
         article.className =
           "bg-white p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md opacity-0";
+
+        const date = new Date(post.date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
         article.innerHTML = `
-          <div class="text-sm text-gray-500 mb-2">${formatDate(post.date)}</div>
-          <h2 class="text-2xl font-semibold mb-4">${post.title.rendered}</h2>
-          <div class="prose">${post.excerpt.rendered}</div>
-          <a 
-            href="/blog/${post.slug}"
-            class="inline-block mt-4 text-blue-600 hover:underline inline-flex items-center"
-          >
+          <div class="text-sm text-gray-500 mb-2">${date}</div>
+          <a href="${blogUrl}/${post.slug}" class="block hover:text-blue-600 transition-colors">
+            <h2 class="text-xl font-semibold mb-4">${post.title.rendered}</h2>
+          </a>
+          <div class="prose mb-4">${post.excerpt.rendered}</div>
+          <a href="${blogUrl}/${post.slug}" class="text-blue-600 hover:underline inline-flex items-center">
             Read more
             <span class="ml-1">→</span>
           </a>
@@ -75,7 +92,6 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
 
         postsContainer.appendChild(article);
 
-        // Trigger animation after a small delay
         setTimeout(() => {
           article.style.transition = "opacity 0.5s ease-in-out";
           article.style.opacity = "1";
@@ -83,15 +99,12 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
       });
     } catch (error) {
       console.error("Error loading more posts:", error);
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "text-center p-4 text-red-600";
+      errorDiv.textContent =
+        "Failed to load more posts. Please try again later.";
+      postsContainer.appendChild(errorDiv);
     }
-  }
-
-  function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
   }
 
   loadMoreButton?.addEventListener("click", loadMorePosts);

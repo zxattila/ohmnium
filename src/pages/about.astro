@@ -1,12 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Hero from "../components/Hero.astro";
+import PageHeader from "../components/PageHeader.astro";
 ---
 
 <Layout>
-  <Hero
+  <PageHeader
     title="About Us"
     description="Learn more about our mission and values"
+    useNoise={true}
   />
 
   <div class="max-w-4xl mx-auto px-4 py-12">
