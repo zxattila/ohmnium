@@ -4,7 +4,7 @@ import electricianImage from "../assets/electrician-abstract-01.jpg";
 
 const {
   image = electricianImage.src,
-  paragraph = "At Ohmnium, we help homeowners, landlords, and businesses with reliable electrical solutions across London & the Home Counties. We show up, get the job done properly, and keep you informed every step of the way—no unnecessary delays, no surprise costs.",
+  paragraph = "At Ohmnium, we help homeowners, landlords, and businesses with reliable electrical solutions across London & the Home Counties. We show up, get the job done properly, and keep you informed every step of the way—no unnecessary delays, no surprise costs.",
 } = Astro.props;
 
 interface Review {
@@ -56,7 +56,7 @@ const mockReviews: Review[] = [
     reviewId: "5",
     reviewer: { displayName: "Elena G." },
     starRating: 5,
-    comment: "Best experience I’ve had in a long time. Will return for sure!",
+    comment: "Best experience I've had in a long time. Will return for sure!",
     createTime: "2024-09-12T09:00:00Z",
   },
 ];
@@ -84,8 +84,8 @@ const { reviews = mockReviews } = Astro.props;
       {
         reviews.map((review, idx) => (
           <div
-            x-show={`current === ${idx}`}
-            :class="current === idx ? 'visible opacity-100 active' : 'invisible opacity-0'"
+            data-index={idx}
+            x-show="current === Number($el.dataset.index)"
             class="transition-opacity duration-300 w-full"
             key={review.reviewId}
           >
