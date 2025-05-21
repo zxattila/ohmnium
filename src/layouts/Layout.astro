@@ -14,6 +14,16 @@ import Navigation from "../components/Navigation.astro";
     <script src="../scripts/main.js"></script>
   </head>
   <body>
+    <!-- Mobile menu overlay - placed at body level -->
+    <div
+      x-data
+      x-show="$store.navigation.isMenuOpen"
+      @click="$store.navigation.toggle()"
+      class="fixed inset-0 bg-base-100 bg-opacity-70 z-30 cursor-pointer"
+      style="display: none;"
+    >
+    </div>
+
     <Navigation />
     <main class="container mx-auto py-5">
       <slot />

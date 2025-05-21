@@ -2,7 +2,7 @@
 import PostItem from "./PostItem.astro";
 import { WP_API_URL } from "../config";
 
-const postCount = 5; // Number of posts to fetch
+const postCount = 3; // Number of posts to fetch
 // const WP_SITE = 'https://techcrunch.com';
 // const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
 
@@ -42,11 +42,11 @@ try {
 const blogUrl = new URL("/blog", Astro.url.origin).pathname;
 ---
 
-<div class="blog-posts">
+<div class="space-y-8">
   <h2 class="text-2xl font-bold mb-6">Latest Posts</h2>
   {
     posts.length > 0 ? (
-      <div class="space-y-8">
+      <div class="grid gap-5 lg:grid-cols-3 sm:grid-cols-2">
         {posts.map((post) => (
           <PostItem post={post} blogUrl={blogUrl} />
         ))}

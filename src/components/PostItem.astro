@@ -12,22 +12,30 @@ interface Props {
 const { post, blogUrl } = Astro.props;
 
 function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 ---
 
-<article class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+<article
+  class="bg-surface-card p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+>
   <div class="text-sm text-gray-500 mb-2">{formatDate(post.date)}</div>
-  <a href={`${blogUrl}/${post.slug}`} class="block hover:text-blue-600 transition-colors">
-    <h2 class="text-xl font-semibold mb-4">{post.title.rendered}</h2>
+  <a href={`${blogUrl}/${post.slug}`} class="block group transition-colors">
+    <h2
+      class="text-xl font-semibold mb-4 group-hover:text-blue-600 transition-colors"
+      set:html={post.title.rendered}
+    />
   </a>
-  <div class="prose mb-4" set:html={post.excerpt.rendered} />
-  <a href={`${blogUrl}/${post.slug}`} class="text-blue-600 hover:underline inline-flex items-center">
-    Read more
+  <div class="prose line-clamp-3 mb-4" set:html={post.excerpt.rendered} />
+  <a
+    href={`${blogUrl}/${post.slug}`}
+    class="text-brand-secondary opacity-80 hover:underline inline-flex items-center"
+  >
+    Read More
     <span class="ml-1">→</span>
   </a>
 </article>

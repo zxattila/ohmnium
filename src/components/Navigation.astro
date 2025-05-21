@@ -1,16 +1,23 @@
 ---
+// Get the current path from Astro.url
+const currentPath = Astro.url.pathname;
+
+// Nav items array with dynamically determined active state
 const navItems = [
-  { href: "/", text: "Home", active: true },
-  { href: "/blog", text: "Blog", active: false },
-  { href: "/about", text: "About", active: false },
-  { href: "/contact", text: "Contact", active: false },
+  { href: "/", text: "Home", active: currentPath === "/" },
+  { href: "/blog", text: "Blog", active: currentPath.startsWith("/blog") },
+  { href: "/about", text: "About", active: currentPath.startsWith("/about") },
+  {
+    href: "/contact",
+    text: "Contact",
+    active: currentPath.startsWith("/contact"),
+  },
 ];
 ---
 
 <header
-  class="bg-white shadow-lg fixed w-full top-0 z-50 transition-transform duration-300"
+  class="bg-gray-50 shadow-lg fixed w-full top-0 z-50 transition-transform duration-300"
   x-data="{ 
-    isOpen: false,
     lastScroll: 0,
     showNav: true,
     init() {
@@ -35,7 +42,7 @@ const navItems = [
   }"
   :class="{ 'translate-y-0': showNav, '-translate-y-full': !showNav }"
 >
-  <nav class="container py-4">
+  <nav class="container py-2.5">
     <div class="flex items-center justify-between">
       <div class="flex-shrink-0">
         <a href="/">
@@ -48,24 +55,24 @@ const navItems = [
       </div>
 
       <!-- Mobile menu button -->
-      <button @click="isOpen = !isOpen" class="md:hidden">
+      <button @click="$store.navigation.toggle()" class="md:hidden">
         <span class="sr-only">Toggle menu</span>
         <svg
-          class="h-6 w-6"
+          class="h-10 w-10 text-black"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
           <path
-            x-show="!isOpen"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            x-show="!$store.navigation.isMenuOpen"
+            stroke-linecap="butt"
+            stroke-linejoin="miter"
             stroke-width="2"
             d="M4 6h16M4 12h16M4 18h16"></path>
           <path
-            x-show="isOpen"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            x-show="$store.navigation.isMenuOpen"
+            stroke-linecap="butt"
+            stroke-linejoin="miter"
             stroke-width="2"
             d="M6 18L18 6M6 6l12 12"></path>
         </svg>
@@ -77,31 +84,29 @@ const navItems = [
           navItems.map((item) => (
             <a
               href={item.href}
-              class={`hover:text-blue-600 ${item.active ? "text-blue-600 font-medium" : ""}`}
+              class={`nav-link ${item.active ? "active" : ""}`}
             >
               {item.text}
             </a>
           ))
         }
       </div>
+      <!-- CTA Button -->
+      <button class="button button-primary hidden md:block"
+        >020 3500 1441</button
+      >
     </div>
 
     <!-- Mobile Navigation -->
     <div
-      x-show="isOpen"
-      x-transition:enter="transition ease-out duration-200"
-      x-transition:enter-start="opacity-0"
-      x-transition:enter-end="opacity-100"
-      x-transition:leave="transition ease-in duration-150"
-      x-transition:leave-start="opacity-100"
-      x-transition:leave-end="opacity-0"
-      class="md:hidden mt-4"
+      x-show="$store.navigation.isMenuOpen"
+      class="md:hidden mt-4 relative z-50"
     >
       {
         navItems.map((item) => (
           <a
             href={item.href}
-            class={`block py-2 hover:text-blue-600 ${item.active ? "text-blue-600 font-medium" : ""}`}
+            class={`nav-link block py-2 ${item.active ? "active" : ""}`}
           >
             {item.text}
           </a>
@@ -112,4 +117,4 @@ const navItems = [
 </header>
 
 <!-- Spacer to prevent content from hiding under fixed nav -->
-<div class="h-16"></div>
+<div class="h-14 md:h-16"></div>

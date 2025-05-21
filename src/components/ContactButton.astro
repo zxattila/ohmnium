@@ -1,0 +1,11 @@
+---
+interface Props {
+  text?: string;
+}
+
+const { text = "020 3500 1441" } = Astro.props;
+---
+
+<section class="pt-2.5 block md:hidden">
+  <button class="button button-primary w-full">{text} </button>
+</section>
