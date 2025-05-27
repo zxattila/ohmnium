@@ -3,7 +3,7 @@ import electricianImage from "../assets/electrician-abstract-01.jpg";
 
 const {
   image = electricianImage.src,
-  title = "Need an<br> Electrician<br> you can<br> trust?",
+  title = "Electricians<br> you can<br> trust",
   text = "When something goes wrong with your electrics, you don’t have time to wait around. Whether it’s a faulty circuit, a tripping fuse board, or a full rewire, you need someone who can fix it fast, do it right, and not leave you chasing them. From estimating how much a project will cost, to finding the right design for you, we ensure each task is executed efficiently.",
 } = Astro.props;
 
@@ -14,10 +14,10 @@ interface Props {
 }
 ---
 
-<div class="grid gap-5 lg:grid-cols-2 sm:grid-cols-1">
+<section class="grid gap-5 lg:grid-cols-2 sm:grid-cols-1 py-5 md:py-0">
   <!--Text Column -->
-  <div class="flex flex-col justify-end items-start lg:w-3/4 sm:w-full">
-    <h2 class="text-4xl md:text-5xl font-bold text-black" set:html={title} />
+  <div class="flex flex-col justify-center items-start lg:w-3/4 sm:w-full">
+    <h2 class="text-5xl md:text-6xl font-bold text-black" set:html={title} />
     <p class="text-gray-600">{text}</p>
   </div>
 
@@ -29,4 +29,4 @@ interface Props {
       class="rounded-2xl object-cover h-96 w-full shadow-md"
     />
   </div>
-</div>
+</section>

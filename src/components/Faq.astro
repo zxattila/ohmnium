@@ -1,0 +1,77 @@
+---
+import Accordion from "../components/Accordion.astro";
+import flower from "../assets/flower-green.svg";
+
+interface AccordionItem {
+  title: string;
+  content: string;
+}
+
+interface Props {
+  title?: string;
+  svgSrc?: string;
+  accordionItems?: AccordionItem[];
+}
+
+// Dummy data for electrician FAQs
+const defaultAccordionItems: AccordionItem[] = [
+  {
+    title: "What electrical services do you provide?",
+    content:
+      "We offer a comprehensive range of electrical services including residential wiring, commercial installations, panel upgrades, lighting installations, electrical repairs, and emergency electrical services. Our licensed electricians handle everything from simple outlet installations to complex electrical system overhauls.",
+  },
+  {
+    title: "How quickly can you respond to electrical emergencies?",
+    content:
+      "We provide 24/7 emergency electrical services with typical response times of 30-60 minutes depending on your location. Our emergency services cover power outages, electrical fires, exposed wiring, and any situation that poses an immediate safety risk to your property.",
+  },
+  {
+    title: "Do you offer free electrical inspections and estimates?",
+    content:
+      "Yes, we provide free electrical safety inspections and detailed written estimates for all residential and commercial projects. Our certified electricians will assess your electrical system, identify potential issues, and provide transparent pricing for any recommended work.",
+  },
+  {
+    title: "Are your electricians licensed and insured?",
+    content:
+      "Absolutely! All our electricians are fully licensed, bonded, and insured. We maintain comprehensive liability insurance and workers' compensation coverage. Our team regularly updates their certifications and stays current with local electrical codes and safety regulations.",
+  },
+  {
+    title: "What are the signs I need electrical panel upgrade?",
+    content:
+      "Common signs include frequent circuit breaker trips, flickering lights, burning smells, warm outlets or switches, outdated fuse boxes, or panels over 20 years old. If you're adding major appliances or experiencing power issues, an electrical panel upgrade may be necessary to ensure safety and adequate power supply.",
+  },
+];
+
+const {
+  title = "Frequently<br>asked<br>questions",
+  svgSrc = flower.src,
+  accordionItems = defaultAccordionItems,
+} = Astro.props;
+---
+
+<section
+  class="grid gap-5 lg:grid-cols-4 grid-cols-1 lg:grid-rows-1 grid-rows-auto py-10 md:py-20"
+>
+  <!-- Title Column: spans 1 on lg, combined with image on default -->
+  <div class="lg:col-span-1 col-span-1 row-start-1">
+    <div class="flex flex-row items-start lg:block">
+      <h2
+        class="text-4xl md:text-5xl md:leading-extra-tight font-bold text-black"
+        set:html={title}
+      />
+      <img
+        src={svgSrc}
+        alt="Decorative flower"
+        class="ml-4 mt-2 lg:ml-0 lg:mt-4 lg:mr-auto w-12 h-12 md:w-16 md:h-16 block"
+      />
+    </div>
+  </div>
+
+  <!-- Accordion Component Column: spans 2 on lg, 2 on default (second row) -->
+  <div class="lg:col-span-2 col-span-full row-start-2 lg:row-start-1">
+    <Accordion accordionItems={accordionItems} />
+  </div>
+
+  <!-- SVG Column: spans 1 on lg, hidden on default -->
+  <div class="lg:col-span-1 col-span-1 row-start-1 hidden lg:block"></div>
+</section>

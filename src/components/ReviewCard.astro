@@ -24,7 +24,7 @@ const { review, onNext } = Astro.props;
 >
   <div>
     <div class="flex items-center justify-between mb-2">
-      <span class="font-medium text-sm text-white/90">
+      <span class="font-medium text-base text-white">
         {review.reviewer.displayName}
       </span>
       <span class="text-yellow-500 text-lg">
@@ -32,7 +32,7 @@ const { review, onNext } = Astro.props;
         {"☆".repeat(5 - review.starRating)}
       </span>
     </div>
-    <p class="line-clamp-3 text-white md:w-3/4">
+    <p class="line-clamp-3 text-white text-lg md:w-3/4">
       {review.comment}
     </p>
   </div>

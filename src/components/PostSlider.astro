@@ -1,0 +1,200 @@
+---
+import PostItem from "./PostItem.astro";
+import { WP_API_URL } from "../config";
+
+const postCount = 9; // Number of posts to fetch
+// const WP_SITE = 'https://techcrunch.com';
+// const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+
+async function fetchWithRetry(url, maxRetries = 3) {
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw new Error(
+          `Failed to fetch after ${maxRetries} attempts: ${error.message}`,
+        );
+      }
+      console.log(
+        `Attempt ${attempt} failed, retrying in ${attempt * 1000}ms...`,
+      );
+      await delay(attempt * 1000);
+    }
+  }
+}
+
+let posts = [];
+try {
+  posts = await fetchWithRetry(
+    `${WP_API_URL}/posts?per_page=${postCount}&order=desc&orderby=date`,
+  );
+} catch (error) {
+  console.error("Failed to fetch blog posts:", error);
+}
+
+const blogUrl = new URL("/blog", Astro.url.origin).pathname;
+---
+
+<section
+  class="py-10"
+  x-data={`{
+  currentGroup: 0,
+  totalPosts: ${posts.length},
+  visiblePosts: 1, // Default for mobile
+  
+  init() {
+    this.updateVisiblePosts();
+    window.addEventListener('resize', () => this.updateVisiblePosts());
+  },
+  
+  updateVisiblePosts() {
+    const oldVisiblePosts = this.visiblePosts;
+    
+    if (window.innerWidth >= 1024) { // lg breakpoint (Tailwind default)
+      this.visiblePosts = 3;
+    } else if (window.innerWidth >= 768) { // md breakpoint (Tailwind default)
+      this.visiblePosts = 2;
+    } else {
+      this.visiblePosts = 1;
+    }
+    
+    // Reset to first group when screen size changes to ensure posts are visible
+    if (oldVisiblePosts !== this.visiblePosts) {
+      this.currentGroup = 0;
+    }
+  },
+  
+  getGroups() {
+    const groups = [];
+    const totalGroups = this.getTotalGroups();
+    
+    for (let i = 0; i < totalGroups; i++) {
+      const group = [];
+      for (let j = 0; j < this.visiblePosts; j++) {
+        // Calculate post index with circular wrap-around
+        const postIndex = (i * this.visiblePosts + j) % this.totalPosts;
+        group.push(postIndex);
+      }
+      groups.push(group);
+    }
+    
+    return groups;
+  },
+  
+  getTotalGroups() {
+    if (this.visiblePosts >= this.totalPosts) return 1;
+    
+    // Calculate how many complete groups we can make
+    return Math.ceil(this.totalPosts / this.visiblePosts);
+  },
+  
+  next() {
+    this.currentGroup = (this.currentGroup + 1) % this.getTotalGroups();
+  },
+  
+  prev() {
+    this.currentGroup = (this.currentGroup - 1 + this.getTotalGroups()) % this.getTotalGroups();
+  },
+  
+  shouldShowPost(index) {
+    if (this.totalPosts <= this.visiblePosts) return true;
+    
+    const groups = this.getGroups();
+    if (!groups[this.currentGroup]) {
+      // Safety check: if current group is invalid, reset to group 0
+      this.currentGroup = 0;
+    }
+    return groups[this.currentGroup].includes(Number(index));
+  },
+  
+  shouldShowControls() {
+    return this.getTotalGroups() > 1;
+  }
+}`}
+>
+  <div class="flex justify-between items-center mb-5">
+    <h2 class="text-2xl font-bold">Latest Posts</h2>
+    <div class="grid grid-cols-2 gap-6" x-show="shouldShowControls()">
+      <button
+        class="bg-transparent p-0 shadow-none border-none flex items-center justify-center w-10 h-10"
+        aria-label="Prev post"
+        type="button"
+        x-on:click="prev()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-8 h-8 md:w-10 md:h-10 text-black"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"></path>
+        </svg>
+      </button>
+      <button
+        class="bg-transparent p-0 shadow-none border-none flex items-center justify-center w-10 h-10"
+        aria-label="Next post"
+        type="button"
+        x-on:click="next()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-8 h-8 md:w-10 md:h-10 text-black"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  {
+    posts.length > 0 ? (
+      <div class="grid gap-5 lg:grid-cols-3 md:grid-cols-2 min-h-64 md:min-h-72">
+        {posts.map((post, index) => (
+          <div
+            x-show={`shouldShowPost(${index})`}
+            class="transition-all duration-300 ease-in-out"
+            data-index={index}
+          >
+            <PostItem post={post} blogUrl={blogUrl} />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="error-message">
+        <p>Unable to load blog posts at this time. Please try again later.</p>
+      </div>
+    )
+  }
+
+  <div class="text-center mt-8" x-show="shouldShowControls()">
+    <a href={blogUrl} class="button button-primary"> View All Posts </a>
+  </div>
+</section>
+
+<style>
+  .error-message {
+    text-align: center;
+    padding: 2rem;
+    background: #fff3f3;
+    border-radius: 8px;
+    color: #d83333;
+  }
+</style>

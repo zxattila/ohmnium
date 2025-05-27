@@ -5,8 +5,8 @@ const currentPath = Astro.url.pathname;
 // Nav items array with dynamically determined active state
 const navItems = [
   { href: "/", text: "Home", active: currentPath === "/" },
-  { href: "/blog", text: "Blog", active: currentPath.startsWith("/blog") },
   { href: "/about", text: "About", active: currentPath.startsWith("/about") },
+  { href: "/blog", text: "Blog", active: currentPath.startsWith("/blog") },
   {
     href: "/contact",
     text: "Contact",
@@ -100,7 +100,7 @@ const navItems = [
     <!-- Mobile Navigation -->
     <div
       x-show="$store.navigation.isMenuOpen"
-      class="md:hidden mt-4 relative z-50"
+      class="md:hidden my-4 relative z-50"
     >
       {
         navItems.map((item) => (

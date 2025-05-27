@@ -1,0 +1,46 @@
+---
+interface SocialLink {
+  url: string;
+  icon: string;
+  label: string;
+  size: string;
+}
+
+const socialLinks: SocialLink[] = [
+  {
+    url: "https://www.linkedin.com/in/kyleguler/",
+    icon: "fa-brands fa-linkedin",
+    label: "LinkedIn",
+    size: "fa-4x",
+  },
+  {
+    url: "https://facebook.com/ohmnium",
+    icon: "fa-brands fa-facebook",
+    label: "Facebook",
+    size: "fa-4x",
+  },
+];
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="pb-5 container mx-auto">
+  <div class="flex mb-5 gap-6 items-center">
+    {
+      socialLinks.map((link) => (
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-state-info/95 hover:text-state-info transition duration-300"
+          aria-label={`Visit our ${link.label} page`}
+        >
+          <i class={`${link.icon} ${link.size}`} aria-hidden="true" />
+        </a>
+      ))
+    }
+  </div>
+  <span class="text-state-info font-heading uppercase text-sm text-bold"
+    >© {currentYear} Ohmnium</span
+  >
+</footer>

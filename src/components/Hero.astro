@@ -8,7 +8,7 @@ interface Props {
 }
 
 const {
-  title = "Welcome to Ohmnium",
+  title = "Electrical Service<br> and Maintenance",
   description = "Your trusted partner for modern electrical solutions.",
   svgSrc = flower.src,
 } = Astro.props;
@@ -28,9 +28,10 @@ const {
   >
     <!-- Column 1: Title -->
     <div class="flex flex-col justify-start md:justify-end h-full">
-      <h1 class="self-start text-4xl md:text-5xl font-bold text-white">
-        {title}
-      </h1>
+      <h1
+        class="self-start text-4xl md:text-5xl md:leading-extra-tight font-bold text-white"
+        set:html={title}
+      />
     </div>
 
     <!-- Column 2: Description -->
@@ -43,6 +44,7 @@ const {
   <img
     src={svgSrc}
     alt="Decorative flower"
-    class="absolute top-5 right-5 w-12 h-12 md:w-16 md:h-16"
+    class="absolute -right-3 md:right-5 top-[75%] md:top-5 w-12 h-12 md:w-16 md:h-16 transform -translate-y-1/2 md:translate-y-0 transition-all duration-300 ease-in-out"
+    style="margin-bottom: -10px;"
   />
 </section>

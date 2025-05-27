@@ -13,6 +13,9 @@ export default {
         lg: ["var(--font-size-lg)", "1.555"],
         xl: ["var(--font-size-xl)", "1.4"],
       },
+      lineHeight: {
+        "extra-tight": "1.15",
+      },
       container: {
         center: true,
         padding: {
@@ -37,7 +40,8 @@ export default {
         brand: {
           primary: "#FFDE59", // primary color
           secondary: "#1A1A1A", // secondary color
-          accent: "#FFDE59",
+          tertiary: "#B15249", // tertiary color
+          accent: "#5A7F1A", // accent color
           flower1: "#F69841", // hero flower
           flower2: "#7ACF0E", // gap flower
           flower3: "#87C12F", // faq flower

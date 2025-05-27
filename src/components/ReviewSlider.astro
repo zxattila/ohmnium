@@ -65,7 +65,8 @@ const mockReviews: Review[] = [
 const { reviews = mockReviews } = Astro.props;
 ---
 
-<div class="grid gap-5 lg:grid-cols-4 sm:grid-cols-3 py-5 auto-rows-auto">
+<!-- Review Slider Section -->
+<section class="grid gap-5 lg:grid-cols-4 sm:grid-cols-3 py-5 auto-rows-auto">
   <!-- Image column -->
   <div class="hidden lg:flex justify-center">
     <img
@@ -110,7 +111,7 @@ const { reviews = mockReviews } = Astro.props;
       {paragraph}
     </p>
   </div>
-</div>
+</section>
 
 <!-- Text Row -->
 <!-- <div class="w-full sm:w-3/4 lg:w-1/2 mt-6">

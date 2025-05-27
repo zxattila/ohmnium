@@ -1,0 +1,404 @@
+---
+// ContactForm.astro - Fixed version without service dropdown, UK phone validation
+---
+
+<div x-data="contactForm" class="md:max-w-2xl mx-auto">
+  <form @submit.prevent="submitForm" class="space-y-2.5">
+    <!-- Name Field -->
+    <div class="form-control">
+      <label for="name" class="label">
+        <span class="label-text text-gray-700 font-medium">Full Name *</span>
+      </label>
+      <input
+        type="text"
+        id="name"
+        x-model="formData.name"
+        class="input input-ghost input-bordered w-full focus:input-primary py-7"
+        :class="{ 'input-error': errors.name }"
+        placeholder="Your full name"
+        required
+      />
+      <div x-show="errors.name" class="label">
+        <span class="label-text-alt text-error" x-text="errors.name"></span>
+      </div>
+    </div>
+
+    <!-- Email Field -->
+    <div class="form-control">
+      <label for="email" class="label">
+        <span class="label-text text-gray-700 font-medium">Email Address *</span
+        >
+      </label>
+      <input
+        type="email"
+        id="email"
+        x-model="formData.email"
+        class="input input-ghost input-bordered w-full focus:input-primary py-7"
+        :class="{ 'input-error': errors.email }"
+        placeholder="your.email@example.com"
+        required
+      />
+      <div x-show="errors.email" class="label">
+        <span class="label-text-alt text-error" x-text="errors.email"></span>
+      </div>
+    </div>
+
+    <!-- Phone Field -->
+    <div class="form-control">
+      <label for="phone" class="label">
+        <span class="label-text text-gray-700 font-medium">Phone Number *</span>
+      </label>
+      <input
+        type="tel"
+        id="phone"
+        x-model="formData.phone"
+        class="input input-ghost input-bordered w-full focus:input-primary py-7"
+        :class="{ 'input-error': errors.phone }"
+        placeholder="020 1234 5678"
+        required
+      />
+      <div x-show="errors.phone" class="label">
+        <span class="label-text-alt text-error" x-text="errors.phone"></span>
+      </div>
+    </div>
+
+    <!-- Message Field -->
+    <div class="form-control">
+      <label for="message" class="label">
+        <span class="label-text text-gray-700 font-medium"
+          >How can we help you? *</span
+        >
+      </label>
+      <textarea
+        id="message"
+        x-model="formData.message"
+        class="textarea textarea-ghost textarea-bordered w-full h-32 focus:textarea-primary resize-none py-2"
+        :class="{ 'textarea-error': errors.message }"
+        placeholder="Please describe your electrical needs..."
+        required></textarea>
+      <div x-show="errors.message" class="label">
+        <span class="label-text-alt text-error" x-text="errors.message"></span>
+      </div>
+    </div>
+
+    <!-- Urgent Checkbox -->
+    <div class="form-control">
+      <label class="label cursor-pointer justify-start space-x-3">
+        <input
+          type="checkbox"
+          x-model="formData.urgent"
+          class="checkbox checkbox-neutral border-gray-300 checked:border-gray-700"
+        />
+        <span class="label-text text-gray-700 font-medium">
+          🚨 This is urgent (requires immediate attention)
+        </span>
+      </label>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-control">
+      <button
+        type="submit"
+        :disabled="loading"
+        class="button button-primary w-full"
+        :class="{ 'loading': loading }"
+      >
+        <span x-show="!loading">Send Message</span>
+        <span x-show="loading">Sending...</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Success/Error Notification -->
+  <div
+    x-show="notification.show"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 transform -translate-y-4"
+    x-transition:enter-end="opacity-100 transform translate-y-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 transform translate-y-0"
+    x-transition:leave-end="opacity-0 transform -translate-y-4"
+    class="mt-6"
+  >
+    <div
+      class="alert"
+      :class="{
+        'alert-success': notification.type === 'success',
+        'alert-error': notification.type === 'error',
+        'alert-warning': notification.type === 'warning'
+      }"
+    >
+      <div class="flex items-start space-x-2">
+        <div x-show="notification.type === 'success'">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <div x-show="notification.type === 'error'">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </div>
+        <div x-show="notification.type === 'warning'">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            ></path>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <div class="font-bold" x-text="notification.title"></div>
+          <div class="text-sm" x-text="notification.message"></div>
+          <div
+            x-show="notification.warnings && notification.warnings.length > 0"
+            class="text-xs mt-2"
+          >
+            <div class="font-semibold">Warnings:</div>
+            <template x-for="warning in notification.warnings" :key="warning">
+              <div x-text="warning"></div>
+            </template>
+          </div>
+        </div>
+        <button @click="closeNotification" class="btn btn-ghost btn-sm">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div
+    x-show="loading"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex items-center justify-center z-50"
+    style="display: none;"
+  >
+    <div class="glass p-8 rounded-2xl">
+      <div class="flex flex-col items-center space-y-4">
+        <div class="loading loading-spinner loading-lg text-primary"></div>
+        <p class="text-lg font-medium">Sending your message...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("alpine:init", () => {
+    Alpine.data("contactForm", () => ({
+      loading: false,
+      formData: {
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        urgent: false,
+      },
+      errors: {},
+      notification: {
+        show: false,
+        type: "",
+        title: "",
+        message: "",
+        warnings: [],
+      },
+
+      // Debounce timer
+      debounceTimer: null,
+
+      validateForm() {
+        this.errors = {};
+        let isValid = true;
+
+        // Name validation
+        if (!this.formData.name.trim()) {
+          this.errors.name = "Name is required";
+          isValid = false;
+        } else if (this.formData.name.trim().length < 2) {
+          this.errors.name = "Name must be at least 2 characters";
+          isValid = false;
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!this.formData.email.trim()) {
+          this.errors.email = "Email is required";
+          isValid = false;
+        } else if (!emailRegex.test(this.formData.email)) {
+          this.errors.email = "Please enter a valid email address";
+          isValid = false;
+        }
+
+        // UK Phone validation - accepts various UK formats
+        const ukPhoneRegex =
+          /^(?:(?:\+44)|(?:0))(?:\d{2}\s?\d{4}\s?\d{4}|\d{3}\s?\d{3}\s?\d{4}|\d{4}\s?\d{6}|\d{5}\s?\d{5})$/;
+        const cleanPhone = this.formData.phone.replace(/\s/g, "");
+        if (!this.formData.phone.trim()) {
+          this.errors.phone = "Phone number is required";
+          isValid = false;
+        } else if (!ukPhoneRegex.test(cleanPhone)) {
+          this.errors.phone =
+            "Please enter a valid UK phone number (e.g., 020 1234 5678)";
+          isValid = false;
+        }
+
+        // Message validation
+        if (!this.formData.message.trim()) {
+          this.errors.message = "Message is required";
+          isValid = false;
+        } else if (this.formData.message.trim().length < 10) {
+          this.errors.message = "Message must be at least 10 characters";
+          isValid = false;
+        }
+
+        return isValid;
+      },
+
+      async submitForm() {
+        // Clear previous notifications
+        this.notification.show = false;
+
+        // Debounce to prevent double submissions
+        if (this.debounceTimer) {
+          clearTimeout(this.debounceTimer);
+        }
+
+        this.debounceTimer = setTimeout(async () => {
+          // Validate form
+          if (!this.validateForm()) {
+            this.showNotification(
+              "error",
+              "Please fix the errors below",
+              "Form validation failed",
+            );
+            return;
+          }
+
+          this.loading = true;
+
+          try {
+            const response = await fetch("/.netlify/functions/contact", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(this.formData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+              this.showNotification(
+                "success",
+                "Message Sent Successfully!",
+                result.message,
+                result.warnings,
+              );
+              this.resetForm();
+            } else {
+              throw new Error(result.error || "Failed to send message");
+            }
+          } catch (error) {
+            console.error("Form submission error:", error);
+
+            let errorMessage =
+              "Sorry, there was an error sending your message. Please try again or call us directly.";
+
+            if (error.message.includes("429")) {
+              errorMessage = "Please wait a moment before submitting again.";
+            }
+
+            this.showNotification(
+              "error",
+              "Oops! Something went wrong",
+              errorMessage,
+            );
+          } finally {
+            this.loading = false;
+          }
+        }, 300); // 300ms debounce
+      },
+
+      showNotification(type, title, message, warnings = []) {
+        this.notification = {
+          show: true,
+          type,
+          title,
+          message,
+          warnings,
+        };
+
+        // Auto-hide success notifications after 8 seconds
+        if (type === "success") {
+          setTimeout(() => {
+            this.closeNotification();
+          }, 8000);
+        }
+      },
+
+      closeNotification() {
+        this.notification.show = false;
+      },
+
+      resetForm() {
+        this.formData = {
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          urgent: false,
+        };
+        this.errors = {};
+      },
+    }));
+  });
+</script>
+
+<style>
+  .glass {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+</style>

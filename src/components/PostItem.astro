@@ -21,19 +21,19 @@ function formatDate(dateString: string) {
 ---
 
 <article
-  class="bg-surface-card p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+  class="bg-surface-card flex flex-col h-full p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow"
 >
   <div class="text-sm text-gray-500 mb-2">{formatDate(post.date)}</div>
   <a href={`${blogUrl}/${post.slug}`} class="block group transition-colors">
     <h2
-      class="text-xl font-semibold mb-4 group-hover:text-blue-600 transition-colors"
+      class="text-xl font-semibold mb-4 group-hover:text-brand-tertiary transition-colors"
       set:html={post.title.rendered}
     />
   </a>
   <div class="prose line-clamp-3 mb-4" set:html={post.excerpt.rendered} />
   <a
     href={`${blogUrl}/${post.slug}`}
-    class="text-brand-secondary opacity-80 hover:underline inline-flex items-center"
+    class="text-brand-secondary opacity-80 hover:underline inline-flex items-center mt-auto"
   >
     Read More
     <span class="ml-1">→</span>

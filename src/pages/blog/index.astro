@@ -22,7 +22,7 @@ try {
 const blogUrl = new URL("/blog", Astro.url.origin).pathname;
 ---
 
-<Layout>
+<Layout title="Blog Posts" pageType="blog">
   <PageHeader
     title="Blog Posts"
     description="Find out about the latest news and updates in the Sparky world."
@@ -70,7 +70,7 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
       newPosts.forEach((post) => {
         const article = document.createElement("article");
         article.className =
-          "bg-white p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md opacity-0";
+          "bg-surface-card flex flex-col h-full p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow opacity-0";
 
         const date = new Date(post.date).toLocaleDateString("en-US", {
           year: "numeric",
@@ -80,12 +80,12 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
 
         article.innerHTML = `
           <div class="text-sm text-gray-500 mb-2">${date}</div>
-          <a href="${blogUrl}/${post.slug}" class="block hover:text-blue-600 transition-colors">
-            <h2 class="text-xl font-semibold mb-4">${post.title.rendered}</h2>
+          <a href="${blogUrl}/${post.slug}" class="block group transition-colors">
+            <h2 class="text-xl font-semibold mb-4 group-hover:text-brand-tertiary transition-colors">${post.title.rendered}</h2>
           </a>
-          <div class="prose mb-4">${post.excerpt.rendered}</div>
-          <a href="${blogUrl}/${post.slug}" class="text-blue-600 hover:underline inline-flex items-center">
-            Read more
+          <div class="prose line-clamp-3 mb-4">${post.excerpt.rendered}</div>
+          <a href="${blogUrl}/${post.slug}" class="text-brand-secondary opacity-80 hover:underline inline-flex items-center mt-auto">
+            Read More
             <span class="ml-1">→</span>
           </a>
         `;

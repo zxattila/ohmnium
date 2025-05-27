@@ -1,18 +1,46 @@
 ---
+import { Image } from "astro:assets";
+import defaultImage from "../assets/electrician-abstract-01.jpg";
+
 interface Props {
-  imageSrc: string;
-  altText: string;
-  height?: string; // Optional: Allows setting a custom height
+  src?: ImageMetadata | string;
+  alt?: string;
+  class?: string;
+  height?: string;
 }
 
-const { imageSrc, altText, height = "auto" } = Astro.props;
+const {
+  src = defaultImage,
+  alt = "Electrician working on a circuit board",
+  class: classList = "",
+  height = "auto",
+} = Astro.props;
 ---
 
-<section class="w-full">
-  <img
-    src={imageSrc}
-    alt={altText}
-    class="w-full"
-    style={`height: ${height};`}
-  />
+<section class="full-width-container">
+  {
+    typeof src === "string" ? (
+      <img
+        src={src}
+        alt={alt}
+        class={`w-full object-cover h-52 md:h-64 lg:h-80 ${classList}`}
+      />
+    ) : (
+      <Image
+        src={src}
+        alt={alt}
+        class={`w-full object-cover h-52 md:h-64 lg:h-80 ${classList}`}
+      />
+    )
+  }
 </section>
+
+<style>
+  .full-width-container {
+    @apply relative w-screen;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+</style>

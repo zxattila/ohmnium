@@ -3,15 +3,15 @@ interface Props {
   title?: string;
 }
 
-const { title = "Your trusted partner for modern electrical solutions." } =
+const { title = "Your trusted partner for modern electrical solutions" } =
   Astro.props;
 ---
 
-<section class="py-10">
-  <div class="bg-surface-banner relative rounded-xl w-full hidden md:block">
+<section class="md:py-10 hidden md:block">
+  <div class="bg-brand-accent relative rounded-xl w-full">
     <!-- Background Overlay -->
     <div
-      class="absolute inset-0 bg-no-repeat bg-cover bg-center opacity-50"
+      class="absolute inset-0 bg-no-repeat bg-cover bg-center opacity-90"
       style="background-image: url('/src/assets/noise.png');"
     >
     </div>

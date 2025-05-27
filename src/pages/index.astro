@@ -1,14 +1,18 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Hero from "../components/Hero.astro";
+import Hero from "../components/HeroAlt.astro";
 import ContactButton from "../components/ContactButton.astro";
 import CardColumns from "../components/CardColumns.astro";
 import ImageText from "../components/ImageText.astro";
+// import ImageTextBento from "../components/ImageTextBento.astro";
 import Spacing from "../components/Spacing.astro";
 import ReviewSlider from "../components/ReviewSlider.astro";
 import Banner from "../components/Banner.astro";
 import Brands from "../components/Brands.astro";
-import BlogPosts from "../components/BlogPosts.astro";
+import PostSlider from "../components/PostSlider.astro";
+import Faq from "../components/Faq.astro";
+import ImageFullWidth from "../components/ImageFullWidth.astro";
+import ContactHome from "../components/ContactHome.astro";
 // import { Image } from "astro:assets";
 ---
 
@@ -16,10 +20,14 @@ import BlogPosts from "../components/BlogPosts.astro";
   <Hero />
   <ContactButton />
   <CardColumns />
+  <!-- <ImageTextBento /> -->
   <ImageText />
-  <Spacing />
+  <!-- <Spacing /> -->
   <ReviewSlider />
-  <Banner />
+  <!-- <Banner /> -->
   <Brands />
-  <BlogPosts />
+  <PostSlider />
+  <Faq />
+  <ImageFullWidth />
+  <ContactHome />
 </Layout>

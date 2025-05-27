@@ -1,21 +1,46 @@
 ---
 const { page, prevPost, nextPost } = Astro.props;
+
+// Helper function to truncate title with ellipsis
+function truncateTitle(title, maxLength = 30) {
+  if (!title) return "";
+
+  // Remove HTML tags for accurate character count
+  const textOnly = title.replace(/<\/?[^>]+(>|$)/g, "");
+
+  if (textOnly.length <= maxLength) return title;
+  return textOnly.substring(0, maxLength) + "...";
+}
 ---
 
 <nav class="flex justify-between items-center max-w-3xl mx-auto mt-8">
   <div class="flex-1 text-left">
-    {page.url.prev && (
-      <a href={page.url.prev} class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">
-        ← {prevPost?.title?.rendered || 'Previous'}
-      </a>
-    )}
+    {
+      page.url.prev && (
+        <a
+          href={page.url.prev}
+          class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+        >
+          ←&nbsp;
+          <span
+            set:html={truncateTitle(prevPost?.title?.rendered) || "Previous"}
+          />
+        </a>
+      )
+    }
   </div>
-  
+
   <div class="flex-1 text-right">
-    {page.url.next && (
-      <a href={page.url.next} class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">
-        {nextPost?.title?.rendered || 'Next'} →
-      </a>
-    )}
+    {
+      page.url.next && (
+        <a
+          href={page.url.next}
+          class="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200"
+        >
+          <span set:html={truncateTitle(nextPost?.title?.rendered) || "Next"} />
+          &nbsp;→
+        </a>
+      )
+    }
   </div>
 </nav>
