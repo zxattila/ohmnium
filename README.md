@@ -134,11 +134,9 @@ The contact form uses React Email templates for flexible email design and the Re
 
 #### Required Dependencies
 
-Install the React Email packages for template rendering:
+The contact form uses HTML email templates and the Resend API for reliable email delivery.
 
-```bash
-npm install @react-email/components @react-email/render react react-dom
-```
+**No additional dependencies required** - the templates use pure HTML with inline CSS.
 
 #### Environment Variables
 
@@ -170,10 +168,10 @@ FLOWISE_URL=https://your-flowise-instance.com/api/v1/prediction/flow-id
 
 #### Email Templates
 
-The contact form sends two emails using React Email templates:
+The contact form sends two emails using HTML email templates:
 
-- **Customer Email** (`/netlify/functions/templates/customer.jsx`) - Confirmation email sent to the customer
-- **Business Email** (`/netlify/functions/templates/business.jsx`) - Notification email sent to your business
+- **Customer Email** (`/netlify/functions/templates/customer.js`) - Confirmation email sent to the customer
+- **Business Email** (`/netlify/functions/templates/business.js`) - Notification email sent to your business
 
 Templates include:
 - Responsive HTML design matching your brand
@@ -192,17 +190,19 @@ Add these image files to your `/public` folder:
 
 Both images should be optimized for web and email delivery.
 
-**Status**: ✅ **React Email templates are fully configured and ready for production use**
-
-Dependencies installed:
-- `@react-email/components` ✅
-- `@react-email/render` ✅  
-- `react` ✅
-- `react-dom` ✅
+**Status**: ✅ **HTML email templates are fully configured and ready for production use**
 
 Image assets ready:
 - Logo copied from assets to public folder ✅
 - Welcome image (electrician-abstract-01.jpg) ready for emails ✅
+
+Template features:
+- Professional HTML email design with inline CSS ✅
+- Custom Francois One and Source Sans 3 fonts ✅
+- Dark mode support with CSS media queries ✅
+- Responsive mobile-optimized layout ✅
+- Logo and welcome image integration ✅
+- Proper security with HTML escaping ✅
 
 ## Tailwind Snippets
 

@@ -19,54 +19,115 @@ module.exports = (data) => {
     currentDate: escapeHtml(data.currentDate),
   };
 
+  const siteUrl = process.env.SITE_URL || "https://ohmnium.co.uk";
+
   return `
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
-  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px 8px 0 0;">
-    <h1 style="color: white; margin: 0; font-size: 24px;">⚡ Thank You for Contacting Us!</h1>
-  </div>
-  
-  <div style="background: white; padding: 30px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <p style="font-size: 18px; color: #333;">Hi ${escapedData.name},</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Thank You for Your Message - Ohmnium Electricians</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Francois+One&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .dark-mode-bg { background-color: #1a1a1a !important; }
+      .dark-mode-text { color: #e5e5e5 !important; }
+      .dark-mode-heading { color: #ffffff !important; }
+      .dark-mode-border { border-color: #404040 !important; }
+      .dark-mode-section { background-color: #2d2d2d !important; }
+      .dark-content { background-color: #2d2d2d !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 40px 20px; font-family: 'Source Sans 3', sans-serif; background-color: white;" class="dark-mode-bg">
+  <div style="max-width: 600px; margin: 0 auto;">
     
-    <p style="line-height: 1.6; color: #555;">
-      Thank you for reaching out to us! We've received your ${data.urgent ? "<strong>urgent</strong> " : ""}message and will get back to you as soon as possible.
-    </p>
-    
-    <div style="background: #e8f4fd; padding: 20px; border-radius: 4px; margin: 20px 0;">
-      <h3 style="margin-top: 0; color: #1976d2;">What happens next?</h3>
-      <ul style="color: #555; line-height: 1.6;">
-        <li>We'll review your request within 24 hours</li>
-        <li>Our team will contact you at ${escapedData.phone}</li>
-        ${escapedData.service ? `<li>Service requested: <strong>${escapedData.service}</strong></li>` : ""}
-        ${data.urgent ? '<li style="color: #ff6b6b; font-weight: bold;">Your request has been flagged as urgent</li>' : ""}
-      </ul>
+    <!-- Company Logo -->
+    <div style="text-align: center; margin-bottom: 40px;">
+      <img src="${siteUrl}/logo.png" width="140" alt="Ohmnium Electricians - Professional Electrical Services" style="display: block; margin: 0 auto;">
     </div>
     
-    <div style="border-left: 4px solid #28a745; padding: 20px; background: #f8fff9; margin: 20px 0;">
-      <h3 style="margin-top: 0; color: #28a745;">Emergency Contact</h3>
-      <p style="margin-bottom: 10px; color: #555;">
+    <!-- Heading Section -->
+    <div style="margin-bottom: 40px;">
+      <h1 style="font-family: 'Francois One', sans-serif; font-size: 30px; line-height: 1.25; font-weight: normal; color: black; text-transform: uppercase; margin: 0 0 16px 0;" class="dark-mode-heading">
+        Thank You for Your Message!
+      </h1>
+    </div>
+    
+    <!-- Welcome Section -->
+    <div style="margin-bottom: 40px;">
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">Hi ${escapedData.name},</p>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">
+        Thank you for reaching out to us! We've received your ${data.urgent ? "<strong>urgent </strong>" : ""}message and our team will get back to you as soon as possible.
+      </p>
+    </div>
+    
+    <!-- Welcome Image -->
+    <div style="margin-bottom: 40px;">
+      <img src="${siteUrl}/welcome.jpg" alt="Welcome to Ohmnium - Professional Electrical Services" style="border-radius: 6px; display: block; max-width: 100%; width: 100%; height: auto;">
+    </div>
+    
+    <!-- What's Next Section -->
+    <div style="margin-bottom: 40px;">
+      <h3 style="font-family: 'Francois One', sans-serif; font-size: 20px; line-height: 1.25; font-weight: normal; color: black; text-transform: uppercase; margin: 0 0 8px 0;" class="dark-mode-heading">What's Next?</h3>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">• We'll review your request within 24 hours</p>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">• Our team will contact you at ${escapedData.phone}</p>
+      ${escapedData.service ? `<p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">• Service requested: <strong>${escapedData.service}</strong></p>` : ""}
+      ${data.urgent ? "<p style=\"font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 600; color: #dc2626; margin: 0 0 16px 0;\">• Your request has been flagged as urgent</p>" : ""}
+    </div>
+    
+    <!-- Emergency Contact Section -->
+    <div style="margin-bottom: 40px;">
+      <h3 style="font-family: 'Francois One', sans-serif; font-size: 20px; line-height: 1.25; font-weight: normal; color: black; text-transform: uppercase; margin: 0 0 8px 0;" class="dark-mode-heading">Emergency Contact</h3>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">
         For immediate assistance outside business hours:
       </p>
-      <p style="font-size: 20px; font-weight: bold; color: #28a745; margin: 0;">
-        📞 020 3500 1441
-      </p>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 20px; line-height: 1.4; font-weight: 600; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">📞 020 3500 1441</p>
     </div>
     
-    <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 4px; margin: 20px 0;">
-      <p style="margin: 0; color: #856404;">
+    <!-- Reference Section -->
+    <div style="background-color: #d1d5db; border-radius: 6px; padding: 20px; margin-bottom: 40px;" class="dark-mode-section">
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0;" class="dark-mode-text">
         <strong>Reference:</strong> Submitted on ${escapedData.currentDate}
       </p>
     </div>
     
-    <p style="color: #555; line-height: 1.6;">
-      Best regards,<br>
-      <strong>The ${process.env.BUSINESS_NAME || "Ohmnium"} Team</strong>
-    </p>
+    <!-- HR Divider -->
+    <hr style="border: none; border-top: 1px solid #9ca3af; margin: 40px 0;" class="dark-mode-border">
+    
+    <!-- Best Regards -->
+    <div style="margin-bottom: 40px;">
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">Best Regards,</p>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">from Kyle</p>
+    </div>
+    
+    <!-- HR Divider -->
+    <hr style="border: none; border-top: 1px solid #9ca3af; margin: 40px 0;" class="dark-mode-border">
+    
+    <!-- Business Info Section -->
+    <div style="margin-bottom: 40px;">
+      <h4 style="font-family: 'Francois One', sans-serif; font-size: 18px; line-height: 1.25; font-weight: normal; color: black; text-transform: uppercase; margin: 0 0 8px 0;" class="dark-mode-heading">Ohmnium Electricians</h4>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">020 3500 1441</p>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">
+        <a href="mailto:info@ohmnium.co.uk" style="color: #6366f1; text-decoration: none;">info@ohmnium.co.uk</a>
+      </p>
+      <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">
+        <a href="https://ohmnium.co.uk" style="color: #6366f1; text-decoration: none;">https://ohmnium.co.uk</a>
+      </p>
+    </div>
+    
+    <!-- Copyright -->
+    <div>
+      <p style="font-family: 'Francois One', sans-serif; font-size: 12px; color: #979797; text-align: center; margin: 0;">© 2025 OHMNIUM</p>
+    </div>
+    
   </div>
-  
-  <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
-    <p>This is an automated message. Please don't reply directly to this email.</p>
-  </div>
-</div>
+</body>
+</html>
 `;
 };

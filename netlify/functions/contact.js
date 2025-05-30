@@ -1,10 +1,9 @@
 // netlify/functions/contact.js
 const { Resend } = require("resend");
-const { render } = require("@react-email/render");
 
-// Import React Email templates
-const CustomerTemplate = require("./templates/customer").default;
-const BusinessTemplate = require("./templates/business").default;
+// Import HTML email templates
+const CustomerTemplate = require("./templates/customer");
+const BusinessTemplate = require("./templates/business");
 
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -268,31 +267,27 @@ exports.handler = async (event, context) => {
     });
 
     // Render email templates
-    const customerHtml = render(
-      CustomerTemplate({
-        name: sanitizedData.name,
-        email: sanitizedData.email,
-        phone: sanitizedData.phone,
-        service: sanitizedData.service,
-        message: sanitizedData.message,
-        currentDate,
-        urgent: sanitizedData.urgent,
-      }),
-    );
+    const customerHtml = CustomerTemplate({
+      name: sanitizedData.name,
+      email: sanitizedData.email,
+      phone: sanitizedData.phone,
+      service: sanitizedData.service,
+      message: sanitizedData.message,
+      currentDate,
+      urgent: sanitizedData.urgent,
+    });
 
-    const businessHtml = render(
-      BusinessTemplate({
-        name: sanitizedData.name,
-        email: sanitizedData.email,
-        phone: sanitizedData.phone,
-        service: sanitizedData.service,
-        message: sanitizedData.message,
-        currentDate,
-        clientIP,
-        urgent: sanitizedData.urgent,
-        warnings: warnings,
-      }),
-    );
+    const businessHtml = BusinessTemplate({
+      name: sanitizedData.name,
+      email: sanitizedData.email,
+      phone: sanitizedData.phone,
+      service: sanitizedData.service,
+      message: sanitizedData.message,
+      currentDate,
+      clientIP,
+      urgent: sanitizedData.urgent,
+      warnings: warnings,
+    });
 
     // Send emails
     const emailPromises = [];
