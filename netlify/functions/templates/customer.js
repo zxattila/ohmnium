@@ -63,7 +63,7 @@ module.exports = (data) => {
     <div style="margin-bottom: 40px;">
       <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">Hi ${escapedData.name},</p>
       <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">
-        Thank you for reaching out to us! We've received your ${data.urgent ? "<strong>urgent </strong>" : ""}message and our team will get back to you as soon as possible.
+        Thank you for reaching out to us! We've received your ${data.urgent ? '<strong>urgent </strong>' : ''}message and our team will get back to you as soon as possible.
       </p>
     </div>
     
@@ -77,8 +77,8 @@ module.exports = (data) => {
       <h3 style="font-family: 'Francois One', sans-serif; font-size: 20px; line-height: 1.25; font-weight: normal; color: black; text-transform: uppercase; margin: 0 0 8px 0;" class="dark-mode-heading">What's Next?</h3>
       <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">• We'll review your request within 24 hours</p>
       <p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">• Our team will contact you at ${escapedData.phone}</p>
-      ${escapedData.service ? `<p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">• Service requested: <strong>${escapedData.service}</strong></p>` : ""}
-      ${data.urgent ? "<p style=\"font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 600; color: #dc2626; margin: 0 0 16px 0;\">• Your request has been flagged as urgent</p>" : ""}
+      ${escapedData.service ? `<p style="font-family: 'Source Sans 3', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 500; color: #1a1a1a; margin: 0 0 16px 0;" class="dark-mode-text">• Service requested: <strong>${escapedData.service}</strong></p>` : ''}
+      ${data.urgent ? '<p style="font-family: \'Source Sans 3\', sans-serif; font-size: 16px; line-height: 1.4; font-weight: 600; color: #dc2626; margin: 0 0 16px 0;">• Your request has been flagged as urgent</p>' : ''}
     </div>
     
     <!-- Emergency Contact Section -->
