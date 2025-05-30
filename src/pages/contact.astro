@@ -1,0 +1,17 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import ContactHome from "../components/ContactHome.astro";
+---
+
+<Layout>
+  <PageHeader
+    title="Contact Us"
+    description="Get in touch with our electrical experts"
+    useNoise={true}
+  />
+
+  <main class="container max-w-screen-lg mx-auto px-4">
+    <ContactHome title="Get in Touch" />
+  </main>
+</Layout>

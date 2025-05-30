@@ -89,7 +89,7 @@ module.exports = (data) => {
     
     <!-- Business Info Section -->
     <div style="margin-bottom: 40px;">
-      <h4 style="font-family: 'Francois One', sans-serif; font-size: 18px; line-height: 1.25; font-weight: normal; color: black; text-transform: uppercase; margin: 0 0 10px 0;" class="dark-mode-heading"><a href="https://ohmnium.co.uk" style="color: black; text-decoration: none;">Ohmnium Electricians</a></h4>
+      <h4 style="font-family: 'Francois One', sans-serif; font-size: 18px; line-height: 1.25; font-weight: normal; color: black; text-transform: uppercase; margin: 0 0 10px 0;" class="dark-mode-heading"><a href="https://ohmnium.co.uk" style="color: inherit; text-decoration: none;" class="dark-mode-heading">Ohmnium Electricians</a></h4>
       <p style="font-family: 'Francois One', sans-serif; font-size: 14px; color: #979797; margin: 0;">© 2025 OHMNIUM</p>
     </div>
     

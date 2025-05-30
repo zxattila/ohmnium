@@ -25,3 +25,5 @@ pnpm-debug.log*
 
 # figma config
 .figma.config.json
+# Local Netlify folder
+.netlify
