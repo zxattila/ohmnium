@@ -88,7 +88,7 @@ module.exports = (data) => {
     </div>
     
     <!-- HR Divider -->
-    <hr style="border: none; border-top: 1px solid #9ca3af; margin: 40px 0;" class="dark-mode-border">
+    <hr style="border: none; border-top: 1px solid #f4f4f4; margin: 40px 0;" class="dark-mode-border">
     
     <!-- Business Info Section -->
     <div style="margin-bottom: 40px;">
