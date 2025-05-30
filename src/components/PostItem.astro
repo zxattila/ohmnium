@@ -21,7 +21,7 @@ function formatDate(dateString: string) {
 ---
 
 <article
-  class="post-item bg-surface-card flex flex-col h-full p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+  class="post-item bg-surface-card flex flex-col h-full px-3 py-5 sm:p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow"
 >
   <div class="text-sm mb-2">{formatDate(post.date)}</div>
   <a href={`${blogUrl}/${post.slug}`} class="block group transition-colors">
