@@ -1,0 +1,83 @@
+---
+import { Image } from "astro:assets";
+import defaultImage from "../assets/electrician-abstract-01.jpg";
+
+interface Props {
+  src?: ImageMetadata | string;
+  alt?: string;
+  class?: string;
+  height?: string;
+  text?: string;
+  showOverlay?: boolean;
+}
+
+const {
+  src = defaultImage,
+  alt = "Electrician working on a circuit board",
+  class: classList = "",
+  height = "auto",
+  text = "We believe great service starts with clear communication. No missed appointments, no vague pricing, no chasing for updates. Just reliable, straight forward support that puts your needs first so even the biggest jobs feel simple.",
+  showOverlay = true,
+} = Astro.props;
+---
+
+<section class="full-width-container">
+  {
+    typeof src === "string" ? (
+      <img
+        src={src}
+        alt={alt}
+        class={`w-full object-cover h-52 md:h-64 lg:h-80 ${classList}`}
+      />
+    ) : (
+      <Image
+        src={src}
+        alt={alt}
+        class={`w-full object-cover h-52 md:h-64 lg:h-80 ${classList}`}
+      />
+    )
+  }
+
+  {
+    text && showOverlay && (
+      <>
+        <div class="absolute inset-0 bg-black bg-opacity-40" />
+        <div class="absolute inset-0 glass backdrop-blur-lg flex items-center justify-center px-5 md:px-10">
+          <div class="text-container text-center">
+            <p class="text-white text-base md:text-xl leading-relaxed">
+              {text}
+            </p>
+          </div>
+        </div>
+      </>
+    )
+  }
+</section>
+
+<style>
+  .full-width-container {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  .text-container {
+    width: 100%; /* mobile default */
+    max-width: 96ch; /* character-based max width */
+  }
+
+  @media (min-width: 768px) {
+    .text-container {
+      width: 80%; /* md: 80% */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .text-container {
+      width: 70%; /* lg: 70% */
+    }
+  }
+</style>

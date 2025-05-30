@@ -1,4 +1,10 @@
 // Alpine.js custom components and utilities
+import Alpine from "alpinejs";
+import collapse from "@alpinejs/collapse";
+
+// Register Alpine.js plugins
+Alpine.plugin(collapse);
+
 document.addEventListener("alpine:init", () => {
   // Counter component
   Alpine.data("counter", () => ({

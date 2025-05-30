@@ -118,88 +118,30 @@
     x-transition:leave="transition ease-in duration-200"
     x-transition:leave-start="opacity-100 transform translate-y-0"
     x-transition:leave-end="opacity-0 transform -translate-y-4"
-    class="mt-6"
+    class="mt-6 p-4 bg-gray-100 rounded-lg"
   >
-    <div
-      class="alert"
-      :class="{
-        'alert-success': notification.type === 'success',
-        'alert-error': notification.type === 'error',
-        'alert-warning': notification.type === 'warning'
-      }"
-    >
-      <div class="flex items-start space-x-2">
-        <div x-show="notification.type === 'success'">
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7"></path>
-          </svg>
-        </div>
-        <div x-show="notification.type === 'error'">
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </div>
-        <div x-show="notification.type === 'warning'">
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-            ></path>
-          </svg>
-        </div>
-        <div class="flex-1">
-          <div class="font-bold" x-text="notification.title"></div>
-          <div class="text-sm" x-text="notification.message"></div>
-          <div
-            x-show="notification.warnings && notification.warnings.length > 0"
-            class="text-xs mt-2"
-          >
-            <div class="font-semibold">Warnings:</div>
-            <template x-for="warning in notification.warnings" :key="warning">
-              <div x-text="warning"></div>
-            </template>
-          </div>
-        </div>
-        <button @click="closeNotification" class="btn btn-ghost btn-sm">
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+    <div class="flex justify-between items-start">
+      <div class="flex-1">
+        <h3 class="font-semibold mb-2" x-text="notification.type + ':'"></h3>
+        <p x-text="notification.message" class="text-gray-700"></p>
       </div>
+      <button
+        @click="closeNotification"
+        class="ml-4 text-gray-500 hover:text-gray-700"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -215,10 +157,10 @@
     class="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex items-center justify-center z-50"
     style="display: none;"
   >
-    <div class="glass p-8 rounded-2xl">
+    <div class="glass bg-gray-300/20 border border-gray-500/30 p-8 rounded-lg">
       <div class="flex flex-col items-center space-y-4">
-        <div class="loading loading-spinner loading-lg text-primary"></div>
-        <p class="text-lg font-medium">Sending your message...</p>
+        <div class="loading loading-spinner loading-lg text-gray-700"></div>
+        <p class="text-base font-medium">Sending your message...</p>
       </div>
     </div>
   </div>
@@ -239,9 +181,7 @@
       notification: {
         show: false,
         type: "",
-        title: "",
         message: "",
-        warnings: [],
       },
 
       // Debounce timer
@@ -307,11 +247,7 @@
         this.debounceTimer = setTimeout(async () => {
           // Validate form
           if (!this.validateForm()) {
-            this.showNotification(
-              "error",
-              "Please fix the errors below",
-              "Form validation failed",
-            );
+            this.showNotification("error", "Please fix the errors below");
             return;
           }
 
@@ -329,12 +265,7 @@
             const result = await response.json();
 
             if (response.ok && result.success) {
-              this.showNotification(
-                "success",
-                "Message Sent Successfully!",
-                result.message,
-                result.warnings,
-              );
+              this.showNotification("success", result.message);
               this.resetForm();
             } else {
               throw new Error(result.error || "Failed to send message");
@@ -349,32 +280,19 @@
               errorMessage = "Please wait a moment before submitting again.";
             }
 
-            this.showNotification(
-              "error",
-              "Oops! Something went wrong",
-              errorMessage,
-            );
+            this.showNotification("error", errorMessage);
           } finally {
             this.loading = false;
           }
         }, 300); // 300ms debounce
       },
 
-      showNotification(type, title, message, warnings = []) {
+      showNotification(type, message) {
         this.notification = {
           show: true,
-          type,
-          title,
+          type: type.charAt(0).toUpperCase() + type.slice(1),
           message,
-          warnings,
         };
-
-        // Auto-hide success notifications after 8 seconds
-        if (type === "success") {
-          setTimeout(() => {
-            this.closeNotification();
-          }, 8000);
-        }
       },
 
       closeNotification() {
@@ -394,11 +312,3 @@
     }));
   });
 </script>
-
-<style>
-  .glass {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-  }
-</style>

@@ -128,6 +128,31 @@ Integrates with OpenAI API to provide intelligent responses to user inquiries:
 
 The project uses environment variables to manage configuration:
 
+## Tailwind Snippets
+
+Custom utility classes for common design patterns:
+
+### First Child Spacing
+Adds consistent bottom margin to all direct child elements:
+
+```css
+.first-child-spacing > * {
+  @apply mb-5;
+}
+```
+
+Usage example:
+```astro
+<div class="first-child-spacing">
+  <!-- All direct children will have mb-5 applied -->
+  <p>This paragraph gets mb-5</p>
+  <h2>This heading gets mb-5</h2>
+  <ul>This list gets mb-5</ul>
+</div>
+```
+
+This utility is particularly useful for WordPress content areas where you need consistent spacing between all elements without targeting specific HTML tags.
+
 - `WP_SITE`: The WordPress site URL (default: "https://techcrunch.com")
 - `OPENAI_API_KEY`: API key for OpenAI integration
 

@@ -1,11 +1,12 @@
 ---
 interface Props {
   text?: string;
+  href?: string;
 }
 
-const { text = "020 3500 1441" } = Astro.props;
+const { text = "020 3500 1441", href = "tel:+442035001441" } = Astro.props;
 ---
 
 <section class="pt-2.5 block md:hidden">
-  <button class="button button-primary w-full">{text} </button>
+  <a href={href} class="button button-primary w-full">{text}</a>
 </section>

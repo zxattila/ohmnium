@@ -1,11 +1,5 @@
 ---
 import ReviewCard from "./ReviewCard.astro";
-import electricianImage from "../assets/electrician-abstract-01.jpg";
-
-const {
-  image = electricianImage.src,
-  paragraph = "At Ohmnium, we help homeowners, landlords, and businesses with reliable electrical solutions across London & the Home Counties. We show up, get the job done properly, and keep you informed every step of the way—no unnecessary delays, no surprise costs.",
-} = Astro.props;
 
 interface Review {
   reviewId: string;
@@ -19,8 +13,6 @@ interface Review {
 
 interface Props {
   reviews?: Review[];
-  image?: string;
-  paragraph?: string;
 }
 
 const mockReviews: Review[] = [
@@ -65,57 +57,28 @@ const mockReviews: Review[] = [
 const { reviews = mockReviews } = Astro.props;
 ---
 
-<!-- Review Slider Section -->
-<section class="grid gap-5 lg:grid-cols-4 sm:grid-cols-3 py-5 auto-rows-auto">
-  <!-- Image column -->
-  <div class="hidden lg:flex justify-center">
-    <img
-      src={image}
-      alt="Review illustration"
-      class="rounded-2xl object-cover h-72 w-full shadow-md"
-    />
-  </div>
-
-  <!-- Review slider column -->
-  <div class="col-span-3 lg:col-span-2 flex justify-center">
-    <div x-data={`{ current: 0, total: ${reviews.length} }`} class="w-full">
-      {
-        reviews.map((review, idx) => (
-          <div
-            data-index={idx}
-            x-show="current === Number($el.dataset.index)"
-            class="transition-opacity duration-300 w-full"
-            key={review.reviewId}
-          >
-            <ReviewCard
-              review={{
-                ...review,
-                comment:
-                  review.comment.length > 120
-                    ? review.comment.slice(0, 117) + "..."
-                    : review.comment,
-              }}
-              current={idx}
-              total={reviews.length}
-              onNext={`current = (current + 1) % total`}
-            />
-          </div>
-        ))
-      }
-    </div>
-  </div>
-
-  <!-- Text Row -->
-  <div class="sm:col-span-2 lg:col-span-2 mt-0 h-auto">
-    <p class="text-base text-gray-700 font-base">
-      {paragraph}
-    </p>
-  </div>
-</section>
-
-<!-- Text Row -->
-<!-- <div class="w-full sm:w-3/4 lg:w-1/2 mt-6">
-  <p class="text-base text-gray-700 font-base">
-    {paragraph}
-  </p>
-</div> -->
+<div x-data={`{ current: 0, total: ${reviews.length} }`} class="w-full">
+  {
+    reviews.map((review, idx) => (
+      <div
+        data-index={idx}
+        x-show="current === Number($el.dataset.index)"
+        class="transition-opacity duration-300 w-full"
+        key={review.reviewId}
+      >
+        <ReviewCard
+          review={{
+            ...review,
+            comment:
+              review.comment.length > 120
+                ? review.comment.slice(0, 117) + "..."
+                : review.comment,
+          }}
+          current={idx}
+          total={reviews.length}
+          onNext={`current = (current + 1) % total`}
+        />
+      </div>
+    ))
+  }
+</div>

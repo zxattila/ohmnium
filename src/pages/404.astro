@@ -1,0 +1,36 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import Links from "../components/Links.astro";
+
+// Content data
+const content = {
+  error: {
+    title: "Page Not Found",
+    description: `
+      <p>Sorry, we couldn't find the page you're looking for. The page may have been moved, deleted, or the URL might be incorrect.</p>
+
+      <p>Don't worry though - you can easily get back on track by using clicking one of the helpful links below.</p>
+    `,
+  },
+};
+---
+
+<Layout title="404 - Page Not Found">
+  <PageHeader
+    title="404 - Oops!"
+    description="The page you're looking for seems to have wandered off"
+    useNoise={true}
+  />
+
+  <div class="max-w-4xl mx-auto px-4 pb-10">
+    <div class="prose prose-lg mx-auto text-center">
+      <h2>{content.error.title}</h2>
+      <div set:html={content.error.description} />
+
+      <div class="not-prose mt-8 space-y-4">
+        <Links />
+      </div>
+    </div>
+  </div>
+</Layout>

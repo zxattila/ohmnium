@@ -1,0 +1,46 @@
+---
+import ReviewSlider from "./ReviewSlider.astro";
+import electricianImage from "../assets/electrician-abstract-01.jpg";
+
+const {
+  image = electricianImage.src,
+  paragraph = "At Ohmnium, we help homeowners, landlords, and businesses with reliable electrical solutions across London & the Home Counties. We show up, get the job done properly, and keep you informed every step of the way—no unnecessary delays, no surprise costs.",
+} = Astro.props;
+
+interface Props {
+  image?: string;
+  paragraph?: string;
+}
+---
+
+<!-- Review Slider Section -->
+<section class="grid gap-5 lg:grid-cols-4 sm:grid-cols-3 py-5 auto-rows-auto">
+  <!-- Image column -->
+  <div class="hidden lg:flex justify-center">
+    <img
+      src={image}
+      alt="Review illustration"
+      class="rounded-2xl object-cover h-72 w-full shadow-md"
+    />
+  </div>
+
+  <!-- Review slider column -->
+  <div class="col-span-3 lg:col-span-2 flex justify-center">
+    <!-- Review slider component -->
+    <ReviewSlider />
+  </div>
+
+  <!-- Text Row -->
+  <div class="sm:col-span-2 lg:col-span-1 mt-0 h-auto">
+    <p class="text-base text-gray-700 font-base">
+      {paragraph}
+    </p>
+  </div>
+</section>
+
+<!-- Text Row -->
+<!-- <div class="w-full sm:w-3/4 lg:w-1/2 mt-6">
+  <p class="text-base text-gray-700 font-base">
+    {paragraph}
+  </p>
+</div> -->

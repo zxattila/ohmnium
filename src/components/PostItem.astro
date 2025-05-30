@@ -25,7 +25,7 @@ function formatDate(dateString: string) {
 >
   <div class="text-sm text-gray-500 mb-2">{formatDate(post.date)}</div>
   <a href={`${blogUrl}/${post.slug}`} class="block group transition-colors">
-    <h2
+    <h3
       class="text-xl font-semibold mb-4 group-hover:text-brand-tertiary transition-colors"
       set:html={post.title.rendered}
     />

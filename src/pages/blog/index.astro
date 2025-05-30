@@ -25,7 +25,7 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
 <Layout title="Blog Posts" pageType="blog">
   <PageHeader
     title="Blog Posts"
-    description="Find out about the latest news and updates in the Sparky world."
+    description="The pulse of practical electrical work"
     useNoise={true}
   />
   <ViewTransitions />
@@ -36,12 +36,14 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
     </div>
 
     <div class="text-center mt-8 mb-12">
-      <button id="load-more" class="button button-primary"> View More </button>
+      <button id="load-more" class="button button-primary md:w-auto w-full">
+        View More
+      </button>
     </div>
   </div>
 </Layout>
 
-<script>
+<script define:vars={{ WP_API_URL }}>
   let currentPage = 1;
   const postsContainer = document.getElementById("posts-container");
   const loadMoreButton = document.getElementById("load-more");
@@ -50,8 +52,6 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
   async function loadMorePosts() {
     try {
       currentPage++;
-      const WP_SITE = "https://techcrunch.com";
-      const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
 
       const response = await fetch(
         `${WP_API_URL}/posts?per_page=10&page=${currentPage}`,

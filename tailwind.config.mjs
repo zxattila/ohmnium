@@ -3,6 +3,23 @@ export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
     extend: {
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: "0.625rem",
+          sm: "1.25rem",
+          md: "1.25rem",
+          lg: "1.25rem",
+          xl: "1.25rem",
+        },
+        screens: {
+          sm: "100%",
+          md: "100%",
+          lg: "100%",
+          xl: "100%",
+          "2xl": "1536px",
+        },
+      },
       fontFamily: {
         body: "var(--font-body-family)",
         heading: "var(--font-heading-family)",
@@ -15,19 +32,6 @@ export default {
       },
       lineHeight: {
         "extra-tight": "1.15",
-      },
-      container: {
-        center: true,
-        padding: {
-          DEFAULT: "1.25rem",
-        },
-        screens: {
-          sm: "100%",
-          md: "100%",
-          lg: "100%",
-          xl: "100%",
-          "2xl": "1536px",
-        },
       },
       colors: {
         base: {

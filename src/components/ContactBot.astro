@@ -1,12 +1,14 @@
 <div x-data="contactBot" class="md:max-w-2xl mx-auto">
-  <div class="mb-6">
-    <label for="prompt" class="block text-gray-700 mb-2">
-      Save time by using our form bot.
+  <div class="form-control mb-6">
+    <label for="name" class="label">
+      <span class="label-text text-gray-700 font-medium"
+        >Save time by using our form bot</span
+      >
     </label>
     <textarea
       id="prompt"
       x-model="prompt"
-      class="w-full bg-gray-100 text-gray-700 px-3 py-2 rounded-lg border border-gray-150 focus:ring-gray-500 focus:border-gray-500 lg:h-[250px] h-[200px] resize-none"
+      class="textarea textarea-ghost textarea-bordered w-full h-32 lg:h-48 focus:textarea-primary resize-none py-2"
       @input="response = ''"
       @keydown.enter="submitPrompt"
       rows="4"

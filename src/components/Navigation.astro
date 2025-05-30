@@ -1,4 +1,11 @@
 ---
+interface Props {
+  text?: string;
+  href?: string;
+}
+
+const { text = "020 3500 1441", href = "tel:+442035001441" } = Astro.props;
+
 // Get the current path from Astro.url
 const currentPath = Astro.url.pathname;
 
@@ -6,6 +13,11 @@ const currentPath = Astro.url.pathname;
 const navItems = [
   { href: "/", text: "Home", active: currentPath === "/" },
   { href: "/about", text: "About", active: currentPath.startsWith("/about") },
+  {
+    href: "/services",
+    text: "Services",
+    active: currentPath.startsWith("/services"),
+  },
   { href: "/blog", text: "Blog", active: currentPath.startsWith("/blog") },
   {
     href: "/contact",
@@ -28,8 +40,8 @@ const navItems = [
           return;
         }
         
-        if (currentScroll > this.lastScroll && this.showNav) {
-          // Scrolling down
+        if (currentScroll > this.lastScroll && this.showNav && currentScroll > 60) {
+          // Scrolling down and past 60px
           this.showNav = false;
         } else if (currentScroll < this.lastScroll && !this.showNav) {
           // Scrolling up
@@ -92,9 +104,7 @@ const navItems = [
         }
       </div>
       <!-- CTA Button -->
-      <button class="button button-primary hidden md:block"
-        >020 3500 1441</button
-      >
+      <a href={href} class="button button-primary hidden md:block">{text}</a>
     </div>
 
     <!-- Mobile Navigation -->

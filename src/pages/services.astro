@@ -1,0 +1,33 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+
+// Content data
+const content = {
+  mission: {
+    title: "Our Services",
+    description: `
+      <p>At Ohmnium Electrical Services, we provide comprehensive electrical solutions for residential and commercial properties across London. Our qualified electricians deliver safe, reliable, and efficient electrical work to the highest industry standards.</p>
+
+      <p>From routine electrical maintenance and installations to emergency repairs and complete rewiring projects, we handle all aspects of electrical work. Our team is fully certified and insured, ensuring peace of mind for every project we undertake.</p>
+
+      <p>We pride ourselves on transparent pricing, punctual service, and quality workmanship. Whether you need a simple socket installation or a complex commercial electrical system, Ohmnium Electrical Services is your trusted partner for all electrical needs.</p>
+    `,
+  },
+};
+---
+
+<Layout>
+  <PageHeader
+    title="Services"
+    description="Electrical solutions for homes and businesses"
+    useNoise={true}
+  />
+
+  <div class="max-w-4xl mx-auto px-4 pb-10">
+    <div class="prose prose-lg mx-auto">
+      <h2>{content.mission.title}</h2>
+      <div set:html={content.mission.description} />
+    </div>
+  </div>
+</Layout>
