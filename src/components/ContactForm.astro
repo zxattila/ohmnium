@@ -16,6 +16,7 @@
         class="input input-ghost input-bordered w-full focus:input-primary py-7"
         :class="{ 'input-error': errors.name }"
         placeholder="Your full name"
+        style="font-size: 16px;"
         required
       />
       <div x-show="errors.name" class="label">
@@ -36,6 +37,7 @@
         class="input input-ghost input-bordered w-full focus:input-primary py-7"
         :class="{ 'input-error': errors.email }"
         placeholder="your.email@example.com"
+        style="font-size: 16px;"
         required
       />
       <div x-show="errors.email" class="label">
@@ -55,6 +57,7 @@
         class="input input-ghost input-bordered w-full focus:input-primary py-7"
         :class="{ 'input-error': errors.phone }"
         placeholder="020 1234 5678"
+        style="font-size: 16px;"
         required
       />
       <div x-show="errors.phone" class="label">
@@ -75,6 +78,9 @@
         class="textarea textarea-ghost textarea-bordered w-full h-32 focus:textarea-primary resize-none py-2"
         :class="{ 'textarea-error': errors.message }"
         placeholder="Please describe your electrical needs..."
+        @focus="handleIOSFocus"
+        @blur="handleIOSBlur"
+        style="font-size: 16px;"
         required></textarea>
       <div x-show="errors.message" class="label">
         <span class="label-text-alt text-error" x-text="errors.message"></span>
@@ -308,6 +314,45 @@
           urgent: false,
         };
         this.errors = {};
+      },
+
+      // iOS Safari viewport fix methods
+      handleIOSFocus(event) {
+        if (this.isIOS()) {
+          // Temporarily disable fixed positioning during focus
+          const header = document.querySelector("header");
+          if (header) {
+            header.classList.add("ios-keyboard-fix");
+          }
+
+          // Scroll element into view with padding
+          setTimeout(() => {
+            event.target.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "nearest",
+            });
+          }, 300);
+        }
+      },
+
+      handleIOSBlur() {
+        if (this.isIOS()) {
+          // Re-enable fixed positioning after blur
+          const header = document.querySelector("header");
+          if (header) {
+            header.classList.remove("ios-keyboard-fix");
+          }
+
+          // Reset viewport
+          setTimeout(() => {
+            window.scrollTo(window.scrollX, window.scrollY);
+          }, 100);
+        }
+      },
+
+      isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       },
     }));
   });

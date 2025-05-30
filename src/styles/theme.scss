@@ -137,6 +137,10 @@
       @apply text-base leading-snug;
     }
   }
+
+  .textarea {
+    line-height: 1.5 !important;
+  }
 }
 
 @layer utilities {
@@ -186,3 +190,62 @@
 // 60px = 3.75rem
 // 80px = 5rem
 // 100px = 6.25rem
+
+/* iOS Safari textarea viewport fix */
+@supports (-webkit-overflow-scrolling: touch) {
+
+  /* Prevent zoom on focus for iOS Safari */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="search"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    transform: translateZ(0);
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  /* Fix for fixed elements during keyboard open */
+  .ios-keyboard-fix {
+    position: relative !important;
+  }
+
+  /* Prevent viewport jumping */
+  body {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+  }
+
+  /* Smooth focus transitions */
+  input:focus,
+  textarea:focus {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-perspective: 1000;
+    perspective: 1000;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
+/* Additional iOS-specific fixes */
+@media screen and (max-width: 768px) {
+
+  /* Ensure minimum font size to prevent zoom */
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1rem) !important;
+  }
+
+  /* Prevent horizontal scroll during focus */
+  html,
+  body {
+    overflow-x: hidden;
+    position: relative;
+  }
+}

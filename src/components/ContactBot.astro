@@ -8,10 +8,13 @@
     <textarea
       id="prompt"
       x-model="prompt"
-      class="textarea textarea-ghost textarea-bordered w-full h-32 lg:h-48 focus:textarea-primary resize-none py-2"
+      class="textarea textarea-ghost textarea-bordered w-full h-32 lg:h-48 focus:textarea-primary resize-none py-7"
       @input="response = ''"
       @keydown.enter="submitPrompt"
+      @focus="handleIOSFocus"
+      @blur="handleIOSBlur"
       rows="4"
+      style="font-size: 16px;"
       placeholder="How can we help you today?"></textarea>
   </div>
 
@@ -72,6 +75,45 @@
         } finally {
           this.loading = false;
         }
+      },
+
+      // iOS Safari viewport fix methods
+      handleIOSFocus(event) {
+        if (this.isIOS()) {
+          // Temporarily disable fixed positioning during focus
+          const header = document.querySelector("header");
+          if (header) {
+            header.classList.add("ios-keyboard-fix");
+          }
+
+          // Scroll element into view with padding
+          setTimeout(() => {
+            event.target.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "nearest",
+            });
+          }, 300);
+        }
+      },
+
+      handleIOSBlur() {
+        if (this.isIOS()) {
+          // Re-enable fixed positioning after blur
+          const header = document.querySelector("header");
+          if (header) {
+            header.classList.remove("ios-keyboard-fix");
+          }
+
+          // Reset viewport
+          setTimeout(() => {
+            window.scrollTo(window.scrollX, window.scrollY);
+          }, 100);
+        }
+      },
+
+      isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       },
     }));
   });
