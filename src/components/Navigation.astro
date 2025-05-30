@@ -115,6 +115,7 @@ const navItems = [
           <a
             href={item.href}
             class={`nav-link block py-2 ${item.active ? "active" : ""}`}
+            @click="$store.navigation.close()"
           >
             {item.text}
           </a>
