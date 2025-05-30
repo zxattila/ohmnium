@@ -139,13 +139,6 @@
 }
 
 @layer utilities {
-  .text-display {
-    @apply font-heading uppercase font-bold leading-extra-tight antialiased;
-    font-size: 3rem;
-    font-size: clamp(2.25rem, 5vw, 3rem);
-    line-height: 1;
-  }
-
   .first-child-spacing>* {
     @apply mb-5;
 
@@ -178,7 +171,8 @@
   }
 }
 
-.single {
+.single,
+.page {
   .prose a {
     @apply text-indigo-500 hover:text-indigo-700 transition-colors duration-200;
   }
@@ -189,14 +183,6 @@
     @apply min-h-72;
   }
 }
-
-// in comments generate a series of rem equivalents for 10px, 20px, 40px, 60px, 80px, 100px
-// 10px = 0.625rem  
-// 20px = 1.25rem
-// 40px = 2.5rem
-// 60px = 3.75rem
-// 80px = 5rem
-// 100px = 6.25rem
 
 /* iOS Safari textarea viewport fix */
 @supports (-webkit-overflow-scrolling: touch) {
