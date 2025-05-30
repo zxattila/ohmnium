@@ -188,6 +188,12 @@
   }
 }
 
+.page-default {
+  .post-item {
+    @apply min-h-72;
+  }
+}
+
 // in comments generate a series of rem equivalents for 10px, 20px, 40px, 60px, 80px, 100px
 // 10px = 0.625rem  
 // 20px = 1.25rem
