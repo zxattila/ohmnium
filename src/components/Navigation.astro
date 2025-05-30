@@ -1,4 +1,6 @@
 ---
+import logo from "../assets/logo.svg";
+
 interface Props {
   text?: string;
   href?: string;
@@ -58,11 +60,7 @@ const navItems = [
     <div class="flex items-center justify-between">
       <div class="flex-shrink-0">
         <a href="/">
-          <img
-            src="/src/assets/logo.svg"
-            alt="Logo"
-            class="max-w-[200px] w-full h-auto"
-          />
+          <img src={logo.src} alt="Logo" class="max-w-[200px] w-full h-auto" />
         </a>
       </div>
 
