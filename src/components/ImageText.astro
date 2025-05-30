@@ -14,7 +14,7 @@ interface Props {
 }
 ---
 
-<section class="grid gap-5 lg:grid-cols-2 sm:grid-cols-1 py-5 md:py-0">
+<section class="grid gap-5 md:grid-cols-2 sm:grid-cols-1 py-5 md:py-0">
   <!--Text Column -->
   <div class="flex flex-col justify-center items-start lg:w-3/4 sm:w-full">
     <h2 class="text-5xl md:text-6xl font-bold text-black" set:html={title} />
@@ -26,7 +26,7 @@ interface Props {
     <img
       src={image}
       alt="Electrician illustration"
-      class="rounded-2xl object-cover h-96 w-full shadow-md"
+      class="rounded-2xl object-cover h-72 md:h-96 w-full shadow-md"
     />
   </div>
 </section>

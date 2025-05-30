@@ -141,6 +141,11 @@
   .textarea {
     line-height: 1.5 !important;
   }
+
+  .input,
+  .textarea {
+    border-radius: 0.5rem !important;
+  }
 }
 
 @layer utilities {
@@ -206,7 +211,7 @@
     font-size: 16px !important;
     transform: translateZ(0);
     -webkit-appearance: none;
-    border-radius: 0;
+    border-radius: 0.5rem !important;
   }
 
   /* Fix for fixed elements during keyboard open */
