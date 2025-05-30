@@ -124,6 +124,39 @@ Integrates with OpenAI API to provide intelligent responses to user inquiries:
 </div>
 ```
 
+#### 4. Contact Page (Future Implementation)
+
+**Note**: This contact page will be added at a later date once the AI setup is fully configured and tested.
+
+The contact page provides a dedicated interface for users to interact with the AI-powered contact bot:
+
+```astro
+// src/pages/contact.astro (To be implemented)
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import ContactBot from "../components/ContactBot.astro";
+---
+
+<Layout>
+  <PageHeader
+    title="Contact Us"
+    description="Get in touch with our AI assistant"
+    useNoise={true}
+  />
+
+  <div class="max-w-2xl mx-auto sm:px-4 pb-10">
+    <ContactBot />
+  </div>
+</Layout>
+```
+
+This page features:
+- Clean, centered layout optimized for the contact bot interface
+- Page header with noise texture background for visual consistency
+- Responsive design that works across all device sizes
+- Integration with the AI-powered ContactBot component
+
 ## 🔧 Configuration
 
 The project uses environment variables to manage configuration:
