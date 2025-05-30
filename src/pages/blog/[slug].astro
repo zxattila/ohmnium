@@ -50,7 +50,7 @@ const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
 ---
 
 <Layout>
-  <article class="max-w-3xl mx-auto md:px-4 py-8">
+  <article class="single max-w-3xl mx-auto md:px-4 py-8">
     <div class="text-gray-500 mb-4">{formattedDate}</div>
     <h1 class="text-4xl font-bold mb-6" set:html={post.title.rendered} />
     <div

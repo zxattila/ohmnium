@@ -128,6 +128,82 @@ Integrates with OpenAI API to provide intelligent responses to user inquiries:
 
 The project uses environment variables to manage configuration:
 
+### Contact Form with Resend Email API
+
+The contact form uses React Email templates for flexible email design and the Resend API for reliable email delivery.
+
+#### Required Dependencies
+
+Install the React Email packages for template rendering:
+
+```bash
+npm install @react-email/components @react-email/render react react-dom
+```
+
+#### Environment Variables
+
+Set these in your `.env` file and Netlify environment variables:
+
+```env
+# WordPress Configuration
+WP_SITE=https://techcrunch.com
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Contact Form Configuration (Required for netlify/functions/contact.js)
+RESEND_API_KEY=your_resend_api_key
+FROM_EMAIL=info@yourdomain.com
+BUSINESS_EMAIL=info@yourdomain.com  
+BUSINESS_NAME=Your Business Name
+DOMAIN=yourdomain.com
+SITE_URL=https://yourdomain.com
+
+# Optional: Flowise Configuration 
+FLOWISE_API_KEY=your_flowise_api_key
+FLOWISE_URL=https://your-flowise-instance.com/api/v1/prediction/flow-id
+```
+
+#### Netlify Configuration
+
+1. **Add environment variables** in your Netlify dashboard under Site Settings > Environment Variables
+2. **Deploy your functions** - Netlify will automatically detect functions in the `netlify/functions/` directory
+3. **Test the contact form** - The form endpoint will be available at `/.netlify/functions/contact`
+
+#### Email Templates
+
+The contact form sends two emails using React Email templates:
+
+- **Customer Email** (`/netlify/functions/templates/customer.jsx`) - Confirmation email sent to the customer
+- **Business Email** (`/netlify/functions/templates/business.jsx`) - Notification email sent to your business
+
+Templates include:
+- Responsive HTML design matching your brand
+- Custom fonts (Francois One & Source Sans 3)
+- Dark mode support for better accessibility
+- Spam detection warnings
+- Rate limiting protection
+- Mobile-optimized layout
+
+#### Required Image Assets
+
+Add these image files to your `/public` folder:
+
+- **`/public/logo.png`** - Company logo (140px width recommended, PNG with transparent background) ✅ **COMPLETED**
+- **`/public/welcome.jpg`** - Welcome image for customer emails (600px max width, optimized for email, under 500KB recommended) ✅ **COMPLETED**
+
+Both images should be optimized for web and email delivery.
+
+**Status**: ✅ **React Email templates are fully configured and ready for production use**
+
+Dependencies installed:
+- `@react-email/components` ✅
+- `@react-email/render` ✅  
+- `react` ✅
+- `react-dom` ✅
+
+Image assets ready:
+- Logo copied from assets to public folder ✅
+- Welcome image (electrician-abstract-01.jpg) ready for emails ✅
+
 ## Tailwind Snippets
 
 Custom utility classes for common design patterns:
@@ -158,14 +234,18 @@ This utility is particularly useful for WordPress content areas where you need c
 
 ## Environment variables can be set in a `.env` file at the root of the project:
 
-```
+```env
+# WordPress Configuration
 WP_SITE=https://techcrunch.com
 OPENAI_API_KEY=your_openai_api_key_here
 
+# Contact Form Configuration (Required for netlify/functions/contact.js)
 RESEND_API_KEY=your_resend_api_key
 FROM_EMAIL=noreply@yourdomain.com
 BUSINESS_EMAIL=contact@yourdomain.com
 BUSINESS_NAME=Your Business Name
+DOMAIN=yourdomain.com
+SITE_URL=https://yourdomain.com
 NODE_ENV=production
 ```
 ## 📦 Installation

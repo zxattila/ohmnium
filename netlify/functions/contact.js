@@ -1,356 +1,382 @@
 // netlify/functions/contact.js
 const { Resend } = require("resend");
-const businessTemplate = require("./templates/business");
-const customerTemplate = require("./templates/customer");
+const { render } = require("@react-email/render");
 
+// Import React Email templates
+const CustomerTemplate = require("./templates/customer").default;
+const BusinessTemplate = require("./templates/business").default;
+
+// Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Simple rate limiting storage (in production, use Redis or database)
-const submissions = new Map();
+// Rate limiting setup (in-memory store - use Redis in production)
+const rateLimitStore = new Map();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_MAX_REQUESTS = 3; // Max 3 submissions per 15 minutes per IP
 
-// Rate limiting function
-function isRateLimited(ip) {
+// Helper functions
+function sanitizeInput(input) {
+  if (typeof input !== "string") return "";
+  return input
+    .trim()
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<[^>]*>/g, "")
+    .substring(0, 2000); // Limit length
+}
+
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+function validatePhone(phone) {
+  const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
+  return phoneRegex.test(phone);
+}
+
+function checkRateLimit(ip) {
   const now = Date.now();
-  const windowMs = 15 * 60 * 1000; // 15 minutes
-  const maxSubmissions = 3; // Max 3 submissions per 15 minutes
+  const userRequests = rateLimitStore.get(ip) || [];
 
-  const userSubmissions = submissions.get(ip) || [];
-  const recentSubmissions = userSubmissions.filter(
-    (time) => now - time < windowMs,
+  // Remove expired requests
+  const validRequests = userRequests.filter(
+    (time) => now - time < RATE_LIMIT_WINDOW,
   );
 
-  if (recentSubmissions.length >= maxSubmissions) {
-    return true;
+  if (validRequests.length >= RATE_LIMIT_MAX_REQUESTS) {
+    return false; // Rate limit exceeded
   }
 
-  // Clean up old entries
-  submissions.set(ip, [...recentSubmissions, now]);
-  return false;
+  // Add current request
+  validRequests.push(now);
+  rateLimitStore.set(ip, validRequests);
+
+  return true; // Within rate limit
 }
 
-// Input validation
-function validateInput(data) {
-  const errors = [];
-  const warnings = [];
-
-  // Required fields
-  if (!data.name?.trim()) {
-    errors.push("Name is required");
-  } else if (data.name.trim().length < 2) {
-    errors.push("Name must be at least 2 characters");
-  } else if (data.name.trim().length > 100) {
-    errors.push("Name is too long (max 100 characters)");
-  }
-
-  // Email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!data.email?.trim()) {
-    errors.push("Email is required");
-  } else if (!emailRegex.test(data.email.trim())) {
-    errors.push("Please enter a valid email address");
-  } else if (data.email.trim().length > 254) {
-    errors.push("Email is too long");
-  }
-
-  // Phone validation - UK phone numbers
-  const ukPhoneRegex =
-    /^(?:(?:\+44)|(?:0))(?:\d{2}\s?\d{4}\s?\d{4}|\d{3}\s?\d{3}\s?\d{4}|\d{4}\s?\d{6}|\d{5}\s?\d{5})$/;
-  const cleanPhone = data.phone?.replace(/\s/g, "") || "";
-  if (!data.phone?.trim()) {
-    errors.push("Phone number is required");
-  } else if (!ukPhoneRegex.test(cleanPhone)) {
-    errors.push("Please enter a valid UK phone number (e.g., 020 1234 5678)");
-  }
-
-  // Message validation
-  if (!data.message?.trim()) {
-    errors.push("Message is required");
-  } else if (data.message.trim().length < 10) {
-    errors.push("Message must be at least 10 characters");
-  } else if (data.message.trim().length > 2000) {
-    errors.push("Message is too long (max 2000 characters)");
-  }
-
-  // Service validation (optional)
-  if (data.service && data.service.length > 100) {
-    errors.push("Service type is too long");
-  }
-
-  // Spam detection (basic)
+function detectSpam(data) {
   const spamKeywords = [
-    "cialis",
-    "viagra",
-    "casino",
-    "lottery",
-    "crypto",
     "bitcoin",
+    "cryptocurrency",
+    "investment",
+    "loan",
+    "casino",
+    "viagra",
+    "pharmacy",
+    "weight loss",
+    "make money",
+    "work from home",
+    "click here",
+    "limited time",
+    "act now",
+    "congratulations",
   ];
-  const messageText = data.message?.toLowerCase() || "";
-  const nameText = data.name?.toLowerCase() || "";
 
-  if (
-    spamKeywords.some(
-      (keyword) => messageText.includes(keyword) || nameText.includes(keyword),
-    )
-  ) {
-    warnings.push("Message flagged for manual review");
-  }
+  const text = `${data.name} ${data.email} ${data.message}`.toLowerCase();
+  const suspiciousPatterns = [
+    /http[s]?:\/\/[^\s]+/gi, // URLs
+    /[^\s]+@[^\s]+\.[^\s]+/gi, // Multiple emails
+    /\b\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4}\b/gi, // Credit card patterns
+  ];
 
-  // URL detection in message
-  const urlRegex = /(https?:\/\/[^\s]+)/gi;
-  if (urlRegex.test(data.message || "")) {
-    warnings.push("Message contains URLs - flagged for review");
-  }
+  // Check for spam keywords
+  const hasSpamKeywords = spamKeywords.some((keyword) =>
+    text.includes(keyword),
+  );
 
-  return { errors, warnings };
-}
+  // Check for suspicious patterns
+  const hasSuspiciousPatterns = suspiciousPatterns.some((pattern) =>
+    pattern.test(text),
+  );
 
-// Sanitize input
-function sanitizeInput(data) {
+  // Check for excessive repetition
+  const words = text.split(/\s+/);
+  const wordCount = {};
+  words.forEach((word) => {
+    if (word.length > 3) {
+      wordCount[word] = (wordCount[word] || 0) + 1;
+    }
+  });
+  const hasExcessiveRepetition = Object.values(wordCount).some(
+    (count) => count > 5,
+  );
+
   return {
-    name: data.name?.trim().slice(0, 100) || "",
-    email: data.email?.trim().toLowerCase().slice(0, 254) || "",
-    phone: data.phone?.trim().slice(0, 20) || "",
-    service: data.service?.trim().slice(0, 100) || "",
-    message: data.message?.trim().slice(0, 2000) || "",
-    urgent: Boolean(data.urgent),
+    isSpam: hasSpamKeywords || hasSuspiciousPatterns || hasExcessiveRepetition,
+    reasons: [
+      ...(hasSpamKeywords ? ["Contains spam keywords"] : []),
+      ...(hasSuspiciousPatterns ? ["Contains suspicious patterns"] : []),
+      ...(hasExcessiveRepetition ? ["Excessive word repetition"] : []),
+    ],
   };
 }
 
 exports.handler = async (event, context) => {
-  // CORS headers
-  const headers = {
-    "Access-Control-Allow-Origin":
-      process.env.NODE_ENV === "production"
-        ? `https://${process.env.DOMAIN}`
-        : "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json",
-  };
-
-  // Handle preflight OPTIONS request
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers,
-      body: "",
-    };
-  }
-
   // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      headers,
-      body: JSON.stringify({
-        success: false,
-        error: "Method not allowed",
-      }),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+      },
+      body: JSON.stringify({ error: "Method not allowed" }),
+    };
+  }
+
+  // Handle CORS preflight
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+      },
+      body: "",
     };
   }
 
   try {
-    // Rate limiting
+    // Get client IP for rate limiting
     const clientIP =
-      event.headers["client-ip"] ||
-      event.headers["x-forwarded-for"]?.split(",")[0] ||
+      event.headers["x-forwarded-for"] ||
       event.headers["x-real-ip"] ||
+      context.clientContext?.ip ||
       "unknown";
 
-    if (isRateLimited(clientIP)) {
+    // Check rate limiting
+    if (!checkRateLimit(clientIP)) {
       return {
         statusCode: 429,
-        headers,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          success: false,
-          error:
-            "Too many requests. Please wait 15 minutes before trying again.",
+          error: "Too many requests. Please wait before submitting again.",
+          retryAfter: Math.ceil(RATE_LIMIT_WINDOW / 1000 / 60), // minutes
         }),
       };
     }
 
     // Parse and validate request body
-    if (!event.body) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          success: false,
-          error: "Request body is required",
-        }),
-      };
-    }
-
-    let formData;
+    let requestData;
     try {
-      formData = JSON.parse(event.body);
+      requestData = JSON.parse(event.body);
     } catch (parseError) {
       return {
         statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          success: false,
-          error: "Invalid JSON in request body",
-        }),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ error: "Invalid JSON in request body" }),
       };
     }
 
-    // Sanitize input
-    const sanitizedData = sanitizeInput(formData);
+    // Extract and sanitize form data
+    const sanitizedData = {
+      name: sanitizeInput(requestData.name),
+      email: sanitizeInput(requestData.email),
+      phone: sanitizeInput(requestData.phone),
+      service: sanitizeInput(requestData.service || ""),
+      message: sanitizeInput(requestData.message),
+      urgent: Boolean(requestData.urgent),
+    };
 
-    // Validate input
-    const { errors, warnings } = validateInput(sanitizedData);
+    // Validation
+    const validationErrors = [];
+    const warnings = [];
 
-    if (errors.length > 0) {
+    if (!sanitizedData.name || sanitizedData.name.length < 2) {
+      validationErrors.push(
+        "Name is required and must be at least 2 characters",
+      );
+    }
+
+    if (!sanitizedData.email) {
+      validationErrors.push("Email is required");
+    } else if (!validateEmail(sanitizedData.email)) {
+      validationErrors.push("Please provide a valid email address");
+    }
+
+    if (!sanitizedData.phone) {
+      validationErrors.push("Phone number is required");
+    } else if (!validatePhone(sanitizedData.phone)) {
+      validationErrors.push("Please provide a valid phone number");
+    }
+
+    if (!sanitizedData.message || sanitizedData.message.length < 10) {
+      validationErrors.push(
+        "Message is required and must be at least 10 characters",
+      );
+    }
+
+    // Return validation errors if any
+    if (validationErrors.length > 0) {
       return {
         statusCode: 400,
-        headers,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          success: false,
           error: "Validation failed",
-          details: errors,
+          details: validationErrors,
         }),
       };
     }
 
-    // Check required environment variables
-    const requiredEnvVars = ["RESEND_API_KEY", "FROM_EMAIL", "BUSINESS_EMAIL"];
-    const missingEnvVars = requiredEnvVars.filter(
-      (envVar) => !process.env[envVar],
-    );
+    // Spam detection
+    const spamCheck = detectSpam(sanitizedData);
+    if (spamCheck.isSpam) {
+      // Log but don't tell the user - just return success to avoid giving feedback to spammers
+      console.log("Spam detected:", spamCheck.reasons, sanitizedData);
 
-    if (missingEnvVars.length > 0) {
-      console.error("Missing environment variables:", missingEnvVars);
       return {
-        statusCode: 500,
-        headers,
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          success: false,
-          error: "Server configuration error",
+          success: true,
+          message: "Thank you for your message. We will get back to you soon.",
         }),
       };
     }
 
-    // Prepare template data
-    const currentDate = new Date().toLocaleDateString("en-US", {
-      weekday: "long",
+    // Additional warnings for suspicious but not spam content
+    if (sanitizedData.message.includes("http")) {
+      warnings.push("Message contains URLs - please verify legitimacy");
+    }
+    if (sanitizedData.name.split(" ").length > 5) {
+      warnings.push("Unusually long name provided");
+    }
+
+    // Generate current date
+    const currentDate = new Date().toLocaleString("en-GB", {
+      timeZone: "Europe/London",
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      timeZoneName: "short",
+      hour12: false,
     });
 
-    const templateData = {
-      ...sanitizedData,
-      currentDate,
-      clientIP, // For internal tracking
-      warnings,
-    };
+    // Render email templates
+    const customerHtml = render(
+      CustomerTemplate({
+        name: sanitizedData.name,
+        email: sanitizedData.email,
+        phone: sanitizedData.phone,
+        service: sanitizedData.service,
+        message: sanitizedData.message,
+        currentDate,
+        urgent: sanitizedData.urgent,
+      }),
+    );
 
-    // Prepare email promises
+    const businessHtml = render(
+      BusinessTemplate({
+        name: sanitizedData.name,
+        email: sanitizedData.email,
+        phone: sanitizedData.phone,
+        service: sanitizedData.service,
+        message: sanitizedData.message,
+        currentDate,
+        clientIP,
+        urgent: sanitizedData.urgent,
+        warnings: warnings,
+      }),
+    );
+
+    // Send emails
     const emailPromises = [];
 
-    // Business notification email
+    // Send confirmation email to customer
     emailPromises.push(
       resend.emails.send({
-        from: `Notifications <${process.env.FROM_EMAIL}>`,
-        to: [process.env.BUSINESS_EMAIL],
-        subject: `New ${sanitizedData.urgent ? "URGENT " : ""}Contact: ${sanitizedData.name}${warnings.length > 0 ? " [FLAGGED]" : ""}`,
-        html: businessTemplate(templateData),
-        reply_to: sanitizedData.email,
+        from: `${process.env.BUSINESS_NAME || "Support"} <${process.env.FROM_EMAIL}>`,
+        to: [sanitizedData.email],
+        subject: `We've received your ${sanitizedData.urgent ? "urgent " : ""}request`,
+        html: customerHtml,
         tags: [
-          { name: "type", value: "business_notification" },
+          { name: "type", value: "customer_confirmation" },
           { name: "urgent", value: sanitizedData.urgent ? "yes" : "no" },
-          { name: "flagged", value: warnings.length > 0 ? "yes" : "no" },
         ],
       }),
     );
 
-    // Customer confirmation email (skip if flagged as potential spam)
-    if (warnings.length === 0) {
-      emailPromises.push(
-        resend.emails.send({
-          from: `${process.env.BUSINESS_NAME || "Support"} <${process.env.FROM_EMAIL}>`,
-          to: [sanitizedData.email],
-          subject: `We've received your ${sanitizedData.urgent ? "urgent " : ""}request`,
-          html: customerTemplate(templateData),
-          tags: [
-            { name: "type", value: "customer_confirmation" },
-            { name: "urgent", value: sanitizedData.urgent ? "yes" : "no" },
-          ],
-        }),
-      );
-    }
+    // Send notification email to business
+    emailPromises.push(
+      resend.emails.send({
+        from: `${process.env.BUSINESS_NAME || "Website"} <${process.env.FROM_EMAIL}>`,
+        to: [process.env.BUSINESS_EMAIL],
+        subject: `New ${sanitizedData.urgent ? "URGENT " : ""}Contact: ${sanitizedData.name}`,
+        html: businessHtml,
+        tags: [
+          { name: "type", value: "business_notification" },
+          { name: "urgent", value: sanitizedData.urgent ? "yes" : "no" },
+        ],
+      }),
+    );
 
-    // Send emails
-    const results = await Promise.allSettled(emailPromises);
+    // Wait for all emails to send
+    const emailResults = await Promise.allSettled(emailPromises);
 
-    // Check if business email failed (critical)
-    const businessEmailResult = results[0];
-    if (businessEmailResult.status === "rejected") {
-      console.error(
-        "Failed to send business notification:",
-        businessEmailResult.reason,
-      );
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({
-          success: false,
-          error:
-            "Failed to process your request. Please try again or contact us directly.",
-        }),
-      };
-    }
+    // Check if any emails failed
+    const failedEmails = emailResults.filter(
+      (result) => result.status === "rejected",
+    );
 
-    // Check customer email result (non-critical)
-    let customerEmailSent = true;
-    if (results.length > 1) {
-      const customerEmailResult = results[1];
-      if (customerEmailResult.status === "rejected") {
-        console.error(
-          "Failed to send customer confirmation:",
-          customerEmailResult.reason,
-        );
-        customerEmailSent = false;
+    if (failedEmails.length > 0) {
+      console.error("Some emails failed to send:", failedEmails);
+
+      // If customer email failed, that's more critical
+      if (emailResults[0].status === "rejected") {
+        return {
+          statusCode: 500,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            error:
+              "Failed to send confirmation email. Please try again or contact us directly.",
+          }),
+        };
       }
     }
 
     // Success response
-    const response = {
-      success: true,
-      message:
-        warnings.length > 0
-          ? "Your message has been received and is under review. We'll contact you soon."
-          : "Thank you! We've received your message and will get back to you soon.",
-    };
-
-    if (warnings.length > 0) {
-      response.warnings = warnings;
-    }
-
-    if (!customerEmailSent && warnings.length === 0) {
-      response.warnings = ["Confirmation email delivery may be delayed"];
-    }
-
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify(response),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        success: true,
+        message: "Thank you for your message. We will get back to you soon.",
+        urgent: sanitizedData.urgent,
+        warnings: warnings.length > 0 ? warnings : undefined,
+      }),
     };
   } catch (error) {
     console.error("Contact form error:", error);
 
     return {
       statusCode: 500,
-      headers,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        success: false,
-        error:
-          "An unexpected error occurred. Please try again later or contact us directly.",
+        error: "An unexpected error occurred. Please try again later.",
       }),
     };
   }
