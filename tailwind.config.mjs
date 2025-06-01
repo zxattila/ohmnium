@@ -42,10 +42,10 @@ export default {
           lighter: "#E5E5E5",
         },
         brand: {
-          primary: "#FFDE59", // primary color
+          primary: "#6366f1", // primary color (indigo-500)
           secondary: "#1A1A1A", // secondary color
           tertiary: "#B15249", // tertiary color
-          accent: "#5A7F1A", // accent color
+          accent: "#FFDE59", // accent color (former primary)
           flower1: "#F69841", // hero flower
           flower2: "#7ACF0E", // gap flower
           flower3: "#87C12F", // faq flower

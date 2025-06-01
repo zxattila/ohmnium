@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PageHeader from "../components/PageHeader.astro";
+import ContentBlock from "../components/ContentBlock.astro";
 
 // Content data
 const content = {
@@ -32,13 +33,11 @@ const content = {
     useNoise={true}
   />
 
-  <div class="page max-w-4xl mx-auto sm:px-4 pb-10">
-    <div>
-      <h2>{content.mission.title}</h2>
-      <div
-        set:html={content.mission.description}
-        class="prose prose-lg mx-auto first-child-spacing"
-      />
-    </div>
-  </div>
+  <section class="page max-w-4xl mx-auto sm:px-4 pb-10">
+    <ContentBlock
+      title={content.mission.title}
+      description={content.mission.description}
+      showContent={true}
+    />
+  </section>
 </Layout>

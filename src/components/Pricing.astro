@@ -1,0 +1,96 @@
+---
+import Table from "./Table.astro";
+
+// Pricing data for electrical services
+const pricingData = [
+  { service: "NICEIC EICR", price: "£120.00" },
+  { service: "NICEIC EICR x 5", price: "£499.00" },
+  { service: "Fire Alarm (up to 10 alarms)", price: "£120.00" },
+  { service: "Emergency Lighting (up to 10 lights)", price: "£120.00" },
+  { service: "PAT (up to 10 items)", price: "£60.00" },
+  { service: "Smoke Alarms", price: "POA" },
+  { service: "Heat Alarms", price: "POA" },
+  { service: "Carbon Monoxide Alarms", price: "POA" },
+  { service: "Humidity Sensors", price: "POA" },
+  { service: "Cooker Hoods", price: "POA" },
+  { service: "Extractor Fans", price: "POA" },
+  { service: "Lighting", price: "POA" },
+  { service: "Sockets", price: "POA" },
+  { service: "Switches", price: "POA" },
+  { service: "Outdoor Power and Lighting", price: "POA" },
+  { service: "Smart Tech/Automation", price: "POA" },
+  { service: "Cooker/Hob", price: "POA" },
+  { service: "Electric Shower", price: "POA" },
+  { service: "Doorbell (Including Ring)", price: "POA" },
+  { service: "CCU (Fusebox)", price: "POA" },
+  { service: "RCD/RCBO/SPD/MCB", price: "POA" },
+  { service: "Rewiring", price: "POA" },
+];
+
+// Component props for customization
+interface Props {
+  title?: string;
+  description?: string;
+  showHeader?: boolean;
+  tableStyle?: "default" | "minimal" | "bordered";
+  mobileLayout?: "scroll" | "stacked";
+  showScrollIcon?: boolean;
+  cta?: string;
+  text?: string;
+  href?: string;
+}
+
+const {
+  title = "Service Pricing",
+  description = "Transparent pricing for professional digital marketing and web development services. No hidden fees, just results-driven solutions for your business.",
+  showHeader = true,
+  tableStyle = "default",
+  mobileLayout = "scroll",
+  showScrollIcon = true,
+  cta = "Need a custom solution?",
+  text = "Call us for an easy quote",
+  href = "tel:+442035001441",
+} = Astro.props;
+---
+
+<section class="py-10">
+  <div class="">
+    {
+      showHeader && (
+        <div class="text-center mb-12 px-4 max-w-2xl mx-auto">
+          <h2
+            class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
+            set:html={title}
+          />
+          <p
+            class="text-base md:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed"
+            set:html={description}
+          />
+        </div>
+      )
+    }
+
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div class="p-6 sm:p-8">
+        <Table
+          data={pricingData}
+          tableStyle={tableStyle}
+          mobileLayout={mobileLayout}
+          showScrollIcon={showScrollIcon}
+        />
+      </div>
+
+      <div class="bg-gray-100 px-6 sm:px-8 py-4 text-center">
+        <p class="text-sm text-gray-600">
+          {cta}
+          <a
+            href={href}
+            class="text-brand-primary hover:text-indigo-700 font-medium ml-1"
+          >
+            {text}
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

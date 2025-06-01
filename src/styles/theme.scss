@@ -103,7 +103,7 @@
     @apply inline-block text-center px-8 py-4 text-base rounded-lg transition-colors duration-200 ease-in-out leading-tight;
 
     &-primary {
-      @apply bg-brand-primary text-black hover:bg-yellow-400;
+      @apply bg-brand-accent text-black hover:bg-yellow-400;
     }
 
     &-secondary {

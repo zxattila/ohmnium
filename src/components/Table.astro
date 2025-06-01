@@ -1,0 +1,128 @@
+---
+interface TableRow {
+  service: string;
+  price: string;
+}
+
+interface Props {
+  data: TableRow[];
+  showScrollIcon?: boolean;
+  tableStyle?: "default" | "minimal" | "bordered";
+  mobileLayout?: "scroll" | "stacked";
+}
+
+const {
+  data = [],
+  showScrollIcon = true,
+  tableStyle = "default",
+  mobileLayout = "scroll",
+} = Astro.props;
+---
+
+<div class="w-full max-w-5xl mx-auto sm:px-4">
+  <!-- Desktop/Tablet Table (hidden on mobile if mobileLayout is 'stacked') -->
+  <div
+    class={`${mobileLayout === "stacked" ? "hidden sm:block" : "block"} relative`}
+  >
+    {
+      showScrollIcon && mobileLayout === "scroll" && (
+        <div class="block sm:hidden mb-4 flex justify-center">
+          <svg
+            class="table-scroll-x-mobile w-20 h-6 opacity-60 text-gray-400"
+            width="311"
+            height="93"
+            viewBox="0 0 311 93"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M301.796 47.6032C282.955 40.7309 246.374 26.3623 245.259 25.3586C241.915 22.3475 234.927 25.4753 238.791 28.9547C240.129 30.1592 241.671 50.1169 240.533 51.3803C239.73 52.2721 58.3067 53.3539 11.3298 56.8072C-9.54972 58.3263 5.48551 65.5396 16.3375 65.8914C63.0086 67.4107 236.458 61.4362 241.63 64.2098C242.284 64.5296 242.633 68.4765 242.446 73.018C242.064 85.9959 249.562 96.6489 254.981 90.6294C257.19 88.1771 270.504 80.1153 290.873 68.8515C302.083 62.5286 321.21 54.587 301.796 47.6032Z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+      )
+    }
+
+    <div
+      class={`${mobileLayout === "scroll" ? "overflow-x-auto" : ""} -mx-4 px-4`}
+    >
+      <table
+        class={`w-full min-w-max ${
+          tableStyle === "bordered"
+            ? "table table-bordered"
+            : tableStyle === "minimal"
+              ? "table table-minimal"
+              : "table"
+        }`}
+      >
+        <thead>
+          <tr class="border-b-2 border-gray-200">
+            <th
+              class="font-heading text-left py-3 px-2 sm:px-4 lg:px-6 text-gray-800 uppercase text-sm sm:text-base"
+            >
+              Service
+            </th>
+            <th
+              class="font-heading text-right py-3 px-2 sm:px-4 lg:px-6 text-gray-800 uppercase text-sm sm:text-base"
+            >
+              Price
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            data.map((row, index) => (
+              <tr
+                class={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                  index % 2 === 1 ? "bg-gray-25" : "bg-white"
+                }`}
+              >
+                <td class="py-3 px-2 sm:px-4 lg:px-6 text-gray-700 text-sm sm:text-base">
+                  {row.service}
+                </td>
+                <td class="py-3 px-2 sm:px-4 lg:px-6 text-right text-gray-900 font-medium text-sm sm:text-base">
+                  {row.price}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mobile Stacked Layout (only shows when mobileLayout is 'stacked') -->
+  {
+    mobileLayout === "stacked" && (
+      <div class="block sm:hidden space-y-4">
+        {data.map((row, index) => (
+          <div
+            class={`p-4 rounded-lg border ${
+              tableStyle === "bordered"
+                ? "border-gray-300 shadow-sm"
+                : tableStyle === "minimal"
+                  ? "border-gray-200"
+                  : "border-gray-200 bg-white shadow-sm"
+            }`}
+          >
+            <div class="flex justify-between items-start">
+              <div class="flex-1 pr-4">
+                <h3 class="font-medium text-gray-900 text-sm leading-tight">
+                  {row.service}
+                </h3>
+              </div>
+              <div class="text-right">
+                <span class="font-semibold text-gray-900 text-sm">
+                  {row.price}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+</div>

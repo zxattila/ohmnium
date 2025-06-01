@@ -1,0 +1,21 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  showContent?: boolean;
+}
+
+const { title, description, showContent = true } = Astro.props;
+---
+
+{
+  showContent && (
+    <div class="prose prose-lg mx-auto">
+      <h2>{title}</h2>
+      <div
+        set:html={description}
+        class="prose prose-lg mx-auto first-child-spacing"
+      />
+    </div>
+  )
+}

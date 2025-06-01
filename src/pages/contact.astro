@@ -2,6 +2,17 @@
 import Layout from "../layouts/Layout.astro";
 import PageHeader from "../components/PageHeader.astro";
 import ContactHome from "../components/ContactHome.astro";
+import ContentBlock from "../components/ContentBlock.astro";
+
+// Content data (not displayed due to showContent={false})
+const content = {
+  mission: {
+    title: "Contact Information",
+    description: `
+      <p>Get in touch with Ohmnium Electrical Services for all your electrical needs. Our qualified team is ready to help with installations, repairs, and maintenance across London.</p>
+    `,
+  },
+};
 ---
 
 <Layout>
@@ -11,7 +22,12 @@ import ContactHome from "../components/ContactHome.astro";
     useNoise={true}
   />
 
-  <main class="container max-w-screen-lg mx-auto px-4">
+  <section class="max-w-screen-lg mx-auto px-4">
+    <ContentBlock
+      title={content.mission.title}
+      description={content.mission.description}
+      showContent={false}
+    />
     <ContactHome title="Get in Touch" />
-  </main>
+  </section>
 </Layout>
