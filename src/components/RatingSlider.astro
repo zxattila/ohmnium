@@ -1,0 +1,173 @@
+---
+import RatingCard from "./RatingCard.astro";
+
+// Google Places API compatible review interface
+interface GooglePlacesReview {
+  author_name: string;
+  profile_photo_url: string;
+  rating: number;
+  text: string;
+  time: number;
+}
+
+interface Props {
+  reviews?: GooglePlacesReview[];
+  googleBusinessUrl?: string;
+  showPagination?: boolean;
+  showHeader?: boolean;
+  heading?: string;
+  description?: string;
+}
+
+// Mock Google Places API data for testing
+const mockReviews: GooglePlacesReview[] = [
+  {
+    author_name: "Sarah Johnson",
+    profile_photo_url: "https://lh3.googleusercontent.com/a/default-user=s40-c",
+    rating: 5,
+    text: "Outstanding service and quality! The team went above and beyond to ensure everything was perfect. Highly recommend to anyone looking for professional work.",
+    time: 1700000000,
+  },
+  {
+    author_name: "Mike Chen",
+    profile_photo_url: "https://lh3.googleusercontent.com/a/default-user=s40-c",
+    rating: 5,
+    text: "Exceptional experience from start to finish. Professional, reliable, and delivered exactly what was promised.",
+    time: 1699000000,
+  },
+  {
+    author_name: "Lisa M.",
+    profile_photo_url: "https://lh3.googleusercontent.com/a/default-user=s40-c",
+    rating: 4,
+    text: "Great work and fair pricing. Communication was excellent throughout the process.",
+    time: 1698000000,
+  },
+  {
+    author_name: "David Rodriguez",
+    profile_photo_url: "https://lh3.googleusercontent.com/a/default-user=s40-c",
+    rating: 5,
+    text: "Couldn't be happier with the results. Professional team that delivers on their promises. Will definitely use their services again!",
+    time: 1697000000,
+  },
+  {
+    author_name: "Jennifer K.",
+    profile_photo_url: "https://lh3.googleusercontent.com/a/default-user=s40-c",
+    rating: 5,
+    text: "Amazing attention to detail and customer service. They made the entire process smooth and stress-free.",
+    time: 1696000000,
+  },
+];
+
+const { 
+  reviews = mockReviews, 
+  googleBusinessUrl = "https://maps.app.goo.gl/FKFfpkgCduE4a2R76",
+  showPagination = false,
+  showHeader = true,
+  heading = "What Our Customers Say",
+  description = "Verified reviews from our valued customers"
+} = Astro.props;
+---
+
+<section class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-20">
+  {showHeader && (
+    <div class="text-center mb-8">
+      <h2 class="text-3xl" set:html={heading}></h2>
+      <p class="text-gray-600" set:html={description}></p>
+    </div>
+  )}
+
+  <div
+    x-data={`{ 
+      current: 0, 
+      total: ${reviews.length},
+      itemsPerView: window.innerWidth >= 768 ? 2 : 1,
+      get maxIndex() {
+        return this.total - 1; // Allow navigation to the very last card
+      },
+      get totalPages() {
+        return Math.ceil(this.total / this.itemsPerView);
+      },
+      get currentPage() {
+        return Math.floor(this.current / this.itemsPerView);
+      },
+      get activeCardIndex() {
+        return this.current;
+      },
+      next() {
+        this.current = this.current >= this.maxIndex ? 0 : this.current + 1;
+      },
+      prev() {
+        this.current = this.current <= 0 ? this.maxIndex : this.current - 1;
+      },
+      goToPage(pageIndex) {
+        this.current = pageIndex * this.itemsPerView;
+      },
+      goToCard(cardIndex) {
+        this.current = cardIndex; // Remove the Math.min limitation
+      },
+      updateItemsPerView() {
+        const oldItemsPerView = this.itemsPerView;
+        this.itemsPerView = window.innerWidth >= 768 ? 2 : 1;
+        // Adjust current position if items per view changed
+        if (oldItemsPerView !== this.itemsPerView) {
+          this.current = Math.min(this.current, this.maxIndex);
+        }
+      }
+    }`}
+    x-init="
+      updateItemsPerView();
+      window.addEventListener('resize', () => updateItemsPerView());
+    "
+    class="relative"
+  >
+    <!-- Navigation Arrows -->
+    <button
+      @click="prev()"
+      class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-transparent p-0 shadow-none border-none flex items-center justify-center w-10 h-10 -ml-6"
+      aria-label="Previous reviews"
+    >
+      <i class="fa-solid fa-chevron-left text-gray-600 text-xl"></i>
+    </button>
+
+    <button
+      @click="next()"
+      class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-transparent p-0 shadow-none border-none flex items-center justify-center w-10 h-10 -mr-6"
+      aria-label="Next reviews"
+    >
+      <i class="fa-solid fa-chevron-right text-gray-600 text-xl"></i>
+    </button>
+
+    <!-- Reviews Container -->
+    <div class="overflow-hidden mx-2 md:mx-5">
+      <div
+        class="flex transition-transform duration-300 ease-in-out"
+        :style="`transform: translateX(-${(current * 100) / itemsPerView}%)`"
+      >
+        {
+          reviews.map((review, index) => (
+            <div class="w-full md:w-1/2 flex-shrink-0 px-2">
+              <RatingCard
+                review={review}
+                googleBusinessUrl={googleBusinessUrl}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Pagination Dots -->
+    {showPagination && (
+      <div class="flex justify-center mt-6 space-x-2" x-show="total > itemsPerView && total >= 2 && total <= 8">
+        <template x-for="(card, index) in Array.from({length: total}, (_, i) => i)" :key="index">
+          <button
+            @click="goToCard(card)"
+            class="w-3 h-3 rounded-full transition-colors duration-200"
+            :class="activeCardIndex === card ? 'bg-black' : 'bg-gray-300 hover:bg-gray-400'"
+            :aria-label="`Go to review ${card + 1}`"
+          ></button>
+        </template>
+      </div>
+    )}
+  </div>
+</section>

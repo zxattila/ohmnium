@@ -124,7 +124,125 @@ Integrates with OpenAI API to provide intelligent responses to user inquiries:
 </div>
 ```
 
-#### 4. Contact Page (Future Implementation)
+#### 4. RatingWidget Component with Google Places API Integration
+
+The RatingWidget component displays customer ratings and reviews from Google Business. It's designed to be easily integrated with the Google Places API for dynamic data fetching.
+
+**Current Implementation** (`src/components/RatingWidget.astro`):
+
+```astro
+---
+// Default values - will be replaced by Google Places API data in the future
+const rating = 5.0;
+const userRatingsTotal = 47;
+const googleBusinessUrl = "https://www.google.com/maps/place/Ohmnium/@51.6637177,-0.0816725,13z/data=!3m1!4b1!4m6!3m5!1s0x6da422e7cebb863:0x9be5391c3058c133!8m2!3d51.6637177!4d-0.0816725!16s%2Fg%2F11x1ctjxjv?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D";
+
+// Calculate how many full stars to show (rounded to nearest whole number)
+const fullStars = Math.round(rating);
+---
+
+<section class="py-6">
+  <div class="container mx-auto text-center sm:text-left">
+    <div class="flex flex-col items-center sm:items-start space-y-2">
+      <!-- Rating Stars -->
+      <div class="flex space-x-1">
+        {Array.from({ length: 5 }, (_, index) => (
+          <div 
+            class={`mask mask-star-2 w-5 h-5 ${index < fullStars ? '' : 'opacity-30'}`}
+            style="background-color: #FFCB45;"
+          ></div>
+        ))}
+      </div>
+      
+      <!-- Review Text -->
+      <p class="text-gray-700 font-medium">
+        Proud to have great feedback from our {userRatingsTotal} customers on 
+        <a href={googleBusinessUrl} target="_blank" rel="noopener noreferrer" class="inline-flex items-center hover:underline">
+          <i class="fa-brands fa-google text-blue-500 mx-1"></i>
+          Google Business!
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+```
+
+**Google Places API Integration (Future)**:
+
+The component is structured to easily integrate with Google Places API data. The expected API response format:
+
+```javascript
+{
+  "result": {
+    "name": "Your Business Name",
+    "rating": 4.7,
+    "user_ratings_total": 50,
+    "reviews": [
+      {
+        "author_name": "John Doe",
+        "profile_photo_url": "https://...",
+        "rating": 5,
+        "text": "Great service!",
+        "time": 1700000000
+      }
+    ]
+  }
+}
+```
+
+**Future API Integration Example**:
+
+```astro
+---
+// Google Places API integration
+const GOOGLE_PLACES_API_KEY = import.meta.env.GOOGLE_PLACES_API_KEY;
+const PLACE_ID = import.meta.env.GOOGLE_PLACE_ID;
+
+let rating = 5.0; // Default fallback
+let userRatingsTotal = 47; // Default fallback
+const googleBusinessUrl = "https://maps.app.goo.gl/FKFfpkgCduE4a2R76";
+
+try {
+  const response = await fetch(
+    `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,rating,user_ratings_total&key=${GOOGLE_PLACES_API_KEY}`
+  );
+  const data = await response.json();
+  
+  if (data.result) {
+    rating = data.result.rating || rating;
+    userRatingsTotal = data.result.user_ratings_total || userRatingsTotal;
+  }
+} catch (error) {
+  console.error("Failed to fetch Google Places data:", error);
+  // Fallback to default values
+}
+
+const fullStars = Math.round(rating);
+---
+```
+
+**Required Environment Variables for Google Places API**:
+
+```env
+# Google Places API Configuration
+GOOGLE_PLACES_API_KEY=your_google_places_api_key
+GOOGLE_PLACE_ID=your_google_business_place_id
+```
+
+**Features**:
+- **Static fallback values** for reliable display when API is unavailable
+- **Dynamic star rendering** that supports decimal ratings (4.7 shows 5 stars, 3.2 shows 3 stars)
+- **Responsive design** with center alignment on mobile, left alignment on desktop
+- **Clickable Google Business link** with proper security attributes
+- **Custom brand colors** using your defined `#FFCB45` star color
+- **Future-ready architecture** for seamless API integration
+
+**Star Logic**:
+- Uses `Math.round(rating)` to determine filled stars
+- Stars beyond the rating count get `opacity-30` (dimmed effect)
+- Supports any rating from 0-5 with proper visual feedback
+
+#### 5. Contact Page (Future Implementation)
 
 **Note**: This contact page will be added at a later date once the AI setup is fully configured and tested.
 

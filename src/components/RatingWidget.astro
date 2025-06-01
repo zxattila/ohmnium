@@ -1,0 +1,43 @@
+---
+// Default values - will be replaced by Google Places API data in the future
+const rating = 5.0;
+const userRatingsTotal = 22;
+const googleBusinessUrl =
+  "https://www.google.com/maps/place/Ohmnium/@51.6637177,-0.0816725,13z/data=!3m1!4b1!4m6!3m5!1s0x6da422e7cebb863:0x9be5391c3058c133!8m2!3d51.6637177!4d-0.0816725!16s%2Fg%2F11x1ctjxjv?entry=ttu&g_ep=EgoyMDI1MDUyOC4wIKXMDSoASAFQAw%3D%3D";
+// unused
+const googleMapsUrl = "https://maps.app.goo.gl/FKFfpkgCduE4a2R76";
+
+// Calculate how many full stars to show (rounded to nearest whole number)
+const fullStars = Math.round(rating);
+---
+
+<section class="pt-2.5 md:pt-4">
+  <div class="container mx-auto text-center sm:text-left">
+    <div class="flex items-center">
+      <!-- Rating Stars -->
+      <div class="flex space-x-1">
+        {
+          Array.from({ length: 5 }, (_, index) => (
+            <div
+              class={`mask mask-star-2 h-4 w-4 sm:w-5 sm:h-5 ${index < fullStars ? "" : "opacity-30"}`}
+              style="background-color: #FFCB45;"
+            />
+          ))
+        }
+      </div>
+
+      <!-- Review Text -->
+      <p class="text-gray-700 font-medium text-sm sm:text-base ml-2.5 mt-0.5">
+        Loved by {userRatingsTotal} customers on
+        <a
+          href={googleBusinessUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center"
+        >
+          <i class="fa-brands fa-google text-blue-500 mx-1"></i>
+        </a>
+      </p>
+    </div>
+  </div>
+</section>

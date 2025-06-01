@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/Hero.astro";
+import RatingWidget from "../components/RatingWidget.astro";
 import ContactButton from "../components/ContactButton.astro";
 import CardColumns from "../components/CardColumns.astro";
 import ImageText from "../components/ImageText.astro";
@@ -8,12 +9,14 @@ import Brands from "../components/Brands.astro";
 import PostSlider from "../components/PostSlider.astro";
 import Faq from "../components/Faq.astro";
 import Banner from "../components/Banner.astro";
+import RatingSlider from "../components/RatingSlider.astro";
 import ContactHome from "../components/ContactHome.astro";
 // import { Image } from "astro:assets";
 ---
 
 <Layout>
   <Hero />
+  <RatingWidget />
   <ContactButton />
   <CardColumns />
   <ImageText />
@@ -21,5 +24,6 @@ import ContactHome from "../components/ContactHome.astro";
   <PostSlider />
   <Faq />
   <Banner />
+  <RatingSlider />
   <ContactHome />
 </Layout>

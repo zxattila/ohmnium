@@ -1,0 +1,69 @@
+---
+// Google Places API compatible review interface
+interface GooglePlacesReview {
+  author_name: string;
+  profile_photo_url: string;
+  rating: number;
+  text: string;
+  time: number;
+}
+
+interface Props {
+  review: GooglePlacesReview;
+  googleBusinessUrl?: string;
+}
+
+const {
+  review,
+  googleBusinessUrl = "https://maps.app.goo.gl/FKFfpkgCduE4a2R76",
+} = Astro.props;
+
+// Calculate how many full stars to show for this individual review
+const fullStars = Math.round(review.rating);
+---
+
+<div class="card">
+  <div class="card-body p-5">
+    <div class="flex flex-col gap-5">
+      <!-- First column: Avatar/Name left, Google icon right -->
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2.5">
+          <img
+            src={review.profile_photo_url}
+            alt={`${review.author_name} profile`}
+            class="w-8 h-8 rounded-full object-cover"
+          />
+          <span class="text-base font-medium text-gray-700"
+            >{review.author_name}</span
+          >
+        </div>
+
+        <a
+          href={googleBusinessUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center"
+        >
+          <i class="fa-brands fa-google text-blue-500"></i>
+        </a>
+      </div>
+
+      <!-- Second column: Rating stars (left aligned) -->
+      <div class="flex space-x-1">
+        {
+          Array.from({ length: 5 }, (_, index) => (
+            <div
+              class={`mask mask-star-2 w-5 h-5 ${index < fullStars ? "" : "opacity-30"}`}
+              style="background-color: #FFCB45;"
+            />
+          ))
+        }
+      </div>
+
+      <!-- Third column: Review text -->
+      <div>
+        <p class="text-gray-700 leading-relaxed">{review.text}</p>
+      </div>
+    </div>
+  </div>
+</div>
