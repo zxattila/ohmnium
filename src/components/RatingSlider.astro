@@ -68,11 +68,11 @@ const {
 } = Astro.props;
 ---
 
-<section class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<section class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 md:py-16">
   {showHeader && (
     <div class="text-center mb-8">
-      <h2 class="text-sm sm:text-base lg:text-lg" set:html={heading}></h2>
-      <p class="text-gray-600" set:html={description}></p>
+      <h2 class="text-base sm:text-2xl lg:text-3xl" set:html={heading}></h2>
+      <p class="text-gray-600 text-sm sm:text-base" set:html={description}></p>
     </div>
   )}
 

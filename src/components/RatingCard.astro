@@ -11,20 +11,24 @@ interface GooglePlacesReview {
 interface Props {
   review: GooglePlacesReview;
   googleBusinessUrl?: string;
+  showBackground?: boolean;
 }
 
 const {
   review,
   googleBusinessUrl = "https://maps.app.goo.gl/FKFfpkgCduE4a2R76",
+  showBackground = false,
 } = Astro.props;
 
 // Calculate how many full stars to show for this individual review
 const fullStars = Math.round(review.rating);
 ---
 
-<div class="card">
-  <div class="card-body p-5">
-    <div class="flex flex-col gap-5">
+<div
+  class={`card h-full ${showBackground ? "bg-white shadow-sm rounded-lg pb-2" : ""}`}
+>
+  <div class="card-body p-5 flex flex-col h-full">
+    <div class="flex flex-col gap-5 flex-grow">
       <!-- First column: Avatar/Name left, Google icon right -->
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-2.5">
@@ -44,7 +48,7 @@ const fullStars = Math.round(review.rating);
           rel="noopener noreferrer"
           class="inline-flex items-center"
         >
-          <i class="fa-brands fa-google text-blue-500"></i>
+          <i class="fa-brands fa-google text-2xl text-blue-500"></i>
         </a>
       </div>
 
