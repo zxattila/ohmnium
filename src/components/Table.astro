@@ -24,28 +24,6 @@ const {
   <div
     class={`${mobileLayout === "stacked" ? "hidden sm:block" : "block"} relative`}
   >
-    {
-      showScrollIcon && mobileLayout === "scroll" && (
-        <div class="block sm:hidden mb-4 flex justify-center">
-          <svg
-            class="table-scroll-x-mobile w-20 h-6 opacity-60 text-gray-400"
-            width="311"
-            height="93"
-            viewBox="0 0 311 93"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M301.796 47.6032C282.955 40.7309 246.374 26.3623 245.259 25.3586C241.915 22.3475 234.927 25.4753 238.791 28.9547C240.129 30.1592 241.671 50.1169 240.533 51.3803C239.73 52.2721 58.3067 53.3539 11.3298 56.8072C-9.54972 58.3263 5.48551 65.5396 16.3375 65.8914C63.0086 67.4107 236.458 61.4362 241.63 64.2098C242.284 64.5296 242.633 68.4765 242.446 73.018C242.064 85.9959 249.562 96.6489 254.981 90.6294C257.19 88.1771 270.504 80.1153 290.873 68.8515C302.083 62.5286 321.21 54.587 301.796 47.6032Z"
-              fill="currentColor"
-            />
-          </svg>
-        </div>
-      )
-    }
-
     <div
       class={`${mobileLayout === "scroll" ? "overflow-x-auto" : ""} -mx-4 px-4`}
     >
@@ -60,15 +38,19 @@ const {
       >
         <thead>
           <tr class="border-b-2 border-gray-200">
-            <th
-              class="font-heading text-left py-3 px-2 sm:px-4 lg:px-6 text-gray-800 uppercase text-sm sm:text-base"
-            >
-              Service
+            <th class="text-left py-3 px-2 sm:px-4 lg:px-6 text-gray-800">
+              <h5
+                class="font-heading font-normal antialiased text-sm sm:text-base"
+              >
+                Service
+              </h5>
             </th>
-            <th
-              class="font-heading text-right py-3 px-2 sm:px-4 lg:px-6 text-gray-800 uppercase text-sm sm:text-base"
-            >
-              Price
+            <th class="text-right py-3 px-2 sm:px-4 lg:px-6 text-gray-800">
+              <h5
+                class="font-heading font-normal antialiased text-sm sm:text-base"
+              >
+                Price
+              </h5>
             </th>
           </tr>
         </thead>
