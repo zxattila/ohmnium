@@ -1,14 +1,37 @@
 ---
 import ContactForm from "./ContactForm.astro";
+import ContentBlock from "./ContentBlock.astro";
 
 interface Props {
   title?: string;
 }
 
-const { title = "Contact us" } = Astro.props;
+const content = {
+  mission: {
+    title: "Contact us",
+    description: `
+      <p>Get in touch with Ohmnium Electrical Services for all your electrical needs. Our qualified team is ready to help with installations, repairs, and maintenance across London.</p>
+    `,
+  },
+  styling: {
+    containerClass: "",
+    titleClass: "text-4xl md:text-5xl",
+    contentClass: "",
+  },
+};
 ---
 
-<section class="md:max-w-2xl mx-auto md:px-4 py-12 md:py-20">
-  <h2 class="text-4xl md:text-5xl mb-5" set:html={title} />
-  <ContactForm />
+<section class="md:max-w-2xl w-full mx-auto py-10">
+  <!-- <h2 class="text-4xl md:text-5xl" set:html={title} /> -->
+  <ContentBlock
+    title={content.mission.title}
+    description={content.mission.description}
+    showContent={true}
+    containerClass={content.styling.containerClass}
+    titleClass={content.styling.titleClass}
+    contentClass={content.styling.contentClass}
+  />
+  <div class="bg-white rounded-lg shadow-lg px-2 md:px-4 py-5">
+    <ContactForm />
+  </div>
 </section>

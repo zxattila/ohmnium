@@ -12,6 +12,11 @@ const content = {
       <p>Get in touch with Ohmnium Electrical Services for all your electrical needs. Our qualified team is ready to help with installations, repairs, and maintenance across London.</p>
     `,
   },
+  styling: {
+    containerClass: "",
+    titleClass: "",
+    contentClass: "",
+  },
 };
 ---
 
@@ -27,6 +32,9 @@ const content = {
       title={content.mission.title}
       description={content.mission.description}
       showContent={false}
+      containerClass={content.styling.containerClass}
+      titleClass={content.styling.titleClass}
+      contentClass={content.styling.contentClass}
     />
     <ContactHome title="Get in Touch" />
   </section>

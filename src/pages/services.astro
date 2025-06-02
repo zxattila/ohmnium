@@ -16,6 +16,11 @@ const content = {
       <p>We pride ourselves on transparent pricing, punctual service, and quality workmanship. Whether you need a simple socket installation or a complex commercial electrical system, Ohmnium Electrical Services is your trusted partner for all electrical needs.</p>
     `,
   },
+  styling: {
+    containerClass: "",
+    titleClass: "",
+    contentClass: "",
+  },
 };
 ---
 
@@ -31,6 +36,9 @@ const content = {
       title={content.mission.title}
       description={content.mission.description}
       showContent={false}
+      containerClass={content.styling.containerClass}
+      titleClass={content.styling.titleClass}
+      contentClass={content.styling.contentClass}
     />
     <Pricing />
   </section>

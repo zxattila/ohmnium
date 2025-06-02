@@ -23,6 +23,11 @@ const content = {
       explicabo.</p>
     `,
   },
+  styling: {
+    containerClass: "",
+    titleClass: "",
+    contentClass: "",
+  },
 };
 ---
 
@@ -38,6 +43,9 @@ const content = {
       title={content.mission.title}
       description={content.mission.description}
       showContent={true}
+      containerClass={content.styling.containerClass}
+      titleClass={content.styling.titleClass}
+      contentClass={content.styling.contentClass}
     />
   </section>
 </Layout>
