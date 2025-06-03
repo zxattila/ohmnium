@@ -66,7 +66,9 @@ const fullStars = Math.round(review.rating);
 
       <!-- Third column: Review text -->
       <div>
-        <p class="text-gray-700 leading-relaxed">{review.text}</p>
+        <p class="line-clamp-3 prose text-gray-700 leading-relaxed">
+          {review.text}
+        </p>
       </div>
     </div>
   </div>
