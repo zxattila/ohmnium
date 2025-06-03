@@ -3,17 +3,22 @@ interface Props {
   imgSrc: string;
   title: string;
   description: string;
+  showImage?: boolean;
 }
 
-const { imgSrc, title, description } = Astro.props;
+const { imgSrc, title, description, showImage = false } = Astro.props;
 ---
 
 <div
   class="card bg-surface-card w-full shadow-sm hover:shadow-md transition-shadow"
 >
-  <figure class="aspect-[2/1]">
-    <img src={imgSrc} alt={title} class="w-full h-full object-cover" />
-  </figure>
+  {
+    showImage && (
+      <figure class="aspect-[2/1]">
+        <img src={imgSrc} alt={title} class="w-full h-full object-cover" />
+      </figure>
+    )
+  }
   <div class="card-body">
     <h3 class="text-base uppercase mb-0">{title}</h3>
     <p class="text-base leading-snug">{description}</p>
