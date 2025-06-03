@@ -13,12 +13,15 @@ const currentPath = Astro.url.pathname;
 
 // Nav items array with dynamically determined active state
 const navItems = [
-  { href: "/", text: "Home", active: currentPath === "/" },
-  { href: "/about", text: "About", active: currentPath.startsWith("/about") },
   {
-    href: "/services",
-    text: "Services",
-    active: currentPath.startsWith("/services"),
+    href: "/",
+    text: "Home",
+    active: currentPath === "/",
+  },
+  {
+    href: "/about",
+    text: "About",
+    active: currentPath.startsWith("/about"),
   },
   {
     href: "/blog",
