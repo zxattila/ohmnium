@@ -6,27 +6,25 @@ import ContentBlock from "../components/ContentBlock.astro";
 // Content data
 const content = {
   mission: {
-    title: "Our Mission",
+    title: "Ohmnium's Story",
     description: `
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat.</p>
+      <p>Ohmnium was born from nearly a decade of hands-on experience, a fair share of setbacks, and a deep drive to grow into something meaningful.</p>
 
-      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-      dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <p>I started my journey at just 16, working for a local electrical firm. Not long after, I joined a family-run business called Fixatex Ltd, where I found my feet and really began to challenge what I thought was possible. I worked hard, often finishing late into the evening, because I believed in doing things properly and seeing the job through to the end.</p>
 
-      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-      accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
-      illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-      explicabo.</p>
+      <p>Leaving Fixatex wasn't an easy choice. I'd grown a lot there, both professionally and personally. But I felt it was time for something new. In 2019, I made the decision to go self-employed. That shift opened the door to a world of learning. The path wasn't always smooth. There were moments of doubt, setbacks, and plenty of lessons. But each experience played a part in shaping what Ohmnium is today.</p>
+
+      <p>At the heart of Ohmnium is the value of harmony. To me, this means creating a sense of balance and flow in everything we do. Whether it's working together as a team, building trust with clients, or taking pride in the work itself, harmony is always present. Just as important is the value of connection. I believe in honest, judgment-free communication and strong, respectful relationships with everyone we work with.</p>
+
+      <p>I originally started the business to earn a living. But as time passed, I realised money alone wasn't enough to keep me going. What truly motivates me is growth, not just for myself, but for the people around me. My goal is to build Ohmnium into a company that values support, honesty, and a strong work ethic. A place where we push past comfort zones and see how far we can really go, together.</p>
+
+      <p>Ohmnium isn't just about electrical work. It's about doing things properly, building something meaningful, and working with people who care.</p>
     `,
   },
   styling: {
     containerClass: "",
-    titleClass: "",
-    contentClass: "",
+    titleClass: "text-2xl sm:text-4xl md:mb-10 mb-5 text-center",
+    contentClass: "sm:text-lg text-base",
   },
 };
 ---
@@ -34,11 +32,11 @@ const content = {
 <Layout>
   <PageHeader
     title="About Us"
-    description="Learn more about our mission and values"
+    description="The journey behind Ohmnium Electricians"
     useNoise={true}
   />
 
-  <section class="page max-w-4xl mx-auto px-2 sm:px-4 pb-10">
+  <section class="page max-w-3xl mx-auto px-2 sm:px-4 pb-10">
     <ContentBlock
       title={content.mission.title}
       description={content.mission.description}
