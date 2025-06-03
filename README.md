@@ -380,6 +380,304 @@ Usage example:
 
 This utility is particularly useful for WordPress content areas where you need consistent spacing between all elements without targeting specific HTML tags.
 
+## 🔍 SEO Components: HeadMetas & HeadSeo
+
+The project includes two specialized components for comprehensive SEO optimization: `HeadMetas.astro` for meta tags and `HeadSeo.astro` for structured data. These components work together to provide complete SEO coverage while maintaining clean separation of concerns.
+
+### HeadMetas Component
+
+Handles all meta tags including Open Graph, Twitter Cards, and basic meta information.
+
+**Usage:**
+```astro
+<HeadMetas 
+  title="Page Title"
+  description="Page description for meta tags"
+  type="website"
+  image="/path/to/image.jpg"
+  imageWidth={1200}
+  imageHeight={630}
+  twitterHandle="@yourbusiness"
+/>
+```
+
+**Props:**
+- `title` (string): Page title for meta tags
+- `description` (string): Meta description
+- `type` (string): Open Graph type - 'website', 'article', 'product', etc.
+- `image` (string, optional): Social media image URL
+- `imageWidth` (number, optional): Image width for Open Graph
+- `imageHeight` (number, optional): Image height for Open Graph  
+- `twitterHandle` (string, optional): Twitter handle for Twitter Cards
+
+**Generated Meta Tags:**
+- Basic meta tags (title, description, viewport)
+- Open Graph tags for Facebook sharing
+- Twitter Card tags for Twitter sharing
+- Canonical URL for SEO
+
+### HeadSeo Component
+
+Generates JSON-LD structured data for search engines with support for multiple schema types.
+
+**Supported Schema Types:**
+- `WebPage` - Standard web pages
+- `ContactPage` - Contact/form pages
+- `AboutPage` - About/company pages
+- `Organization` - Business/company data
+- `Blog` - Blog listing pages
+- `BlogPosting` - Individual blog posts
+- `FAQPage` - Pages with FAQ sections
+
+**Basic Usage:**
+```astro
+<HeadSeo 
+  title="Page Title"
+  description="Page description"
+  schemaType="WebPage"
+/>
+```
+
+**Blog Post Usage:**
+```astro
+<HeadSeo 
+  title="Blog Post Title"
+  description="Blog post description"
+  schemaType="BlogPosting"
+  datePublished="2025-01-15"
+  dateModified="2025-01-16"
+  author="Author Name"
+/>
+```
+
+**FAQ Page Usage:**
+```astro
+---
+import { defaultElectricalFaqItems } from "../components/Faq.astro";
+---
+<HeadSeo 
+  title="FAQ - Electrical Services"
+  description="Frequently asked questions about our electrical services"
+  schemaType="FAQPage"
+  faqItems={defaultElectricalFaqItems}
+/>
+```
+
+**Custom FAQ Usage:**
+```astro
+---
+const customFaqItems = [
+  {
+    title: "What services do you offer?",
+    content: "We offer comprehensive electrical services including..."
+  },
+  {
+    title: "How much do you charge?",
+    content: "Our pricing depends on the scope of work..."
+  }
+];
+---
+<HeadSeo 
+  title="Service FAQ"
+  description="Common questions about our services"
+  schemaType="FAQPage"
+  faqItems={customFaqItems}
+/>
+```
+
+### Integration with Layout Component
+
+Both components are automatically integrated into the main `Layout.astro` component:
+
+```astro
+---
+// src/layouts/Layout.astro
+import HeadMetas from "../components/HeadMetas.astro";
+import HeadSeo from "../components/HeadSeo.astro";
+import type { AccordionItem } from "../components/Faq.astro";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  pageType?: "default" | "blog" | "contact" | "about";
+  type?: 'website' | 'article' | 'product';
+  schemaType?: "WebPage" | "ContactPage" | "AboutPage" | "Organization" | "Blog" | "BlogPosting" | "FAQPage";
+  image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  twitterHandle?: string;
+  datePublished?: string;
+  dateModified?: string;
+  author?: string;
+  faqItems?: AccordionItem[];
+}
+---
+
+<html lang="en">
+  <head>
+    <!-- Meta Tags Component -->
+    <HeadMetas 
+      title={title}
+      description={description}
+      type={type}
+      image={image}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
+      twitterHandle={twitterHandle}
+    />
+    
+    <!-- SEO Schema Component -->
+    <HeadSeo 
+      title={title}
+      description={description}
+      schemaType={schemaType}
+      datePublished={datePublished}
+      dateModified={dateModified}
+      author={author}
+      faqItems={faqItems}
+    />
+  </head>
+  <!-- ... -->
+</html>
+```
+
+### Page Implementation Examples
+
+**Standard Page:**
+```astro
+---
+// src/pages/services.astro
+import Layout from "../layouts/Layout.astro";
+---
+<Layout 
+  title="Electrical Services - Inspections, Rewiring & Repairs"
+  description="Professional electrical services including inspections, fault finding, rewiring, and consumer unit upgrades."
+  pageType="default"
+  schemaType="WebPage"
+>
+  <!-- Page content -->
+</Layout>
+```
+
+**Contact Page:**
+```astro
+---
+// src/pages/contact.astro
+import Layout from "../layouts/Layout.astro";
+---
+<Layout 
+  title="Contact Ohmnium Electricians - Get Your Free Quote"
+  description="Contact our qualified electricians for a free quote on electrical work in Staffordshire."
+  pageType="contact"
+  schemaType="ContactPage"
+>
+  <!-- Contact form and content -->
+</Layout>
+```
+
+**FAQ Page with Schema:**
+```astro
+---
+// src/pages/index.astro
+import Layout from "../layouts/Layout.astro";
+import { defaultElectricalFaqItems } from "../components/Faq.astro";
+---
+<Layout 
+  title="Ohmnium Electricians - Professional Electrical Services"
+  description="Professional electrical services in Staffordshire. Qualified electricians for inspections, fault finding, rewiring."
+  pageType="default"
+  schemaType="FAQPage"
+  faqItems={defaultElectricalFaqItems}
+>
+  <!-- Page content including FAQ component -->
+</Layout>
+```
+
+**Blog Post:**
+```astro
+---
+// src/pages/blog/[slug].astro
+import Layout from "../../layouts/Layout.astro";
+
+// Get blog post data...
+const { title, content, date, author } = post;
+---
+<Layout 
+  title={title}
+  description={excerpt}
+  pageType="blog"
+  type="article"
+  schemaType="BlogPosting"
+  datePublished={date}
+  author={author}
+>
+  <!-- Blog post content -->
+</Layout>
+```
+
+### FAQ Schema Architecture
+
+The FAQ schema implementation follows a clean, reusable pattern:
+
+1. **FAQ data is defined once** in `Faq.astro` component
+2. **Interface is exported** for type safety across components
+3. **Schema requires explicit FAQ data** - no hidden fallbacks
+4. **Easy to extend** for different FAQ sets on different pages
+
+**Creating Custom FAQ Sets:**
+```astro
+---
+// For a services page with specific FAQ
+import type { AccordionItem } from "../components/Faq.astro";
+
+const servicesFaqItems: AccordionItem[] = [
+  {
+    title: "Do you offer emergency repairs?",
+    content: "Yes, we provide 24/7 emergency electrical repair services..."
+  },
+  {
+    title: "Are your electricians certified?",
+    content: "All our electricians are fully qualified and NICEIC registered..."
+  }
+];
+---
+<Layout 
+  schemaType="FAQPage"
+  faqItems={servicesFaqItems}
+>
+```
+
+### SEO Benefits
+
+**Search Engine Optimization:**
+- Proper meta tags for search result snippets
+- Open Graph for social media sharing
+- Structured data for rich snippets
+- FAQ schema for FAQ rich results
+- Organization schema for business information
+
+**Rich Results Potential:**
+- FAQ sections may appear as expandable results in Google
+- Blog posts get proper article markup
+- Business information appears in knowledge panels
+- Social shares display proper previews
+
+### Error Handling
+
+The components include proper error handling:
+
+```astro
+// HeadSeo.astro - FAQ schema validation
+if (schemaType === "FAQPage") {
+  if (!faqItems || faqItems.length === 0) {
+    throw new Error("FAQPage schema requires faqItems to be provided");
+  }
+  // Generate FAQ schema...
+}
+```
+
+This ensures that FAQ schema is only generated when proper FAQ data is provided, preventing empty or malformed structured data.
+
 - `WP_SITE`: The WordPress site URL (default: "https://techcrunch.com")
 - `OPENAI_API_KEY`: API key for OpenAI integration
 

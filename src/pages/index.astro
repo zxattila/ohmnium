@@ -7,14 +7,20 @@ import CardColumns from "../components/CardColumns.astro";
 import ImageText from "../components/ImageText.astro";
 import Brands from "../components/Brands.astro";
 import PostSlider from "../components/PostSlider.astro";
-import Faq from "../components/Faq.astro";
+import Faq, { defaultElectricalFaqItems } from "../components/Faq.astro";
 import Banner from "../components/Banner.astro";
 import RatingSlider from "../components/RatingSlider.astro";
 import ContactHome from "../components/ContactHome.astro";
 // import { Image } from "astro:assets";
 ---
 
-<Layout>
+<Layout
+  title="Ohmnium Electricians - Professional Electrical Services in Staffordshire"
+  description="Professional electrical services in Staffordshire. Qualified electricians for inspections, fault finding, rewiring, consumer units. Free quotes, competitive prices, quality work."
+  pageType="default"
+  schemaType="FAQPage"
+  faqItems={defaultElectricalFaqItems}
+>
   <Hero />
   <RatingWidget />
   <ContactButton />

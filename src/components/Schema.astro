@@ -1,0 +1,76 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  type?: "WebPage" | "Article" | "ContactPage" | "AboutPage";
+  url?: string;
+  image?: string;
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+}
+
+const {
+  title,
+  description,
+  type = "WebPage",
+  url,
+  image,
+  publishedTime,
+  modifiedTime,
+  author,
+} = Astro.props;
+
+const canonicalURL = url || Astro.url.href;
+const siteUrl = Astro.site?.href || "https://ohmnium.co.uk";
+const siteName = "Ohmnium Electricians";
+
+// Schema.org structured data
+const schemaData = {
+  "@context": "https://schema.org",
+  "@type": type,
+  name: title,
+  description: description,
+  url: canonicalURL,
+  ...(image && { image: image }),
+  ...(publishedTime && { datePublished: publishedTime }),
+  ...(modifiedTime && { dateModified: modifiedTime }),
+  ...(author && { author: { "@type": "Person", name: author } }),
+  publisher: {
+    "@type": "Organization",
+    name: siteName,
+    url: siteUrl,
+    logo: {
+      "@type": "ImageObject",
+      url: `${siteUrl}/logo.png`,
+    },
+  },
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": canonicalURL,
+  },
+};
+---
+
+<!-- SEO Meta Tags -->
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:site_name" content={siteName} />
+{image && <meta property="og:image" content={image} />}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+{image && <meta property="twitter:image" content={image} />}
+
+<!-- Schema.org JSON-LD -->
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

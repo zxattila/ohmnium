@@ -1,0 +1,165 @@
+---
+import type { AccordionItem } from "../components/Faq.astro";
+
+export interface Props {
+  schemaType?:
+    | "WebPage"
+    | "ContactPage"
+    | "AboutPage"
+    | "Organization"
+    | "Blog"
+    | "BlogPosting"
+    | "FAQPage";
+  title: string;
+  description: string;
+  url?: string;
+  datePublished?: string;
+  dateModified?: string;
+  author?: string;
+  faqItems?: AccordionItem[];
+}
+
+const {
+  schemaType = "WebPage",
+  title,
+  description,
+  url,
+  datePublished,
+  dateModified,
+  author,
+  faqItems,
+} = Astro.props;
+
+const canonicalURL = url || Astro.url.href;
+const siteUrl = Astro.site?.href || "https://ohmnium.co.uk";
+const siteName = "Ohmnium Electricians";
+
+// Base organization data
+const organizationData = {
+  "@type": "Organization",
+  name: siteName,
+  url: siteUrl,
+  logo: {
+    "@type": "ImageObject",
+    url: `${siteUrl}/logo.png`,
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    areaServed: "Staffordshire, UK",
+  },
+  address: {
+    "@type": "PostalAddress",
+    addressRegion: "Staffordshire",
+    addressCountry: "GB",
+  },
+  serviceArea: {
+    "@type": "Place",
+    name: "Staffordshire",
+  },
+};
+
+// Schema data based on page type
+let schemaData;
+
+if (schemaType === "Organization") {
+  schemaData = {
+    "@context": "https://schema.org",
+    ...organizationData,
+  };
+} else if (schemaType === "Blog") {
+  schemaData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: title,
+    description: description,
+    url: canonicalURL,
+    publisher: organizationData,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalURL,
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteName,
+      url: siteUrl,
+    },
+  };
+} else if (schemaType === "BlogPosting") {
+  schemaData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description: description,
+    url: canonicalURL,
+    ...(datePublished && { datePublished: datePublished }),
+    ...(dateModified && { dateModified: dateModified }),
+    ...(author && {
+      author: {
+        "@type": "Person",
+        name: author,
+      },
+    }),
+    publisher: organizationData,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalURL,
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteName,
+      url: siteUrl,
+    },
+  };
+} else if (schemaType === "FAQPage") {
+  if (!faqItems || faqItems.length === 0) {
+    throw new Error("FAQPage schema requires faqItems to be provided");
+  }
+  schemaData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    name: title,
+    description: description,
+    url: canonicalURL,
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.title,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.content,
+      },
+    })),
+    publisher: organizationData,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalURL,
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteName,
+      url: siteUrl,
+    },
+  };
+} else {
+  schemaData = {
+    "@context": "https://schema.org",
+    "@type": schemaType,
+    name: title,
+    description: description,
+    url: canonicalURL,
+    publisher: organizationData,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalURL,
+    },
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteName,
+      url: siteUrl,
+    },
+  };
+}
+---
+
+<!-- Schema.org JSON-LD -->
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

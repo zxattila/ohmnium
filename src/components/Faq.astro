@@ -2,7 +2,7 @@
 import Accordion from "../components/Accordion.astro";
 import flower from "../assets/flower-green.svg";
 
-interface AccordionItem {
+export interface AccordionItem {
   title: string;
   content: string;
 }
@@ -13,8 +13,8 @@ interface Props {
   accordionItems?: AccordionItem[];
 }
 
-// Dummy data for electrician FAQs
-const defaultAccordionItems: AccordionItem[] = [
+// Default FAQ data for electrician services - exported for reuse in schema
+export const defaultElectricalFaqItems: AccordionItem[] = [
   {
     title: "What electrical services do you offer?",
     content:
@@ -45,7 +45,7 @@ const defaultAccordionItems: AccordionItem[] = [
 const {
   title = "Frequently<br>asked<br>questions",
   svgSrc = flower.src,
-  accordionItems = defaultAccordionItems,
+  accordionItems = defaultElectricalFaqItems,
 } = Astro.props;
 ---
 
