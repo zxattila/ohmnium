@@ -1,5 +1,9 @@
 ---
 import type { AccordionItem } from "../components/Faq.astro";
+import {
+  calculateAggregateRating,
+  type GooglePlacesReview,
+} from "../data/reviews";
 
 export interface Props {
   schemaType?:
@@ -9,7 +13,8 @@ export interface Props {
     | "Organization"
     | "Blog"
     | "BlogPosting"
-    | "FAQPage";
+    | "FAQPage"
+    | "LocalBusiness";
   title: string;
   description: string;
   url?: string;
@@ -17,6 +22,18 @@ export interface Props {
   dateModified?: string;
   author?: string;
   faqItems?: AccordionItem[];
+  reviews?: GooglePlacesReview[];
+  businessName?: string;
+  businessType?: string;
+  address?: {
+    streetAddress?: string;
+    addressLocality?: string;
+    addressRegion?: string;
+    postalCode?: string;
+    addressCountry?: string;
+  };
+  phoneNumber?: string;
+  email?: string;
 }
 
 const {
@@ -28,11 +45,17 @@ const {
   dateModified,
   author,
   faqItems,
+  reviews,
+  businessName,
+  businessType = "Electrician",
+  address,
+  phoneNumber,
+  email,
 } = Astro.props;
 
 const canonicalURL = url || Astro.url.href;
 const siteUrl = Astro.site?.href || "https://ohmnium.co.uk";
-const siteName = "Ohmnium Electricians";
+const siteName = businessName || "Ohmnium Electricians";
 
 // Base organization data
 const organizationData = {
@@ -46,16 +69,31 @@ const organizationData = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
-    areaServed: "Staffordshire, UK",
+    areaServed: "London, UK",
+    ...(phoneNumber && { telephone: phoneNumber }),
+    ...(email && { email: email }),
   },
-  address: {
-    "@type": "PostalAddress",
-    addressRegion: "Staffordshire",
-    addressCountry: "GB",
-  },
+  address: address
+    ? {
+        "@type": "PostalAddress",
+        ...(address.streetAddress && { streetAddress: address.streetAddress }),
+        ...(address.addressLocality && {
+          addressLocality: address.addressLocality,
+        }),
+        ...(address.addressRegion && { addressRegion: address.addressRegion }),
+        ...(address.postalCode && { postalCode: address.postalCode }),
+        ...(address.addressCountry && {
+          addressCountry: address.addressCountry,
+        }),
+      }
+    : {
+        "@type": "PostalAddress",
+        addressLocality: "London",
+        addressCountry: "GB",
+      },
   serviceArea: {
     "@type": "Place",
-    name: "Staffordshire",
+    name: "London",
   },
 };
 
@@ -66,6 +104,79 @@ if (schemaType === "Organization") {
   schemaData = {
     "@context": "https://schema.org",
     ...organizationData,
+  };
+} else if (schemaType === "LocalBusiness") {
+  const aggregateRating = calculateAggregateRating(reviews || []);
+
+  schemaData = {
+    "@context": "https://schema.org",
+    "@type":
+      businessType === "Electrician" ? "ProfessionalService" : "LocalBusiness",
+    name: siteName,
+    description: description,
+    url: siteUrl,
+    ...(phoneNumber && { telephone: phoneNumber }),
+    ...(email && { email: email }),
+    address: address
+      ? {
+          "@type": "PostalAddress",
+          ...(address.streetAddress && {
+            streetAddress: address.streetAddress,
+          }),
+          ...(address.addressLocality && {
+            addressLocality: address.addressLocality,
+          }),
+          ...(address.addressRegion && {
+            addressRegion: address.addressRegion,
+          }),
+          ...(address.postalCode && { postalCode: address.postalCode }),
+          ...(address.addressCountry && {
+            addressCountry: address.addressCountry,
+          }),
+        }
+      : {
+          "@type": "PostalAddress",
+          addressLocality: "London",
+          addressCountry: "GB",
+        },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 51.5074, // London coordinates
+      longitude: -0.1278,
+    },
+    areaServed: {
+      "@type": "Place",
+      name: "London, UK",
+    },
+    ...(aggregateRating && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: aggregateRating.ratingValue,
+        reviewCount: aggregateRating.reviewCount,
+        bestRating: aggregateRating.bestRating,
+        worstRating: aggregateRating.worstRating,
+      },
+    }),
+    ...(reviews &&
+      reviews.length > 0 && {
+        review: reviews.map((reviewData) => ({
+          "@type": "Review",
+          author: {
+            "@type": "Person",
+            name: reviewData.author_name,
+          },
+          reviewRating: {
+            "@type": "Rating",
+            ratingValue: reviewData.rating,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          reviewBody: reviewData.text,
+          datePublished: new Date(reviewData.time * 1000).toISOString(),
+        })),
+      }),
+    priceRange: "$$",
+    serviceType: "Electrical Services",
   };
 } else if (schemaType === "Blog") {
   schemaData = {

@@ -11,15 +11,28 @@ import Faq, { defaultElectricalFaqItems } from "../components/Faq.astro";
 import Banner from "../components/Banner.astro";
 import RatingSlider from "../components/RatingSlider.astro";
 import ContactHome from "../components/ContactHome.astro";
+import { mockReviews } from "../data/reviews";
 // import { Image } from "astro:assets";
 ---
 
 <Layout
-  title="Ohmnium Electricians - Professional Electrical Services in Staffordshire"
-  description="Professional electrical services in Staffordshire. Qualified electricians for inspections, fault finding, rewiring, consumer units. Free quotes, competitive prices, quality work."
+  title="Ohmnium Electricians - Professional Electrical Services in London"
+  description="Professional electrical services in London. Qualified electricians for inspections, fault finding, rewiring, consumer units. Free quotes, competitive prices, quality work."
   pageType="default"
-  schemaType="FAQPage"
+  schemaType="LocalBusiness"
   faqItems={defaultElectricalFaqItems}
+  reviews={mockReviews}
+  businessName="Ohmnium Electricians"
+  businessType="Electrician"
+  address={{
+    streetAddress: "24 Mount Pleasant",
+    addressLocality: "London",
+    postalCode: "EN4 9HH",
+    addressCountry: "GB",
+  }}
+  phoneNumber="020 3500 1441"
+  email="info@ohmnium.co.uk"
+  keywords="electrician, electrical services, London, rewiring, inspections, fault finding, consumer units, electrical repairs"
 >
   <Hero />
   <RatingWidget />

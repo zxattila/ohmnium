@@ -10,6 +10,13 @@ export interface Props {
   imageWidth?: number;
   imageHeight?: number;
   twitterHandle?: string;
+  keywords?: string;
+  author?: string;
+  robots?: string;
+  language?: string;
+  businessName?: string;
+  businessPhone?: string;
+  businessAddress?: string;
 }
 
 const {
@@ -22,6 +29,13 @@ const {
   imageWidth,
   imageHeight,
   twitterHandle,
+  keywords,
+  author,
+  robots = "index, follow",
+  language = "en-GB",
+  businessName,
+  businessPhone,
+  businessAddress,
 } = Astro.props;
 
 const canonicalURL = url || Astro.url.href;
@@ -31,6 +45,35 @@ const canonicalURL = url || Astro.url.href;
 <meta name="description" content={description} />
 <title>{title}</title>
 <link rel="canonical" href={canonicalURL} />
+<meta name="robots" content={robots} />
+<meta name="language" content={language} />
+{keywords && <meta name="keywords" content={keywords} />}
+{author && <meta name="author" content={author} />}
+
+<!-- Business-specific meta tags for local SEO -->
+{
+  businessName && (
+    <meta name="business:contact_data:locality" content={businessName} />
+  )
+}
+{
+  businessPhone && (
+    <meta name="business:contact_data:phone_number" content={businessPhone} />
+  )
+}
+{
+  businessAddress && (
+    <meta
+      name="business:contact_data:street_address"
+      content={businessAddress}
+    />
+  )
+}
+
+<!-- Geo meta tags for local business -->
+<meta name="geo.region" content="GB-LND" />
+<meta name="geo.placename" content="London" />
+<meta name="ICBM" content="51.5074, -0.1278" />
 
 <!-- Open Graph Meta Tags -->
 <meta property="og:site_name" content={siteName} />

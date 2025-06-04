@@ -3,11 +3,31 @@ import Layout from "../../layouts/Layout.astro";
 import Pagination from "../../components/Pagination.astro";
 import { WP_API_URL } from "../../config";
 
+// Define simplified WordPress post interface - only essential data
+interface WordPressPost {
+  id: number;
+  slug: string;
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  date: string;
+  modified?: string;
+  // Optional custom fields for schema if you add them to WP
+  schema_title?: string;
+  schema_description?: string;
+}
+
 export async function getStaticPaths() {
   // const WP_SITE = "https://techcrunch.com";
   // const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
 
-  let posts = [];
+  let posts: WordPressPost[] = [];
   try {
     const response = await fetch(`${WP_API_URL}/posts?per_page=100`);
     if (!response.ok) {
@@ -40,16 +60,38 @@ export async function getStaticPaths() {
   });
 }
 
-const { post, page, prevPost, nextPost } = Astro.props;
+const { post, page, prevPost, nextPost } = Astro.props as {
+  post: WordPressPost;
+  page: any;
+  prevPost: WordPressPost | null;
+  nextPost: WordPressPost | null;
+};
 
 const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
   year: "numeric",
   month: "long",
   day: "numeric",
 });
+
+// Use custom schema fields if available, otherwise fall back to standard fields
+const schemaTitle =
+  post.schema_title || post.title.rendered.replace(/<[^>]*>/g, "").trim();
+const cleanExcerpt = post.excerpt.rendered.replace(/<[^>]*>/g, "").trim();
+const schemaDescription =
+  post.schema_description ||
+  cleanExcerpt ||
+  `Professional electrical insights from Ohmnium Electricians.`;
 ---
 
-<Layout>
+<Layout
+  title={schemaTitle}
+  description={schemaDescription}
+  pageType="blog"
+  type="article"
+  schemaType="BlogPosting"
+  datePublished={post.date}
+  dateModified={post.modified}
+>
   <article class="single max-w-3xl mx-auto md:px-4 py-8">
     <div class="text-gray-500 mb-4">{formattedDate}</div>
     <h1 class="text-4xl mb-6" set:html={post.title.rendered} />

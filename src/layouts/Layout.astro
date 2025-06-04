@@ -6,6 +6,7 @@ import HeadMetas from "../components/HeadMetas.astro";
 import HeadSeo from "../components/HeadSeo.astro";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import type { AccordionItem } from "../components/Faq.astro";
+import type { GooglePlacesReview } from "../data/reviews";
 
 export interface Props {
   title?: string;
@@ -19,7 +20,8 @@ export interface Props {
     | "Organization"
     | "Blog"
     | "BlogPosting"
-    | "FAQPage";
+    | "FAQPage"
+    | "LocalBusiness";
   image?: string;
   imageWidth?: number;
   imageHeight?: number;
@@ -28,11 +30,28 @@ export interface Props {
   dateModified?: string;
   author?: string;
   faqItems?: AccordionItem[];
+  reviews?: GooglePlacesReview[];
+  businessName?: string;
+  businessType?: string;
+  address?: {
+    streetAddress?: string;
+    addressLocality?: string;
+    addressRegion?: string;
+    postalCode?: string;
+    addressCountry?: string;
+  };
+  phoneNumber?: string;
+  email?: string;
+  keywords?: string;
+  robots?: string;
+  language?: string;
+  businessPhone?: string;
+  businessAddress?: string;
 }
 
 const {
-  title = "Ohmnium - Electrical Services",
-  description = "Professional electrical services in Staffordshire. From inspections and fault finding to full rewiring and consumer unit upgrades.",
+  title = "Ohmnium Electricians",
+  description = "Professional electrical services. From inspections and fault finding to full rewiring and consumer unit upgrades.",
   pageType = "default",
   type = "website",
   schemaType = "WebPage",
@@ -44,6 +63,17 @@ const {
   dateModified,
   author,
   faqItems,
+  reviews,
+  businessName,
+  businessType,
+  address,
+  phoneNumber,
+  email,
+  keywords,
+  robots,
+  language,
+  businessPhone,
+  businessAddress,
 } = Astro.props;
 ---
 
@@ -67,6 +97,13 @@ const {
       imageWidth={imageWidth}
       imageHeight={imageHeight}
       twitterHandle={twitterHandle}
+      keywords={keywords}
+      author={author}
+      robots={robots}
+      language={language}
+      businessName={businessName}
+      businessPhone={businessPhone}
+      businessAddress={businessAddress}
     />
 
     <!-- SEO Schema Component -->
@@ -78,6 +115,12 @@ const {
       dateModified={dateModified}
       author={author}
       faqItems={faqItems}
+      reviews={reviews}
+      businessName={businessName}
+      businessType={businessType}
+      address={address}
+      phoneNumber={phoneNumber}
+      email={email}
     />
 
     <script src="../scripts/main.js"></script>

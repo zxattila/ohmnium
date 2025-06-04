@@ -654,13 +654,96 @@ const servicesFaqItems: AccordionItem[] = [
 - Open Graph for social media sharing
 - Structured data for rich snippets
 - FAQ schema for FAQ rich results
+- LocalBusiness schema for business information and star ratings
 - Organization schema for business information
 
 **Rich Results Potential:**
 - FAQ sections may appear as expandable results in Google
 - Blog posts get proper article markup
-- Business information appears in knowledge panels
+- Business information appears in knowledge panels with star ratings
+- LocalBusiness schema enables rich snippets with reviews and ratings
 - Social shares display proper previews
+
+### LocalBusiness Schema Implementation
+
+The project includes a comprehensive LocalBusiness schema implementation that enables star ratings and rich business information to appear in search engine results pages (SERPs).
+
+#### Key Features:
+
+**Star Ratings in Search Results:**
+- Aggregate rating calculation (5.0 average from reviews)
+- Individual review schema with author details
+- Professional service categorization for electrical services
+- Google Places API compatible review structure
+
+**Business Information Schema:**
+- Complete business contact details (name, phone, email)
+- Service area definition (geographic targeting)
+- Business hours and availability
+- Professional service categories
+- Location and address information
+
+#### Usage Example:
+
+```astro
+---
+// src/pages/index.astro
+import Layout from '../layouts/Layout.astro';
+import { reviews, getAverageRating, getTotalReviews } from '../data/reviews';
+
+const businessDetails = {
+  schemaType: "LocalBusiness" as const,
+  businessName: "Ohmnium Electrical Services",
+  businessType: "ElectricalContractor",
+  reviews: reviews,
+  address: {
+    streetAddress: "123 Electric Avenue",
+    addressLocality: "Stafford",
+    addressRegion: "Staffordshire",
+    postalCode: "ST16 1AB",
+    addressCountry: "GB"
+  },
+  phoneNumber: "+44 1785 123456",
+  email: "info@ohmnium.co.uk"
+};
+---
+
+<Layout {...businessDetails}>
+  <!-- Page content -->
+</Layout>
+```
+
+#### Review Data Structure:
+
+The project uses centralized review data in `/src/data/reviews.ts`:
+
+```typescript
+export interface Review {
+  author: string;
+  rating: number;
+  text: string;
+  datePublished: string;
+}
+
+export const reviews: Review[] = [
+  {
+    author: "Sarah Johnson",
+    rating: 5,
+    text: "Outstanding electrical work! Professional, punctual, and reasonably priced.",
+    datePublished: "2024-01-15"
+  },
+  // ... more reviews
+];
+
+export function getAverageRating(): number;
+export function getTotalReviews(): number;
+```
+
+This implementation ensures that search engines can display:
+- ⭐⭐⭐⭐⭐ 5.0 star rating in search results
+- Business name, phone, and service area
+- Individual customer reviews
+- Professional service categorization
 
 ### Error Handling
 
@@ -678,8 +761,32 @@ if (schemaType === "FAQPage") {
 
 This ensures that FAQ schema is only generated when proper FAQ data is provided, preventing empty or malformed structured data.
 
-- `WP_SITE`: The WordPress site URL (default: "https://techcrunch.com")
-- `OPENAI_API_KEY`: API key for OpenAI integration
+## 🔧 Configuration
+
+### Config.ts and Environment Variables
+
+The project uses a centralized configuration system via `/src/config.ts` that interfaces with environment variables:
+
+```typescript
+// src/config.ts
+export const WP_SITE = import.meta.env.WP_SITE || "https://techcrunch.com";
+export const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+```
+
+**Purpose of config.ts:**
+- **Centralized Configuration**: Single source of truth for all site-wide settings
+- **Environment Variable Processing**: Safely handles environment variables with fallbacks
+- **API URL Construction**: Automatically builds WordPress REST API endpoints
+- **Type Safety**: Provides TypeScript support for configuration values
+- **Default Values**: Ensures the site works even without environment variables set
+
+**Relationship to .env Files:**
+- Environment variables are accessed via `import.meta.env` (Astro's environment variable system)
+- Variables prefixed with `WP_` are available in the browser (public variables)
+- Other variables like `OPENAI_API_KEY` are server-side only for security
+- The config.ts file processes these variables and provides sensible defaults
+
+**Key Environment Variables:**
 
 ## Environment variables can be set in a `.env` file at the root of the project:
 
