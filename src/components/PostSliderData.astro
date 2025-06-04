@@ -1,0 +1,110 @@
+---
+import PostItemData from "./PostItemData.astro";
+import { mockPosts } from "../data/posts";
+
+const posts = mockPosts;
+---
+
+<section
+  class="py-10"
+  x-data={`{
+  currentIndex: 0,
+  totalPosts: ${posts.length},
+  visiblePosts: 1, // Default for mobile
+  
+  init() {
+    this.updateVisiblePosts();
+    window.addEventListener('resize', () => this.updateVisiblePosts());
+  },
+  
+  updateVisiblePosts() {
+    if (window.innerWidth >= 1024) { // lg breakpoint
+      this.visiblePosts = 3;
+    } else if (window.innerWidth >= 768) { // md breakpoint  
+      this.visiblePosts = 2;
+    } else {
+      this.visiblePosts = 1;
+    }
+  },
+  
+  next() {
+    this.currentIndex = (this.currentIndex + 1) % this.totalPosts;
+  },
+  
+  prev() {
+    this.currentIndex = (this.currentIndex - 1 + this.totalPosts) % this.totalPosts;
+  },
+  
+  shouldShowPost(index) {
+    const visibleIndices = [];
+    for (let i = 0; i < this.visiblePosts; i++) {
+      visibleIndices.push((this.currentIndex + i) % this.totalPosts);
+    }
+    return visibleIndices.includes(Number(index));
+  },
+  
+  shouldShowControls() {
+    return this.totalPosts > this.visiblePosts;
+  }
+}`}
+>
+  <div class="flex justify-between items-center mb-5">
+    <h2 class="text-2xl">Latest Posts</h2>
+    <div class="grid grid-cols-2 gap-6" x-show="shouldShowControls()">
+      <button
+        class="bg-transparent p-0 shadow-none border-none flex items-center justify-center w-10 h-10"
+        aria-label="Prev post"
+        type="button"
+        x-on:click="prev()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-8 h-8 md:w-10 md:h-10 text-black"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"></path>
+        </svg>
+      </button>
+      <button
+        class="bg-transparent p-0 shadow-none border-none flex items-center justify-center w-10 h-10"
+        aria-label="Next post"
+        type="button"
+        x-on:click="next()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-8 h-8 md:w-10 md:h-10 text-black"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid gap-5 lg:grid-cols-3 md:grid-cols-2 min-h-64 md:min-h-72">
+    {
+      posts.map((post, index) => (
+        <div
+          x-show={`shouldShowPost(${index})`}
+          class="transition-all duration-300 ease-in-out"
+          data-index={index}
+        >
+          <PostItemData post={post} index={index} />
+        </div>
+      ))
+    }
+  </div>
+</section>

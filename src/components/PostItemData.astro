@@ -1,0 +1,62 @@
+---
+interface Props {
+  post: {
+    title: string;
+    excerpt: string;
+    content: string;
+    date: string;
+  };
+  index: number;
+}
+
+const { post, index } = Astro.props;
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+---
+
+<article
+  class="post-item bg-surface-card flex flex-col h-full px-3 py-5 sm:p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+>
+  <div class="text-sm mb-2">{formatDate(post.date)}</div>
+  <div
+    class="cursor-pointer group transition-colors"
+    onclick={`post_modal_${index}.showModal()`}
+  >
+    <h3 class="text-xl mb-4 group-hover:text-indigo-700 transition-colors">
+      {post.title}
+    </h3>
+  </div>
+  <div class="prose line-clamp-3 mb-4">{post.excerpt}</div>
+  <button
+    onclick={`post_modal_${index}.showModal()`}
+    class="hover:underline inline-flex items-center mt-auto cursor-pointer"
+  >
+    Read More
+    <span class="ml-1">→</span>
+  </button>
+</article>
+
+<!-- Modal for this specific post -->
+<dialog
+  id={`post_modal_${index}`}
+  class="modal"
+  x-data="{}"
+  @click.self={`document.getElementById('post_modal_${index}').close()`}
+>
+  <div class="modal-box max-w-4xl bg-white">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        >✕</button
+      >
+    </form>
+    <div class="text-sm mb-2 text-gray-600">{formatDate(post.date)}</div>
+    <h3 class="text-2xl font-bold mb-4">{post.title}</h3>
+    <div class="prose max-w-none" set:html={post.content} />
+  </div>
+</dialog>
