@@ -1,7 +1,9 @@
 // netlify/functions/contact.js
 const { Resend } = require("resend");
 const businessTemplate = require("./templates/business");
+const businessTextTemplate = require("./templates/business-text");
 const customerTemplate = require("./templates/customer");
+const customerTextTemplate = require("./templates/customer-text");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -260,6 +262,7 @@ exports.handler = async (event, context) => {
         to: [process.env.BUSINESS_EMAIL],
         subject: `New ${sanitizedData.urgent ? "URGENT " : ""}Contact: ${sanitizedData.name}${warnings.length > 0 ? " [FLAGGED]" : ""}`,
         html: businessTemplate(templateData),
+        text: businessTextTemplate(templateData),
         reply_to: sanitizedData.email,
         tags: [
           { name: "type", value: "business_notification" },
@@ -277,6 +280,7 @@ exports.handler = async (event, context) => {
           to: [sanitizedData.email],
           subject: `We've received your ${sanitizedData.urgent ? "urgent " : ""}request`,
           html: customerTemplate(templateData),
+          text: customerTextTemplate(templateData),
           tags: [
             { name: "type", value: "customer_confirmation" },
             { name: "urgent", value: sanitizedData.urgent ? "yes" : "no" },
