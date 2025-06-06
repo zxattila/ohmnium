@@ -7,6 +7,9 @@ interface Props {
   titleClass?: string;
   textClass?: string;
   cardClass?: string;
+  showSvg?: boolean;
+  svgContent?: string;
+  svgClasses?: string;
 }
 
 const {
@@ -17,12 +20,16 @@ const {
   titleClass = "uppercase mb-0",
   textClass = "leading-snug",
   cardClass = "",
+  showSvg = false,
+  svgContent = "",
+  svgClasses = "",
 } = Astro.props;
 ---
 
 <div
-  class={`card w-full shadow-sm hover:shadow-md transition-shadow ${cardClass}`}
+  class={`card w-full shadow-sm hover:shadow-md transition-shadow relative ${cardClass}`}
 >
+  {showSvg && svgContent && <div class={svgClasses} set:html={svgContent} />}
   {
     showImage && (
       <figure class="aspect-[3/1]">
