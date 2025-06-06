@@ -4,17 +4,9 @@ import Card from "./Card.astro";
 // Props
 interface Props {
   showEmojis?: boolean;
-  titleSize?: "xs" | "sm" | "base";
 }
 
-const { showEmojis = false, titleSize = "sm" } = Astro.props;
-
-// Map title size to Tailwind classes (base is default, only smaller options)
-const titleSizeClasses = {
-  xs: "text-xs",
-  sm: "text-sm",
-  base: "text-base",
-};
+const { showEmojis = false } = Astro.props;
 
 // Service data with emojis
 const serviceData = [
@@ -112,7 +104,9 @@ const services = serviceData.map((service) => ({
   title: showEmojis ? `${service.emoji} ${service.title}` : service.title,
   description: service.description,
   showImage: false,
-  titleClass: titleSizeClasses[titleSize],
+  titleClass: "text-sm uppercase mb-0",
+  textClass: "text-base leading-snug",
+  cardClass: "min-h-36 bg-surface-card",
 }));
 ---
 

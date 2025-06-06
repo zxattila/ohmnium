@@ -5,6 +5,8 @@ interface Props {
   description: string;
   showImage?: boolean;
   titleClass?: string;
+  textClass?: string;
+  cardClass?: string;
 }
 
 const {
@@ -12,12 +14,14 @@ const {
   title,
   description,
   showImage = false,
-  titleClass = "text-base",
+  titleClass = "uppercase mb-0",
+  textClass = "leading-snug",
+  cardClass = "",
 } = Astro.props;
 ---
 
 <div
-  class="card bg-surface-card w-full shadow-sm hover:shadow-md transition-shadow"
+  class={`card w-full shadow-sm hover:shadow-md transition-shadow ${cardClass}`}
 >
   {
     showImage && (
@@ -27,7 +31,7 @@ const {
     )
   }
   <div class="card-body">
-    <h3 class={`${titleClass} uppercase mb-0`}>{title}</h3>
-    <p class="text-base leading-snug">{description}</p>
+    <h3 class={titleClass}>{title}</h3>
+    <p class={textClass}>{description}</p>
   </div>
 </div>
