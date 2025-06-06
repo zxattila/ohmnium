@@ -10,6 +10,7 @@ A modern, component-based static website built with Astro, Alpine.js, and Tailwi
 - [🔧 Configuration](#-configuration)
 - [🎯 SEO & Search Engine Optimization](#-seo--search-engine-optimization)
 - [Tailwind Snippets](#tailwind-snippets)
+- [📏 Tailwind Sizing Pattern](#-tailwind-sizing-pattern)
 - [🖼️ Image Optimization & Browser Compatibility](#️-image-optimization--browser-compatibility)
 - [🔍 SEO Components](#-seo-components-headmetas--headseo)
 - [📦 Installation](#-installation)
@@ -393,6 +394,75 @@ Usage example:
 ```
 
 This utility is particularly useful for WordPress content areas where you need consistent spacing between all elements without targeting specific HTML tags.
+
+## 📏 Tailwind Sizing Pattern
+
+Tailwind CSS follows a systematic pattern for all its sizing classes based on a **4px unit system**. Understanding this pattern helps you make consistent spacing decisions across your project.
+
+### Base System
+- Each increment = **0.25rem = 4px**
+- Class numbers multiply by the base unit
+- Same pattern applies to: `w-`, `h-`, `min-h-`, `max-h-`, `p-`, `m-`, `gap-`, `space-`, `top-`, `left-`, etc.
+
+### Common Height Classes
+```
+min-h-0   = 0rem     (0px)
+min-h-1   = 0.25rem  (4px)
+min-h-2   = 0.5rem   (8px)
+min-h-3   = 0.75rem  (12px)
+min-h-4   = 1rem     (16px)
+min-h-5   = 1.25rem  (20px)
+min-h-6   = 1.5rem   (24px)
+min-h-8   = 2rem     (32px)
+min-h-10  = 2.5rem   (40px)
+min-h-12  = 3rem     (48px)
+min-h-14  = 3.5rem   (56px)
+min-h-16  = 4rem     (64px)
+min-h-20  = 5rem     (80px)
+min-h-24  = 6rem     (96px)
+min-h-28  = 7rem     (112px)
+min-h-32  = 8rem     (128px)
+min-h-36  = 9rem     (144px)
+min-h-40  = 10rem    (160px)
+min-h-44  = 11rem    (176px)
+min-h-48  = 12rem    (192px)
+min-h-52  = 13rem    (208px)
+min-h-56  = 14rem    (224px)
+min-h-60  = 15rem    (240px)
+min-h-64  = 16rem    (256px)
+min-h-72  = 18rem    (288px)
+min-h-80  = 20rem    (320px)
+min-h-96  = 24rem    (384px)
+```
+
+### Fractional Values
+For fine-tuned control:
+```
+min-h-0.5 = 0.125rem (2px)
+min-h-1.5 = 0.375rem (6px)
+min-h-2.5 = 0.625rem (10px)
+min-h-3.5 = 0.875rem (14px)
+```
+
+### Pattern Logic
+- **1-12**: Every increment available (continuous 4px steps)
+- **14-96**: Larger increments with some gaps for practical use
+- **Fractional**: .5 increments for precise adjustments
+
+### Practical Usage
+```astro
+<!-- Card with consistent minimum height -->
+<div class="min-h-32 bg-surface-card">
+  <!-- Content that needs at least 128px height -->
+</div>
+
+<!-- Spacing that follows the same pattern -->
+<div class="p-4 m-2 gap-6">
+  <!-- 16px padding, 8px margin, 24px gap -->
+</div>
+```
+
+This systematic approach ensures visual consistency and makes it easier to maintain proportional relationships throughout your design.
 
 ## 🖼️ Image Optimization & Browser Compatibility
 
