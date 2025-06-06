@@ -37,8 +37,12 @@ const brands = [
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl">
       {
         brands.map((brand) => (
-          <div class="flex items-center justify-center brand-container">
-            <img src={brand.src} alt={brand.alt} class="brand-image" />
+          <div class="flex items-center justify-center">
+            <img
+              src={brand.src}
+              alt={brand.alt}
+              class="h-[30px] lg:h-[40px] w-auto object-contain"
+            />
           </div>
         ))
       }
@@ -52,27 +56,3 @@ const brands = [
     </p>
   </div>
 </section>
-
-<style>
-  .brand-container {
-    height: 30px;
-    min-height: 30px;
-    /* Force layout calculation */
-    contain: layout;
-  }
-
-  .brand-image {
-    max-height: 100%;
-    width: auto;
-    object-fit: contain;
-    /* Prevent layout shifts */
-    transform: translateZ(0);
-  }
-
-  @media (min-width: 1024px) {
-    .brand-container {
-      height: 40px;
-      min-height: 40px;
-    }
-  }
-</style>
