@@ -109,11 +109,12 @@ const services = serviceData.map((service) => ({
   description: service.description,
   showImage: false,
   titleClass: "text-sm uppercase mb-0",
-  textClass: "text-base text-black leading-snug",
-  cardClass: "min-h-32 bg-surface-card border border-gray-300",
+  textClass: "text-base text-gray-800 leading-snug",
+  cardClass: "min-h-32 bg-surface-card border border-gray-300 group",
   showSvg: true,
   svgContent: cardSvgContent,
-  svgClasses: "absolute bottom-2 right-2 z-10 text-gray-800",
+  svgClasses:
+    "absolute bottom-2 right-2 z-10 text-indigo-600 group-hover:text-indigo-700 group-hover:-translate-y-1 transition-all duration-200",
 }));
 ---
 
