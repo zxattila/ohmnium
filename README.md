@@ -2,6 +2,19 @@
 
 A modern, component-based static website built with Astro, Alpine.js, and TailwindCSS that fetches dynamic content from WordPress via the REST API v2.
 
+## 📋 Table of Contents
+
+- [🚀 Project Overview](#-project-overview)
+- [🧩 Tech Stack](#-tech-stack)
+- [💻 Component Architecture](#-component-architecture)
+- [🔧 Configuration](#-configuration)
+- [🎯 SEO & Search Engine Optimization](#-seo--search-engine-optimization)
+- [Tailwind Snippets](#tailwind-snippets)
+- [🔍 SEO Components](#-seo-components-headmetas--headseo)
+- [📦 Installation](#-installation)
+- [🏃‍♂️ Getting Started](#️-getting-started)
+- [📚 Additional Resources](#-additional-resources)
+
 ## 🚀 Project Overview
 
 Ohmnium is a performant frontend that combines the benefits of static site generation with dynamic content from a headless WordPress backend. The site features a clean, responsive design with interactive components powered by Alpine.js and styled using TailwindCSS with DaisyUI.
@@ -804,6 +817,99 @@ DOMAIN=yourdomain.com
 SITE_URL=https://yourdomain.com
 NODE_ENV=production
 ```
+
+## 🎯 SEO & Search Engine Optimization
+
+This project includes comprehensive SEO optimization with automated sitemap generation and search engine crawler guidance.
+
+### 🗺️ Sitemap
+
+**URL:** `https://ohmnium.co.uk/sitemap.xml`
+
+The sitemap automatically includes:
+- **Static Pages**: Homepage, About, Services, Contact, Blog Index
+- **Dynamic Blog Posts**: All WordPress posts via REST API (up to 100 posts)
+- **SEO Metadata**: Last modified dates, change frequency, and priority values
+- **Real-time Updates**: Fetches latest WordPress content on each request
+- **Caching**: 1-hour cache for optimal performance
+
+#### Sitemap Structure:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://ohmnium.co.uk</loc>
+    <lastmod>2025-06-06T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Static pages + Dynamic WordPress blog posts -->
+</urlset>
+```
+
+### 🤖 Robots.txt
+
+**URL:** `https://ohmnium.co.uk/robots.txt`
+
+Provides comprehensive crawler guidance:
+- **Allow**: All main content pages (`/`, `/about`, `/services`, `/contact`, `/blog/*`)
+- **Disallow**: API endpoints, admin areas, build files (`/api/`, `/.netlify/`, `/_astro/`)
+- **Sitemap Reference**: Points to the dynamic sitemap
+- **Crawl Delay**: Respectful 1-second delay between requests
+- **Bot Management**: Specific rules for Google, Bing, Yahoo, and blocks SEO crawlers
+
+#### Key Features:
+- ✅ **Search Engine Friendly**: Explicit guidance for major search engines
+- ✅ **Performance Optimized**: Prevents crawling of unnecessary files
+- ✅ **Security**: Blocks access to admin and private areas
+- ✅ **Bad Bot Protection**: Blocks known SEO tool crawlers
+
+### 📊 Google Search Console Setup
+
+1. **Verify Domain**: Add `https://ohmnium.co.uk` to Google Search Console
+2. **Submit Sitemap**: Navigate to Sitemaps → Add `https://ohmnium.co.uk/sitemap.xml`
+3. **Monitor**: Check indexing status and any crawl errors
+4. **Test**: Use robots.txt tester to verify crawler access
+
+### 🔧 Static SEO File Generation
+
+The project includes an optional script for generating static SEO files when needed:
+
+```bash
+# Generate static sitemap.xml and robots.txt files
+npm run generate:seo
+
+# Build project with SEO files generation
+npm run build:seo
+```
+
+#### When to Use Static Generation:
+
+**Use `npm run generate:seo` when:**
+- **Pre-deployment testing**: Generate files locally to preview exact sitemap content
+- **Build pipeline integration**: Some hosting providers require static files during build
+- **CDN caching**: Create static files for better caching on content delivery networks
+- **Backup/redundancy**: Generate fallback files if dynamic endpoints fail
+- **WordPress API down**: Ensure sitemap exists even if WordPress API is temporarily unavailable
+
+**Don't use static generation if:**
+- **Blog updates frequently**: Dynamic endpoints automatically include new posts
+- **Real-time accuracy needed**: Static files become outdated quickly
+- **Hosting supports dynamic routes**: Netlify/Vercel handle dynamic endpoints natively
+- **WordPress content changes often**: Static files won't reflect latest content
+
+#### Static vs Dynamic Files:
+
+| Feature | Dynamic Endpoints | Static Files |
+|---------|------------------|--------------|
+| **Content Updates** | ✅ Real-time WordPress posts | ❌ Requires regeneration |
+| **Performance** | ✅ Cached (1 hour) | ✅ Instant serving |
+| **Accuracy** | ✅ Always current | ❌ Can become outdated |
+| **Reliability** | ⚠️ Depends on WordPress API | ✅ Always available |
+| **Maintenance** | ✅ Zero maintenance | ❌ Manual updates needed |
+
+**Recommendation**: Use dynamic endpoints by default. Only generate static files for specific deployment requirements or as backup files.
+
 ## 📦 Installation
 
 ## 🏃‍♂️ Getting Started

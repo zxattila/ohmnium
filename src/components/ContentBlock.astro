@@ -3,6 +3,7 @@ interface Props {
   title: string;
   description: string;
   showContent?: boolean;
+  showTitle?: boolean;
   containerClass?: string;
   titleClass?: string;
   contentClass?: string;
@@ -12,6 +13,7 @@ const {
   title,
   description,
   showContent = true,
+  showTitle = true,
   containerClass = "",
   titleClass = "",
   contentClass = "",
@@ -21,7 +23,7 @@ const {
 {
   showContent && (
     <div class={`prose prose-lg ${containerClass}`}>
-      <h2 class={titleClass}>{title}</h2>
+      {showTitle && <h2 class={titleClass}>{title}</h2>}
       <div
         set:html={description}
         class={`prose prose-lg first-child-spacing ${contentClass}`}

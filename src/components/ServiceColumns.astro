@@ -1,0 +1,121 @@
+---
+import Card from "./Card.astro";
+
+// Props
+interface Props {
+  showEmojis?: boolean;
+  titleSize?: "xs" | "sm" | "base";
+}
+
+const { showEmojis = false, titleSize = "sm" } = Astro.props;
+
+// Map title size to Tailwind classes (base is default, only smaller options)
+const titleSizeClasses = {
+  xs: "text-xs",
+  sm: "text-sm",
+  base: "text-base",
+};
+
+// Service data with emojis
+const serviceData = [
+  {
+    emoji: "📋",
+    title: "NICEIC Electrical Installation Condition Reports (EICR)",
+    description:
+      "Periodic inspection and testing for landlords, homeowners, and businesses.",
+  },
+  {
+    emoji: "🏠",
+    title: "Landlord Electrical Safety Certificates",
+    description: "Ensure your property meets legal safety standards.",
+  },
+  {
+    emoji: "🔌",
+    title: "Portable Appliance Testing (PAT Testing)",
+    description: "For residential lets, commercial properties, and offices.",
+  },
+  {
+    emoji: "🚨",
+    title: "Emergency Lighting Testing & Installation",
+    description:
+      "Up to 10-point emergency lighting systems tested or installed.",
+  },
+  {
+    emoji: "🔥",
+    title: "Fire Alarm Testing & Installation",
+    description: "Suitable for HMOs, rentals, and commercial premises.",
+  },
+  {
+    emoji: "💨",
+    title: "Smoke, Heat & Carbon Monoxide Alarms",
+    description:
+      "Hardwired or interlinked detection systems for full compliance.",
+  },
+  {
+    emoji: "🌪️",
+    title: "Extractor Fans & Humidity Sensors",
+    description: "Bathroom and kitchen ventilation systems.",
+  },
+  {
+    emoji: "💡",
+    title: "Lighting Installation & Upgrades",
+    description:
+      "Indoor and outdoor lighting solutions, including LED upgrades.",
+  },
+  {
+    emoji: "🔌",
+    title: "Socket & Switch Installation",
+    description: "Additional points, replacements, and decorative finishes.",
+  },
+  {
+    emoji: "🌳",
+    title: "Outdoor Power & Garden Lighting",
+    description: "Safe and weatherproof installations for outdoor use.",
+  },
+  {
+    emoji: "⚡",
+    title: "Consumer Unit (Fusebox) Upgrades",
+    description: "Modern RCD, RCBO, and SPD protection for improved safety.",
+  },
+  {
+    emoji: "🍳",
+    title: "Cooker & Hob Wiring",
+    description: "Installation of dedicated supplies and isolation.",
+  },
+  {
+    emoji: "🚿",
+    title: "Electric Shower Installations",
+    description: "Including supply upgrades and safety protection.",
+  },
+  {
+    emoji: "🏡",
+    title: "Smart Home Automation",
+    description:
+      "Lighting control, smart sockets, voice integration, and more.",
+  },
+  {
+    emoji: "🔔",
+    title: "Ring Doorbell & Smart Security Systems",
+    description: "Installation and setup of video doorbells and smart cameras.",
+  },
+  {
+    emoji: "🔧",
+    title: "Rewiring Services",
+    description:
+      "Full or partial rewires for domestic and commercial properties.",
+  },
+];
+
+// Map service data to Card component format
+const services = serviceData.map((service) => ({
+  imgSrc: "",
+  title: showEmojis ? `${service.emoji} ${service.title}` : service.title,
+  description: service.description,
+  showImage: false,
+  titleClass: titleSizeClasses[titleSize],
+}));
+---
+
+<div class="grid gap-5 lg:grid-cols-2 sm:grid-cols-2 py-5">
+  {services.map((service) => <Card {...service} />)}
+</div>

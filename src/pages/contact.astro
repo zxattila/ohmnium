@@ -1,13 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PageHeader from "../components/PageHeader.astro";
-import ContactHome from "../components/ContactHome.astro";
+import ContactForm from "../components/ContactForm.astro";
 import ContentBlock from "../components/ContentBlock.astro";
 
 // Content data (not displayed due to showContent={false})
 const content = {
   mission: {
-    title: "Contact Information",
+    title: "",
     description: `
       <p>Get in touch with Ohmnium Electrical Services for all your electrical needs. Our qualified team is ready to help with installations, repairs, and maintenance across London.</p>
     `,
@@ -21,8 +21,8 @@ const content = {
 ---
 
 <Layout
-  title="Contact Ohmnium Electricians - Get Your Free Quote"
-  description="Contact Ohmnium Electricians for professional electrical services in Staffordshire. Get your free quote today for installations, repairs, inspections and more."
+  title="Contact Ohmnium Electricians - Professional Electrical Services in London"
+  description="Contact Ohmnium Electricians for professional electrical services in London, Herts, Enfield, Essex. Get your free quote today for installations, repairs, inspections and more."
   pageType="contact"
   schemaType="ContactPage"
 >
@@ -32,15 +32,15 @@ const content = {
     useNoise={true}
   />
 
-  <section class="max-w-screen-lg mx-auto px-4">
+  <section class="max-w-2xl mx-auto px-4">
     <ContentBlock
       title={content.mission.title}
       description={content.mission.description}
-      showContent={false}
+      showContent={true}
       containerClass={content.styling.containerClass}
       titleClass={content.styling.titleClass}
       contentClass={content.styling.contentClass}
     />
-    <ContactHome title="Get in Touch" />
+    <ContactForm />
   </section>
 </Layout>

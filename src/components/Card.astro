@@ -4,9 +4,16 @@ interface Props {
   title: string;
   description: string;
   showImage?: boolean;
+  titleClass?: string;
 }
 
-const { imgSrc, title, description, showImage = false } = Astro.props;
+const {
+  imgSrc,
+  title,
+  description,
+  showImage = false,
+  titleClass = "text-base",
+} = Astro.props;
 ---
 
 <div
@@ -20,7 +27,7 @@ const { imgSrc, title, description, showImage = false } = Astro.props;
     )
   }
   <div class="card-body">
-    <h3 class="text-base uppercase mb-0">{title}</h3>
+    <h3 class={`${titleClass} uppercase mb-0`}>{title}</h3>
     <p class="text-base leading-snug">{description}</p>
   </div>
 </div>
