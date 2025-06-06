@@ -63,3 +63,10 @@ document.addEventListener("alpine:init", () => {
     },
   });
 });
+
+// Developer signature
+console.log(
+  "%c⚡ Ohmnium Electricians",
+  "color: #FFCB45; font-size: 12px; font-weight: light; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);",
+);
+console.log("By Jemkits");
