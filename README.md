@@ -10,6 +10,7 @@ A modern, component-based static website built with Astro, Alpine.js, and Tailwi
 - [🔧 Configuration](#-configuration)
 - [🎯 SEO & Search Engine Optimization](#-seo--search-engine-optimization)
 - [Tailwind Snippets](#tailwind-snippets)
+- [🖼️ Image Optimization & Browser Compatibility](#️-image-optimization--browser-compatibility)
 - [🔍 SEO Components](#-seo-components-headmetas--headseo)
 - [📦 Installation](#-installation)
 - [🏃‍♂️ Getting Started](#️-getting-started)
@@ -392,6 +393,204 @@ Usage example:
 ```
 
 This utility is particularly useful for WordPress content areas where you need consistent spacing between all elements without targeting specific HTML tags.
+
+## 🖼️ Image Optimization & Browser Compatibility
+
+This section covers best practices for handling images across different browsers, with particular focus on Safari-specific fixes and various image format strategies.
+
+### Safari-Specific Fixes
+
+Safari can have rendering inconsistencies with SVG images and CSS sizing. Here are proven solutions:
+
+#### CSS Properties for Safari Stability
+
+```css
+/* Safari-specific fixes for images */
+.safari-optimized-image {
+  /* Force hardware acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  
+  /* Prevent layout thrashing */
+  contain: layout;
+  
+  /* Ensure consistent sizing */
+  box-sizing: border-box;
+  
+  /* For SVGs specifically */
+  shape-rendering: geometricPrecision;
+}
+```
+
+#### Inline Style Implementation
+
+For quick fixes, you can add Safari-specific styles directly to image elements:
+
+```astro
+<img 
+  src={brand.src} 
+  alt={brand.alt}
+  class="h-[30px] lg:h-[40px] w-auto object-contain"
+  style="transform: translateZ(0); backface-visibility: hidden;"
+/>
+```
+
+### Image Format Comparison
+
+Understanding the trade-offs between different image formats helps you choose the right approach for your use case.
+
+#### SVG (Scalable Vector Graphics)
+
+**Pros:**
+- ✅ **Scalable**: Perfect quality at any size
+- ✅ **Small file size**: Efficient for simple graphics
+- ✅ **Editable**: Can be styled with CSS
+- ✅ **Accessible**: Screen readers can parse SVG content
+- ✅ **Interactive**: Can include animations and interactions
+
+**Cons:**
+- ❌ **Browser inconsistencies**: Safari can be problematic
+- ❌ **Complex graphics**: Large file sizes for detailed images
+- ❌ **Limited browser support**: Older browsers may struggle
+- ❌ **Rendering issues**: Occasional layout problems
+
+**Best for:** Icons, logos, simple illustrations, graphics that need to scale
+
+#### PNG (Portable Network Graphics)
+
+**Pros:**
+- ✅ **Universal support**: Works reliably across all browsers
+- ✅ **Transparency**: Full alpha channel support
+- ✅ **Consistent rendering**: Predictable display across devices
+- ✅ **No compression artifacts**: Lossless format
+- ✅ **Color accuracy**: Excellent color reproduction
+
+**Cons:**
+- ❌ **Large file sizes**: Especially for complex images
+- ❌ **Not scalable**: Pixelation when resized
+- ❌ **No vector benefits**: Cannot be styled with CSS
+- ❌ **Limited interactivity**: Static images only
+
+**Best for:** Complex images, photos with transparency, when browser compatibility is critical
+
+#### Inline SVG
+
+**Pros:**
+- ✅ **Maximum control**: Full CSS styling capabilities
+- ✅ **Better performance**: No additional HTTP requests
+- ✅ **Safari friendly**: More reliable than external SVGs
+- ✅ **Accessible**: Better screen reader support
+- ✅ **Interactive**: Can add hover effects and animations
+
+**Cons:**
+- ❌ **Larger HTML**: Increases page size
+- ❌ **Maintenance overhead**: Harder to manage multiple instances
+- ❌ **Caching limitations**: Cannot be cached separately
+- ❌ **Code complexity**: Makes HTML more complex
+
+**Best for:** Critical icons, logos, graphics that need styling
+
+### SVG Fallback Strategy
+
+Implement progressive enhancement with automatic fallbacks:
+
+```astro
+---
+// Component with SVG fallback
+interface Props {
+  svgSrc: string;
+  pngSrc: string;
+  alt: string;
+}
+
+const { svgSrc, pngSrc, alt } = Astro.props;
+---
+
+<!-- SVG with PNG fallback -->
+<img 
+  src={svgSrc} 
+  alt={alt}
+  class="h-[30px] lg:h-[40px] w-auto object-contain"
+  style="transform: translateZ(0); backface-visibility: hidden;"
+  onError={`this.src='${pngSrc}'; this.style.transform='none';`}
+  loading="lazy"
+  decoding="async"
+/>
+```
+
+### Robust Image Component
+
+Create a reusable component that handles different scenarios:
+
+```astro
+---
+// components/OptimizedImage.astro
+interface Props {
+  src: string;
+  alt: string;
+  fallbackSrc?: string;
+  height?: string;
+  loading?: 'eager' | 'lazy';
+  safariOptimized?: boolean;
+}
+
+const { 
+  src, 
+  alt, 
+  fallbackSrc, 
+  height = "auto", 
+  loading = "lazy",
+  safariOptimized = true 
+} = Astro.props;
+
+const safariStyles = safariOptimized ? 
+  "transform: translateZ(0); backface-visibility: hidden;" : "";
+---
+
+<img 
+  src={src} 
+  alt={alt}
+  class="w-auto object-contain"
+  style={`height: ${height}; ${safariStyles}`}
+  onError={fallbackSrc ? `this.src='${fallbackSrc}'` : undefined}
+  loading={loading}
+  decoding="async"
+/>
+```
+
+### Best Practices Summary
+
+1. **Use SVG for scalable graphics** but provide PNG fallbacks for Safari
+2. **Apply Safari-specific CSS** for critical image elements
+3. **Consider inline SVG** for important icons and logos
+4. **Implement progressive enhancement** with fallback strategies
+5. **Test across browsers** especially Safari on mobile devices
+6. **Use appropriate loading strategies** (lazy loading for below-fold content)
+7. **Add explicit dimensions** to prevent layout shifts
+
+### Implementation Example
+
+Here's how the Brands component could be enhanced with these practices:
+
+```astro
+{
+  brands.map((brand) => (
+    <div class="flex items-center justify-center">
+      <img
+        src={brand.src}
+        alt={brand.alt}
+        class="h-[30px] lg:h-[40px] w-auto object-contain"
+        style="transform: translateZ(0); backface-visibility: hidden;"
+        onError={`this.src='${brand.src.replace('.svg', '.png')}'`}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  ))
+}
+```
+
+This approach ensures consistent rendering across all browsers while maintaining performance and accessibility standards.
 
 ## 🔍 SEO Components: HeadMetas & HeadSeo
 
