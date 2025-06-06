@@ -117,6 +117,8 @@ const services = serviceData.map((service) => ({
 }));
 ---
 
-<div class="grid gap-5 lg:grid-cols-2 sm:grid-cols-2 py-5">
+<section
+  class="grid gap-5 lg:grid-cols-2 sm:grid-cols-2 max-w-3xl mx-auto sm:px-4 pb-10"
+>
   {services.map((service) => <Card {...service} />)}
-</div>
+</section>
