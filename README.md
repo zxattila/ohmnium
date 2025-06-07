@@ -515,6 +515,153 @@ import inspectionImg from "../assets/inspection.png";
 | `quality`    | `number`                  | `80`                           | Image quality (1-100)                     |
 | `class`      | `string`                  | `""`                           | CSS classes                               |
 
+#### Detailed Attribute Guide
+
+**`src` - Image Source (Required)**
+```astro
+import heroImage from "../assets/hero.jpg";
+<Image src={heroImage} alt="Hero" />
+```
+- **Use ImageMetadata imports** from `/src/assets/` for optimization
+- **Avoid string URLs** unless absolutely necessary (no optimization)
+- **Astro processes imports** automatically with Sharp for best performance
+
+**`alt` - Alternative Text (Required)**
+```astro
+<Image src={heroImage} alt="Professional electrician working on circuit board" />
+```
+- **Be descriptive and specific** - helps screen readers and SEO
+- **Avoid "image of" or "picture of"** - screen readers already announce it's an image
+- **Empty alt=""** only for decorative images that add no content value
+
+**`usePicture` - Picture Element (Default: true)**
+```astro
+<!-- Uses <picture> with multiple sources -->
+<Image src={heroImage} alt="Hero" usePicture={true} />
+
+<!-- Uses single <img> tag -->
+<Image src={heroImage} alt="Hero" usePicture={false} />
+```
+- **True (recommended)**: Creates `<picture>` element with multiple format sources
+- **False**: Single `<img>` tag, still optimized but less browser compatibility
+- **Best practice**: Keep default `true` for maximum compatibility
+
+**`lazy` - Lazy Loading (Default: true)**
+```astro
+<!-- Lazy load (below-the-fold images) -->
+<Image src={heroImage} alt="Hero" lazy={true} />
+
+<!-- Eager load (above-the-fold images) -->
+<Image src={heroImage} alt="Hero" lazy={false} />
+```
+- **True**: Loads when image enters viewport (saves bandwidth)
+- **False**: Loads immediately (use for above-the-fold/hero images)
+- **Mobile tip**: Always use `lazy={false}` for LCP (Largest Contentful Paint) images
+
+**`widths` - Responsive Breakpoints (Default: [640, 768, 1024, 1280, 1536])**
+```astro
+<!-- Mobile-first optimization -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  widths={[240, 320, 480, 640, 800]} 
+/>
+
+<!-- Desktop-focused -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  widths={[800, 1024, 1280, 1920]} 
+/>
+```
+- **Array of pixel widths** - Astro generates these sizes automatically
+- **Mobile-first approach**: Start with smaller widths (240px, 320px)
+- **Performance impact**: More widths = more variants, better optimization
+- **Rule of thumb**: 3-5 breakpoints cover most use cases
+
+**`sizes` - CSS Sizes Attribute (Default: Tailwind responsive)**
+```astro
+<!-- Mobile-first responsive -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  sizes="(max-width: 768px) 100vw, 50vw" 
+/>
+
+<!-- Complex layout -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  sizes="(max-width: 320px) 280px, (max-width: 768px) 720px, 500px" 
+/>
+```
+- **Tells browser which image size to download** based on viewport
+- **Critical for performance** - wrong sizes = downloading wrong image size
+- **Format**: `(media-query) size, fallback-size`
+- **Common patterns**:
+  - Full width mobile: `(max-width: 768px) 100vw, 50vw`
+  - Fixed sidebar: `(max-width: 768px) 100vw, calc(100vw - 300px)`
+
+**`formats` - Output Formats (Default: ['avif', 'webp'])**
+```astro
+<!-- Modern formats with fallback -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  formats={['avif', 'webp']} 
+/>
+
+<!-- Conservative approach -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  formats={['webp']} 
+/>
+```
+- **AVIF**: Best compression (~50% smaller than JPEG), newer browser support
+- **WebP**: Good compression (~30% smaller than JPEG), wide browser support
+- **Automatic fallback**: Original format (JPEG/PNG) always included
+- **Order matters**: Most preferred format first
+
+**`quality` - Image Quality (Default: 80)**
+```astro
+<!-- High quality for hero images -->
+<Image src={heroImage} alt="Hero" quality={90} />
+
+<!-- Optimized for mobile/texture -->
+<Image src={textureImg} alt="" quality={65} />
+
+<!-- Aggressive compression for thumbnails -->
+<Image src={thumbnailImg} alt="Thumbnail" quality={50} />
+```
+- **Range**: 1-100 (higher = better quality, larger file size)
+- **Recommendations**:
+  - **90-95**: Hero images, critical visuals
+  - **80-85**: Standard photos, marketing images
+  - **65-75**: Background textures, patterns
+  - **50-65**: Thumbnails, small images
+- **Mobile consideration**: Lower quality acceptable due to smaller screens
+
+**`class` - CSS Classes**
+```astro
+<!-- Tailwind utility classes -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  class="w-full h-64 object-cover rounded-lg shadow-md" 
+/>
+
+<!-- Custom component styling -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  class="hero-image fade-in" 
+/>
+```
+- **Standard CSS classes** - works like any other HTML element
+- **Tailwind CSS**: Responsive utilities, object-fit, aspect ratios
+- **Custom classes**: Define in your stylesheets for reusable styles
+
 #### Performance Impact
 
 - **File size reduction**: ~75% smaller with WebP/AVIF

@@ -24,10 +24,10 @@ const {
       <Image
         src={backgroundImage}
         alt=""
-        widths={[400, 800, 1200, 1600, 2000]}
-        sizes="100vw"
+        widths={[240, 320, 480, 640, 800]}
+        sizes="(max-width: 320px) 240px, (max-width: 480px) 320px, (max-width: 768px) 480px, (max-width: 1024px) 640px, 800px"
         formats={['webp', 'avif']}
-        quality={80}
+        quality={50}
         class="w-full h-full object-cover"
         lazy={false}
       />
@@ -41,10 +41,10 @@ const {
       <Image
         src={noisier}
         alt=""
-        widths={[400, 800, 1200, 1600]}
-        sizes="100vw"
+        widths={[240, 320, 480, 640, 800]}
+        sizes="(max-width: 320px) 240px, (max-width: 480px) 320px, (max-width: 768px) 480px, (max-width: 1024px) 640px, 800px"
         formats={['webp', 'avif']}
-        quality={75}
+        quality={65}
         class="w-full h-full object-none"
         lazy={false}
       />

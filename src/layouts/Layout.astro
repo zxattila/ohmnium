@@ -11,7 +11,8 @@ import type { GooglePlacesReview } from "../data/reviews";
 // Import critical assets for preloading
 import francoisOneFont from "../fonts/FrancoisOne-Regular.ttf";
 import sourceSans3Font from "../fonts/SourceSans3-Regular.ttf";
-import noiseImage from "../assets/noisier.png";
+import noiseImage from "../assets/noise.png";
+import noisierImage from "../assets/noisier.png";
 
 // Get WordPress site URL for DNS prefetch
 const WP_SITE = import.meta.env.WP_SITE || "https://techcrunch.com";
@@ -91,10 +92,16 @@ const {
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Performance optimization meta tags -->
+    <meta name="theme-color" content="#1e40af" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
     <!-- Preload critical fonts for better performance -->
     <link
@@ -112,8 +119,68 @@ const {
       crossorigin
     />
 
-    <!-- Preload critical above-the-fold image -->
-    <link rel="preload" href={noiseImage.src} as="image" type="image/png" />
+    <!-- Preload critical above-the-fold image with mobile-first priority -->
+    <link
+      rel="preload"
+      href={noiseImage.src}
+      as="image"
+      type="image/png"
+      media="(max-width: 767px)"
+    />
+    <link
+      rel="preload"
+      href={noisierImage.src}
+      as="image"
+      type="image/png"
+      media="(min-width: 768px)"
+    />
+
+    <!-- Early hints for mobile performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      /* Mobile-first critical styles for hero section */
+      .hero-section {
+        position: relative;
+        background-color: #1e40af; /* bg-brand-secondary fallback */
+        border-radius: 0.75rem;
+        overflow: hidden;
+        min-height: 300px;
+      }
+
+      @media (min-width: 768px) {
+        .hero-section {
+          min-height: 400px;
+        }
+      }
+
+      /* Ensure text is readable while images load */
+      .hero-content {
+        position: relative;
+        z-index: 10;
+        color: white;
+        padding: 1.25rem 0.5rem;
+      }
+
+      /* Critical font loading optimization */
+      .hero-title {
+        font-family: "Francois One", sans-serif;
+        font-size: 3rem;
+        line-height: 1;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+
+      @media (min-width: 768px) {
+        .hero-title {
+          font-size: 3.75rem;
+          text-align: left;
+          margin-bottom: 0;
+        }
+      }
+    </style>
 
     <!-- DNS prefetch for WordPress API (client-side API calls) -->
     <link rel="dns-prefetch" href={new URL(WP_SITE).origin} />
