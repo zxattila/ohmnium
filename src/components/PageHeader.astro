@@ -1,9 +1,12 @@
 ---
+import Image from "./Image.astro";
+import noisier from "../assets/noisier.png";
+
 interface Props {
   title: string;
   description: string;
   useNoise?: boolean;
-  backgroundImage?: string;
+  backgroundImage?: ImageMetadata | string;
 }
 
 const {
@@ -12,18 +15,44 @@ const {
   useNoise = false,
   backgroundImage = "https://images.pexels.com/photos/2387793/pexels-photo-2387793.jpeg",
 } = Astro.props;
-
-const headerClass = useNoise
-  ? "relative py-16 md:py-24 mb-10 lg:mb-12 rounded-xl background-noise"
-  : "relative py-16 md:py-24 mb-10 lg:mb-12 rounded-xl";
-
-const headerStyle = !useNoise
-  ? `background-image: url(${backgroundImage}); background-size: cover; background-position: center;`
-  : "";
 ---
 
-<header class={headerClass} style={headerStyle}>
-  {!useNoise && <div class="absolute inset-0 bg-black opacity-50 rounded-xl" />}
+<header class="relative py-16 md:py-24 mb-10 lg:mb-12 rounded-xl overflow-hidden">
+  <!-- Optimized Background Image -->
+  {!useNoise && (
+    <div class="absolute inset-0">
+      <Image
+        src={backgroundImage}
+        alt=""
+        widths={[400, 800, 1200, 1600, 2000]}
+        sizes="100vw"
+        formats={['webp', 'avif']}
+        quality={80}
+        class="w-full h-full object-cover"
+        lazy={false}
+      />
+      <div class="absolute inset-0 bg-black opacity-50" />
+    </div>
+  )}
+  
+  <!-- Noise Background Alternative -->
+  {useNoise && (
+    <div class="absolute inset-0">
+      <Image
+        src={noisier}
+        alt=""
+        widths={[400, 800, 1200, 1600]}
+        sizes="100vw"
+        formats={['webp', 'avif']}
+        quality={75}
+        class="w-full h-full object-none"
+        lazy={false}
+      />
+      <!-- Radial gradient overlay with background blend mode -->
+      <div class="absolute inset-0 bg-radial from-brand-secondary/90 from-40% to-brand-secondary/95 bg-blend-overlay" />
+    </div>
+  )}
+
   <div class="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
     <h1 class="text-5xl md:text-6xl mb-2 md:mb-4 text-white">
       {title}

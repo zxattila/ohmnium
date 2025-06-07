@@ -1,0 +1,104 @@
+---
+interface Props {
+  postId?: number;
+  postSlug?: string;
+  sizes?: string;
+  loading?: "lazy" | "eager";
+  fetchpriority?: "high" | "low" | "auto";
+  class?: string;
+  alt?: string;
+}
+
+const { 
+  postId, 
+  postSlug, 
+  sizes = "(max-width: 640px) 500px, 100vw",
+  loading = "lazy",
+  fetchpriority = "auto",
+  class: className = "rounded-xl object-cover",
+  alt 
+} = Astro.props;
+
+// Get WP_SITE from environment variables
+const WP_SITE = import.meta.env.WP_SITE;
+const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+
+// Function to fetch post data
+async function fetchPost() {
+  try {
+    let url = `${WP_API_URL}/posts`;
+    
+    if (postId) {
+      url += `/${postId}?_embed`;
+    } else if (postSlug) {
+      url += `?slug=${postSlug}&_embed`;
+    } else {
+      throw new Error("Either postId or postSlug must be provided");
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return Array.isArray(data) ? data[0] : data;
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return null;
+  }
+}
+
+// Fetch the post data
+const post = await fetchPost();
+
+// Extract image data
+const featuredMedia = post?._embedded?.["wp:featuredmedia"]?.[0];
+const imgSmall = featuredMedia?.sizes?.["post-thumbnail-small"];
+const imgHero = featuredMedia?.sizes?.["post-thumbnail-hero"];
+const title = post?.title?.rendered || alt || "Image";
+
+// Fallback image URLs
+const smallImg = imgSmall || featuredMedia?.source_url;
+const heroImg = imgHero || featuredMedia?.source_url;
+---
+
+{smallImg && heroImg && (
+  <>
+    <!-- Preload hero image for LCP -->
+    <link
+      rel="preload"
+      as="image"
+      href={heroImg}
+      imagesrcset={`${heroImg} 1920w, ${smallImg} 500w`}
+      fetchpriority={fetchpriority}
+      type="image/jpeg"
+    />
+
+    <img
+      src={smallImg}
+      srcset={`${smallImg} 500w, ${heroImg} 1920w`}
+      sizes={sizes}
+      alt={title}
+      loading={loading}
+      class={className}
+    />
+  </>
+)}
+
+{!smallImg && !heroImg && post && (
+  <!-- Fallback: single image from WordPress -->
+  <img
+    src={featuredMedia?.source_url}
+    alt={title}
+    loading={loading}
+    class={className}
+  />
+)}
+
+{!post && (
+  <!-- Error state: no post found -->
+  <div class={`flex items-center justify-center bg-gray-200 text-gray-500 ${className}`}>
+    <p>Image not found</p>
+  </div>
+)}

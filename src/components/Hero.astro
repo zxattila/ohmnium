@@ -1,6 +1,7 @@
 ---
 import flower from "../assets/flower-orange.svg";
 import noisier from "../assets/noisier.png";
+import Image from "./Image.astro";
 
 interface Props {
   title?: string;
@@ -15,12 +16,19 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative bg-brand-secondary rounded-xl">
-  <!-- Background Overlay -->
-  <div
-    class="absolute inset-0 bg-no-repeat bg-cover bg-center opacity-30"
-    style={`background-image: url('${noisier.src}');`}
-  >
+<section class="relative bg-brand-secondary rounded-xl overflow-hidden">
+  <!-- Optimized Background Image -->
+  <div class="absolute inset-0 opacity-30">
+    <Image
+      src={noisier}
+      alt=""
+      widths={[400, 800, 1200, 1600, 2000]}
+      sizes="100vw"
+      formats={["webp", "avif"]}
+      quality={75}
+      class="w-full h-full object-cover"
+      lazy={false}
+    />
   </div>
 
   <!-- Content -->

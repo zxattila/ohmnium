@@ -466,7 +466,162 @@ This systematic approach ensures visual consistency and makes it easier to maint
 
 ## 🖼️ Image Optimization & Browser Compatibility
 
-This section covers best practices for handling images across different browsers, with particular focus on Safari-specific fixes and various image format strategies.
+This section covers comprehensive image optimization strategies, including the Dynamic Image Component, PageHeader optimizations, API preloading, and browser compatibility fixes.
+
+### Dynamic Image Component
+
+The project includes an optimized Image component that wraps Astro's built-in image optimization with Sharp, providing automatic format conversion, responsive images, and lazy loading.
+
+#### Features
+
+- ✅ **Automatic format conversion** (AVIF, WebP with fallbacks)
+- ✅ **Responsive images** with custom breakpoints
+- ✅ **Lazy loading** by default
+- ✅ **Auto-detected dimensions** from source images
+- ✅ **Sharp integration** for optimal compression
+- ✅ **TypeScript support** with full type safety
+
+#### Basic Usage
+
+```astro
+---
+import Image from "../components/Image.astro";
+import inspectionImg from "../assets/inspection.png";
+---
+
+<!-- Simple usage with auto-detected dimensions -->
+<Image src={inspectionImg} alt="Inspection & Testing" />
+
+<!-- Custom sizes and breakpoints -->
+<Image
+  src={inspectionImg}
+  alt="Inspection & Testing"
+  widths={[480, 768, 1024, 1280]}
+  sizes="(max-width: 768px) 100vw, 50vw"
+/>
+```
+
+#### Props Reference
+
+| Prop         | Type                      | Default                        | Description                               |
+| ------------ | ------------------------- | ------------------------------ | ----------------------------------------- |
+| `src`        | `ImageMetadata \| string` | required                       | Image source (import from assets)         |
+| `alt`        | `string`                  | required                       | Alt text for accessibility                |
+| `usePicture` | `boolean`                 | `true`                         | Use picture element for responsive images |
+| `lazy`       | `boolean`                 | `true`                         | Enable lazy loading                       |
+| `widths`     | `number[]`                | `[640, 768, 1024, 1280, 1536]` | Responsive breakpoint widths              |
+| `sizes`      | `string`                  | Tailwind responsive            | CSS sizes attribute                       |
+| `formats`    | `string[]`                | `['avif', 'webp']`             | Output formats (with fallback)            |
+| `quality`    | `number`                  | `80`                           | Image quality (1-100)                     |
+| `class`      | `string`                  | `""`                           | CSS classes                               |
+
+#### Performance Impact
+
+- **File size reduction**: ~75% smaller with WebP/AVIF
+- **Responsive loading**: Only loads appropriate size
+- **Lazy loading**: Improves initial page load
+- **Format negotiation**: Browser gets best supported format
+
+### PageHeader Component Optimization
+
+The PageHeader component supports dynamic background images with full performance optimization:
+
+#### Usage Examples
+
+```astro
+---
+import PageHeader from "../components/PageHeader.astro";
+import electricianImage from "../assets/electrician-abstract.jpg";
+import inspectionImage from "../assets/inspection.png";
+---
+
+<!-- Using local asset images (best performance) -->
+<PageHeader
+  title="Services"
+  description="Professional electrical solutions"
+  backgroundImage={inspectionImage}
+/>
+
+<!-- Using noise background (existing pattern) -->
+<PageHeader
+  title="Services"
+  description="Electrical solutions"
+  useNoise={true}
+/>
+```
+
+#### Performance Benefits
+
+- **Responsive Images**: Multiple sizes (400px to 2000px) for different screens
+- **Modern Formats**: WebP and AVIF for 60-80% smaller file sizes
+- **Smart Loading**: No lazy loading for above-the-fold content
+- **Quality Optimization**: Balanced quality (80%) for fast loading
+
+### API Optimization Methods
+
+#### Preload Tags for Critical Assets
+
+The project implements strategic preloading for performance optimization:
+
+```astro
+---
+// Layout.astro - Critical asset preloading
+import heroImage from "../assets/electrician-abstract.jpg";
+import { WP_SITE } from "astro:env/server";
+---
+
+<head>
+  <!-- Critical fonts -->
+  <link
+    rel="preload"
+    href="/fonts/FrancoisOne-Regular.ttf"
+    as="font"
+    type="font/ttf"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="/fonts/SourceSans3-Regular.ttf"
+    as="font"
+    type="font/ttf"
+    crossorigin
+  />
+  
+  <!-- Hero image for above-the-fold content -->
+  <link
+    rel="preload"
+    href={heroImage.src}
+    as="image"
+    type="image/jpeg"
+  />
+  
+  <!-- DNS prefetch for WordPress API -->
+  {WP_SITE && (
+    <link rel="dns-prefetch" href={new URL(WP_SITE).origin} />
+  )}
+</head>
+```
+
+#### WordPress API Optimization
+
+```astro
+---
+// Optimize API calls with caching and preloading
+const wpApiUrl = `${import.meta.env.WP_SITE}/wp-json/wp/v2`;
+
+// Preload critical API endpoints
+const criticalEndpoints = [
+  `${wpApiUrl}/posts?per_page=5`,
+  `${wpApiUrl}/pages`,
+  `${wpApiUrl}/media`
+];
+---
+
+<!-- Preload critical API endpoints -->
+{criticalEndpoints.map(endpoint => (
+  <link rel="preload" href={endpoint} as="fetch" crossorigin />
+))}
+```
 
 ### Safari-Specific Fixes
 
@@ -494,8 +649,6 @@ Safari can have rendering inconsistencies with SVG images and CSS sizing. Here a
 
 #### Inline Style Implementation
 
-For quick fixes, you can add Safari-specific styles directly to image elements:
-
 ```astro
 <img 
   src={brand.src} 
@@ -506,8 +659,6 @@ For quick fixes, you can add Safari-specific styles directly to image elements:
 ```
 
 ### Image Format Comparison
-
-Understanding the trade-offs between different image formats helps you choose the right approach for your use case.
 
 #### SVG (Scalable Vector Graphics)
 
@@ -526,141 +677,60 @@ Understanding the trade-offs between different image formats helps you choose th
 
 **Best for:** Icons, logos, simple illustrations, graphics that need to scale
 
-#### PNG (Portable Network Graphics)
+#### PNG/JPG with Optimization
 
 **Pros:**
 - ✅ **Universal support**: Works reliably across all browsers
-- ✅ **Transparency**: Full alpha channel support
+- ✅ **Transparency**: PNG supports alpha channel
 - ✅ **Consistent rendering**: Predictable display across devices
-- ✅ **No compression artifacts**: Lossless format
-- ✅ **Color accuracy**: Excellent color reproduction
+- ✅ **Sharp integration**: Automatic WebP/AVIF conversion
+- ✅ **Responsive**: Multiple sizes generated automatically
 
 **Cons:**
-- ❌ **Large file sizes**: Especially for complex images
-- ❌ **Not scalable**: Pixelation when resized
-- ❌ **No vector benefits**: Cannot be styled with CSS
-- ❌ **Limited interactivity**: Static images only
+- ❌ **Larger base size**: Without optimization
+- ❌ **Not scalable**: Pixelation when resized beyond original
 
-**Best for:** Complex images, photos with transparency, when browser compatibility is critical
-
-#### Inline SVG
-
-**Pros:**
-- ✅ **Maximum control**: Full CSS styling capabilities
-- ✅ **Better performance**: No additional HTTP requests
-- ✅ **Safari friendly**: More reliable than external SVGs
-- ✅ **Accessible**: Better screen reader support
-- ✅ **Interactive**: Can add hover effects and animations
-
-**Cons:**
-- ❌ **Larger HTML**: Increases page size
-- ❌ **Maintenance overhead**: Harder to manage multiple instances
-- ❌ **Caching limitations**: Cannot be cached separately
-- ❌ **Code complexity**: Makes HTML more complex
-
-**Best for:** Critical icons, logos, graphics that need styling
-
-### SVG Fallback Strategy
-
-Implement progressive enhancement with automatic fallbacks:
-
-```astro
----
-// Component with SVG fallback
-interface Props {
-  svgSrc: string;
-  pngSrc: string;
-  alt: string;
-}
-
-const { svgSrc, pngSrc, alt } = Astro.props;
----
-
-<!-- SVG with PNG fallback -->
-<img 
-  src={svgSrc} 
-  alt={alt}
-  class="h-[30px] lg:h-[40px] w-auto object-contain"
-  style="transform: translateZ(0); backface-visibility: hidden;"
-  onError={`this.src='${pngSrc}'; this.style.transform='none';`}
-  loading="lazy"
-  decoding="async"
-/>
-```
-
-### Robust Image Component
-
-Create a reusable component that handles different scenarios:
-
-```astro
----
-// components/OptimizedImage.astro
-interface Props {
-  src: string;
-  alt: string;
-  fallbackSrc?: string;
-  height?: string;
-  loading?: 'eager' | 'lazy';
-  safariOptimized?: boolean;
-}
-
-const { 
-  src, 
-  alt, 
-  fallbackSrc, 
-  height = "auto", 
-  loading = "lazy",
-  safariOptimized = true 
-} = Astro.props;
-
-const safariStyles = safariOptimized ? 
-  "transform: translateZ(0); backface-visibility: hidden;" : "";
----
-
-<img 
-  src={src} 
-  alt={alt}
-  class="w-auto object-contain"
-  style={`height: ${height}; ${safariStyles}`}
-  onError={fallbackSrc ? `this.src='${fallbackSrc}'` : undefined}
-  loading={loading}
-  decoding="async"
-/>
-```
+**Best for:** Photos, complex images, hero backgrounds (when using Image component)
 
 ### Best Practices Summary
 
-1. **Use SVG for scalable graphics** but provide PNG fallbacks for Safari
-2. **Apply Safari-specific CSS** for critical image elements
-3. **Consider inline SVG** for important icons and logos
-4. **Implement progressive enhancement** with fallback strategies
-5. **Test across browsers** especially Safari on mobile devices
-6. **Use appropriate loading strategies** (lazy loading for below-fold content)
-7. **Add explicit dimensions** to prevent layout shifts
+1. **Use the Image component** for all photos and complex images
+2. **Import images from `/src/assets/`** for optimization benefits
+3. **Apply Safari-specific CSS** for critical SVG elements
+4. **Implement preload tags** for critical assets (fonts, hero images)
+5. **Use DNS prefetch** for external API endpoints
+6. **Set appropriate loading strategies** (eager for above-fold, lazy for below-fold)
+7. **Add explicit alt text** for accessibility
+8. **Test across browsers** especially Safari on mobile devices
 
-### Implementation Example
+### Migration Guide
 
-Here's how the Brands component could be enhanced with these practices:
+#### Before (Performance Issues)
 
 ```astro
-{
-  brands.map((brand) => (
-    <div class="flex items-center justify-center">
-      <img
-        src={brand.src}
-        alt={brand.alt}
-        class="h-[30px] lg:h-[40px] w-auto object-contain"
-        style="transform: translateZ(0); backface-visibility: hidden;"
-        onError={`this.src='${brand.src.replace('.svg', '.png')}'`}
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-  ))
-}
+<img
+  src="/_astro/inspection.OwM58V36.png"
+  alt="Inspection"
+  class="w-full h-full object-cover"
+/>
 ```
 
-This approach ensures consistent rendering across all browsers while maintaining performance and accessibility standards.
+#### After (Optimized)
+
+```astro
+---
+import Image from "../components/Image.astro";
+import inspectionImg from "../assets/inspection.png";
+---
+
+<Image
+  src={inspectionImg}
+  alt="Inspection & Testing"
+  class="w-full h-full object-cover"
+/>
+```
+
+This comprehensive approach ensures optimal image performance, browser compatibility, and user experience across all devices and browsers.
 
 ## 🔍 SEO Components: HeadMetas & HeadSeo
 

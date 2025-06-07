@@ -67,6 +67,9 @@ export default {
           stars: "#FFCB45", // review stars
         },
       },
+      backgroundImage: {
+        radial: "radial-gradient(circle, var(--tw-gradient-stops))",
+      },
     },
   },
   plugins: [require("daisyui")],

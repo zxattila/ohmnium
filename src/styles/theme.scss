@@ -161,6 +161,35 @@
   background-size: auto, cover;
 }
 
+.background-noise-optimized {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('../assets/noisier.png');
+    background-size: auto;
+    background-repeat: repeat;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(26, 26, 26, 0.89) 40%, rgba(26, 26, 26, 0.96));
+    mix-blend-mode: overlay;
+    z-index: 2;
+  }
+
+  >* {
+    position: relative;
+    z-index: 10;
+  }
+}
+
 .page-blog {
 
   article,

@@ -1,17 +1,24 @@
 ---
 import electricianImage from "../assets/trust.jpg";
+import type { ImageMetadata } from "astro";
 
 const {
-  image = electricianImage.src,
+  image = electricianImage,
   title = "Electricians<br> you can<br> trust",
-  text = "When something goes wrong with your electrics, you don’t have time to wait around. Whether it’s a faulty circuit, a tripping fuse board, or a full rewire, you need someone who can fix it fast, do it right, and not leave you chasing them. From estimating how much a project will cost, to finding the right design for you, we ensure each task is executed efficiently.",
+  text = "When something goes wrong with your electrics, you don't have time to wait around. Whether it's a faulty circuit, a tripping fuse board, or a full rewire, you need someone who can fix it fast, do it right, and not leave you chasing them. From estimating how much a project will cost, to finding the right design for you, we ensure each task is executed efficiently.",
 } = Astro.props;
 
 interface Props {
-  image?: string;
+  image?: string | ImageMetadata;
   title?: string;
   text?: string;
 }
+
+// Determine if we should use optimized images
+const isImageMetadata = typeof image === "object" && image !== null;
+
+// Dynamic import of Image component only when needed
+const Image = isImageMetadata ? (await import("./Image.astro")).default : null;
 ---
 
 <section class="grid gap-5 md:grid-cols-2 sm:grid-cols-1 py-5 md:py-0">
@@ -23,10 +30,25 @@ interface Props {
 
   <!-- Image Column -->
   <div class="flex justify-center">
-    <img
-      src={image}
-      alt="Electrician illustration"
-      class="rounded-2xl object-cover h-72 md:h-96 w-full shadow-md"
-    />
+    {
+      isImageMetadata && Image ? (
+        <Image
+          src={image as ImageMetadata}
+          alt="Electrician illustration"
+          widths={[480, 640, 768, 1024]}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          formats={["webp", "avif"]}
+          quality={85}
+          class="rounded-2xl object-cover h-72 md:h-96 w-full shadow-md"
+          lazy={true}
+        />
+      ) : (
+        <img
+          src={image as string}
+          alt="Electrician illustration"
+          class="rounded-2xl object-cover h-72 md:h-96 w-full shadow-md"
+        />
+      )
+    }
   </div>
 </section>

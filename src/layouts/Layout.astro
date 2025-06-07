@@ -8,6 +8,14 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import type { AccordionItem } from "../components/Faq.astro";
 import type { GooglePlacesReview } from "../data/reviews";
 
+// Import critical assets for preloading
+import francoisOneFont from "../fonts/FrancoisOne-Regular.ttf";
+import sourceSans3Font from "../fonts/SourceSans3-Regular.ttf";
+import noiseImage from "../assets/noisier.png";
+
+// Get WordPress site URL for DNS prefetch
+const WP_SITE = import.meta.env.WP_SITE || "https://techcrunch.com";
+
 export interface Props {
   title?: string;
   description?: string;
@@ -88,6 +96,28 @@ const {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Preload critical fonts for better performance -->
+    <link
+      rel="preload"
+      href={francoisOneFont}
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={sourceSans3Font}
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
+    <!-- Preload critical above-the-fold image -->
+    <link rel="preload" href={noiseImage.src} as="image" type="image/png" />
+
+    <!-- DNS prefetch for WordPress API (client-side API calls) -->
+    <link rel="dns-prefetch" href={new URL(WP_SITE).origin} />
+
     <!-- SEO Head Metas Component -->
     <HeadMetas
       title={title}
@@ -123,6 +153,7 @@ const {
       email={email}
     />
 
+    <!-- Load main script (preloaded above) -->
     <script src="../scripts/main.js"></script>
   </head>
   <body class={`page-${pageType}`}>

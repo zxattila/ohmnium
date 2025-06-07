@@ -1,6 +1,8 @@
 ---
+import type { ImageMetadata } from "astro";
+
 interface Props {
-  imgSrc: string;
+  imgSrc: string | ImageMetadata;
   title: string;
   description: string;
   showImage?: boolean;
@@ -10,6 +12,9 @@ interface Props {
   showSvg?: boolean;
   svgContent?: string;
   svgClasses?: string;
+  // New props for dynamic image sizing
+  cardWidths?: number[];
+  cardSizes?: string;
 }
 
 const {
@@ -23,7 +28,16 @@ const {
   showSvg = false,
   svgContent = "",
   svgClasses = "",
+  // Default card-optimized image settings based on actual viewport measurements
+  cardWidths = [320, 500, 612], // Accurate card sizes: lg=320px, sm=500px, mobile=612px
+  cardSizes = "(min-width: 1024px) 320px, (min-width: 640px) 500px, 612px", // Matches real card dimensions
 } = Astro.props;
+
+// Determine if we should use optimized images
+const isImageMetadata = typeof imgSrc === "object" && imgSrc !== null;
+
+// Dynamic import of Image component only when needed
+const Image = isImageMetadata ? (await import("./Image.astro")).default : null;
 ---
 
 <div
@@ -33,7 +47,24 @@ const {
   {
     showImage && (
       <figure class="aspect-[3/1]">
-        <img src={imgSrc} alt={title} class="w-full h-full object-cover" />
+        {isImageMetadata && Image ? (
+          <Image
+            src={imgSrc as ImageMetadata}
+            alt={title}
+            widths={cardWidths}
+            sizes={cardSizes}
+            formats={["webp", "avif"]}
+            quality={85}
+            class="w-full h-full object-cover"
+            lazy={true}
+          />
+        ) : (
+          <img
+            src={imgSrc as string}
+            alt={title}
+            class="w-full h-full object-cover"
+          />
+        )}
       </figure>
     )
   }
