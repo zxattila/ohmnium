@@ -9,8 +9,6 @@ import type { AccordionItem } from "../components/Faq.astro";
 import type { GooglePlacesReview } from "../data/reviews";
 
 // Import critical assets for preloading
-import francoisOneFont from "../fonts/FrancoisOne-Regular.ttf";
-import sourceSans3Font from "../fonts/SourceSans3-Regular.ttf";
 import noiseImage from "../assets/noise.png";
 import noisierImage from "../assets/noisier.png";
 
@@ -103,22 +101,6 @@ const {
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-    <!-- Preload critical fonts for better performance -->
-    <link
-      rel="preload"
-      href={francoisOneFont}
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href={sourceSans3Font}
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
-
     <!-- Preload critical above-the-fold image with mobile-first priority -->
     <link
       rel="preload"
@@ -134,53 +116,6 @@ const {
       type="image/png"
       media="(min-width: 768px)"
     />
-
-    <!-- Early hints for mobile performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- Critical CSS for above-the-fold content -->
-    <style>
-      /* Mobile-first critical styles for hero section */
-      .hero-section {
-        position: relative;
-        background-color: #1e40af; /* bg-brand-secondary fallback */
-        border-radius: 0.75rem;
-        overflow: hidden;
-        min-height: 300px;
-      }
-
-      @media (min-width: 768px) {
-        .hero-section {
-          min-height: 400px;
-        }
-      }
-
-      /* Ensure text is readable while images load */
-      .hero-content {
-        position: relative;
-        z-index: 10;
-        color: white;
-        padding: 1.25rem 0.5rem;
-      }
-
-      /* Critical font loading optimization */
-      .hero-title {
-        font-family: "Francois One", sans-serif;
-        font-size: 3rem;
-        line-height: 1;
-        text-align: center;
-        margin-bottom: 1rem;
-      }
-
-      @media (min-width: 768px) {
-        .hero-title {
-          font-size: 3.75rem;
-          text-align: left;
-          margin-bottom: 0;
-        }
-      }
-    </style>
 
     <!-- DNS prefetch for WordPress API (client-side API calls) -->
     <link rel="dns-prefetch" href={new URL(WP_SITE).origin} />
@@ -224,6 +159,14 @@ const {
     <script src="../scripts/main.js"></script>
   </head>
   <body class={`page-${pageType}`}>
+    <!-- Skip to content link for screen readers -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded focus:shadow-lg"
+    >
+      Skip to main content
+    </a>
+
     <!-- Mobile menu overlay - placed at body level -->
     <div
       x-data
@@ -235,7 +178,7 @@ const {
     </div>
 
     <Navigation />
-    <main class="container py-5">
+    <main id="main" class="container py-5">
       <slot />
     </main>
     <Footer />

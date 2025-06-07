@@ -13,6 +13,7 @@ A modern, component-based static website built with Astro, Alpine.js, and Tailwi
 - [📏 Tailwind Sizing Pattern](#-tailwind-sizing-pattern)
 - [🖼️ Image Optimization & Browser Compatibility](#️-image-optimization--browser-compatibility)
 - [🔍 SEO Components](#-seo-components-headmetas--headseo)
+- [🔧 Font Optimization & Performance](#-font-optimization--performance)
 - [📦 Installation](#-installation)
 - [🏃‍♂️ Getting Started](#️-getting-started)
 - [📚 Additional Resources](#-additional-resources)
@@ -1395,6 +1396,93 @@ npm run build:seo
 | **Maintenance** | ✅ Zero maintenance | ❌ Manual updates needed |
 
 **Recommendation**: Use dynamic endpoints by default. Only generate static files for specific deployment requirements or as backup files.
+
+## 🔧 Font Optimization & Performance
+
+The project uses optimized web fonts for maximum performance while maintaining visual quality. All fonts have been converted from TTF to WOFF2 format for significant size reduction.
+
+### Font Files
+
+The project uses two custom font families:
+
+- **Francois One**: Used for headings (`--font-heading-family`)
+- **Source Sans 3**: Used for body text (`--font-body-family`)
+
+### Font Optimization Process
+
+#### Installation of WOFF2 Tools
+
+To optimize fonts, install the `woff2` compression tools via Homebrew:
+
+```bash
+brew install woff2
+```
+
+#### Converting TTF to WOFF2
+
+Convert your TTF fonts to WOFF2 format for better compression:
+
+```bash
+# Navigate to fonts directory
+cd src/fonts
+
+# Convert each font file
+woff2_compress FrancoisOne-Regular.ttf
+woff2_compress SourceSans3-Regular.ttf
+```
+
+#### Performance Results
+
+The WOFF2 conversion achieved significant file size reductions:
+
+| Font | TTF Size | WOFF2 Size | Reduction |
+|------|----------|------------|-----------|
+| **FrancoisOne-Regular** | 75KB | 31KB | **58%** |
+| **SourceSans3-Regular** | 381KB | 103KB | **73%** |
+| **Total Savings** | 456KB | 134KB | **70%** |
+
+#### CSS Implementation
+
+The optimized fonts are implemented with progressive enhancement:
+
+```scss
+@font-face {
+  font-family: 'Francois One';
+  src: url('../fonts/FrancoisOne-Regular.woff2') format('woff2'),
+       url('../fonts/FrancoisOne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Sans 3';
+  src: url('../fonts/SourceSans3-Regular.woff2') format('woff2'),
+       url('../fonts/SourceSans3-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+```
+
+#### Key Benefits
+
+- ✅ **70% smaller downloads** for modern browsers (WOFF2)
+- ✅ **Backward compatibility** with TTF fallback for older browsers
+- ✅ **Faster page loads** especially on mobile/slower connections
+- ✅ **Better Core Web Vitals** scores (LCP, FCP)
+- ✅ **`font-display: swap`** prevents invisible text during font load
+
+#### Maintenance
+
+When adding new fonts:
+
+1. **Convert to WOFF2**: Use `woff2_compress filename.ttf`
+2. **Update CSS**: Add both WOFF2 and TTF sources
+3. **Test compatibility**: Verify fonts load correctly across browsers
+4. **Remove unused fonts**: Keep only fonts actually used in the project
+
+This optimization saves **322KB** in font downloads while maintaining identical visual appearance.
 
 ## 📦 Installation
 

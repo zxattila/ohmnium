@@ -1,7 +1,8 @@
 /* Then declare your font faces */
 @font-face {
   font-family: 'Francois One';
-  src: url('../fonts/FrancoisOne-Regular.ttf') format('truetype');
+  src: url('../fonts/FrancoisOne-Regular.woff2') format('woff2'),
+    url('../fonts/FrancoisOne-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -9,7 +10,8 @@
 
 @font-face {
   font-family: 'Source Sans 3';
-  src: url('../fonts/SourceSans3-Regular.ttf') format('truetype');
+  src: url('../fonts/SourceSans3-Regular.woff2') format('woff2'),
+    url('../fonts/SourceSans3-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
