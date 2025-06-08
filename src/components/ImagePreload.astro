@@ -1,0 +1,67 @@
+---
+import { getImage } from "astro:assets";
+
+// Props interface matching Image.astro but focused on preload needs
+interface Props {
+  src: ImageMetadata | string;
+  width?: number;
+  format?: "webp" | "avif" | "png" | "jpg";
+  quality?: number;
+  fetchpriority?: "high" | "low" | "auto";
+  // Optional: include both formats for multiple preloads
+  formats?: string[];
+  includeMultipleFormats?: boolean;
+}
+
+const {
+  src,
+  width = 400, // Match your current rendered default
+  format = "webp", // Primary format (most compatible)
+  quality = 65, // Match Hero component default
+  fetchpriority = "high",
+  formats = ["webp", "avif"],
+  includeMultipleFormats = false,
+} = Astro.props;
+
+// Generate optimized image for primary format
+const optimizedImage = await getImage({
+  src,
+  width,
+  format,
+  quality,
+});
+
+// Optionally generate for backup format (if includeMultipleFormats is true)
+let backupImage;
+if (includeMultipleFormats && formats.length > 1) {
+  const backupFormat = formats.find((f) => f !== format) || "avif";
+  backupImage = await getImage({
+    src,
+    width,
+    format: backupFormat,
+    quality,
+  });
+}
+---
+
+<!-- Primary format preload -->
+<link
+  rel="preload"
+  as="image"
+  href={optimizedImage.src}
+  type={`image/${format}`}
+  fetchpriority={fetchpriority}
+/>
+
+<!-- Optional backup format preload -->
+{
+  backupImage && (
+    <link
+      rel="preload"
+      as="image"
+      href={backupImage.src}
+      type={`image/${backupImage.format || "avif"}`}
+      fetchpriority="low"
+    />
+  )
+}
