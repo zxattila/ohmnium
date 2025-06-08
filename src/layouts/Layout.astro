@@ -7,10 +7,7 @@ import HeadSeo from "../components/HeadSeo.astro";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import type { AccordionItem } from "../components/Faq.astro";
 import type { GooglePlacesReview } from "../data/reviews";
-
-// Import critical assets for preloading
-import noiseImage from "../assets/noise.png";
-import noisierImage from "../assets/noisier.png";
+import noisier from "../assets/noisier.png";
 
 // Get WordPress site URL for DNS prefetch
 const WP_SITE = import.meta.env.WP_SITE || "https://techcrunch.com";
@@ -101,24 +98,11 @@ const {
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-    <!-- Preload critical above-the-fold image with mobile-first priority -->
-    <link
-      rel="preload"
-      href={noiseImage.src}
-      as="image"
-      type="image/png"
-      media="(max-width: 767px)"
-    />
-    <link
-      rel="preload"
-      href={noisierImage.src}
-      as="image"
-      type="image/png"
-      media="(min-width: 768px)"
-    />
-
     <!-- DNS prefetch for WordPress API (client-side API calls) -->
     <link rel="dns-prefetch" href={new URL(WP_SITE).origin} />
+
+    <!-- Preload critical hero background image -->
+    <link rel="preload" as="image" href={noisier.src} fetchpriority="high" />
 
     <!-- SEO Head Metas Component -->
     <HeadMetas
@@ -155,7 +139,7 @@ const {
       email={email}
     />
 
-    <!-- Load main script (preloaded above) -->
+    <!-- Load main script -->
     <script src="../scripts/main.js"></script>
   </head>
   <body class={`page-${pageType}`}>
