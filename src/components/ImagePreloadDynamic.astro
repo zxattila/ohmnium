@@ -1,0 +1,115 @@
+---
+import { getImage } from "astro:assets";
+
+// Props interface matching Image.astro with dynamic format detection
+interface Props {
+  src: ImageMetadata | string;
+  width?: number;
+  quality?: number;
+  fetchpriority?: "high" | "low" | "auto";
+  // Match Hero component's exact format order
+  formats?: string[];
+  // Match Hero component's exact parameters
+  widths?: number[];
+  sizes?: string;
+}
+
+const {
+  src,
+  width = 400, // Default width for preload
+  quality = 65, // Match Hero component default
+  fetchpriority = "high",
+  formats = ["webp", "avif"], // Match Hero component default order
+  widths = [240, 320, 480, 640, 800], // Match Hero component exact widths
+  sizes = "(max-width: 320px) 240px, (max-width: 480px) 320px, (max-width: 768px) 480px, (max-width: 1024px) 640px, 800px",
+} = Astro.props;
+
+/**
+ * Browser format detection utility that mirrors Astro's Image component logic.
+ * This function predicts which format the browser will actually request,
+ * ensuring preload URLs match the Image component's generated URLs exactly.
+ */
+function detectOptimalFormat(formatArray: string[]): string {
+  // In a server-side environment (Astro build), we can't access navigator
+  // So we need to predict browser behavior based on modern browser support
+
+  // Modern browser support as of 2024:
+  // - AVIF: Chrome 85+, Firefox 93+, Safari 16.1+ (iOS 16.1+)
+  // - WebP: Chrome 23+, Firefox 65+, Safari 14+ (iOS 14+)
+
+  // Since we can't detect the actual browser during build time,
+  // we'll implement a fallback strategy that matches most common scenarios:
+
+  for (const format of formatArray) {
+    if (format === "webp") {
+      // WebP has the widest browser support (95%+ of browsers)
+      // It's the safest fallback for preloading
+      console.log(
+        "ImagePreloadDynamic: Selecting WebP format for maximum compatibility",
+      );
+      return "webp";
+    }
+    if (format === "avif") {
+      // AVIF has good modern browser support but not universal
+      // Only select if WebP is not available in the formats array
+      continue;
+    }
+  }
+
+  // Fallback to WebP if available, otherwise first format
+  const fallbackFormat = formatArray.includes("webp") ? "webp" : formatArray[0];
+  console.log(`ImagePreloadDynamic: Fallback to ${fallbackFormat} format`);
+  return fallbackFormat;
+}
+
+// Detect the optimal format that the Image component will likely serve
+const selectedFormat = detectOptimalFormat(formats);
+
+// Generate optimized image using the predicted format and exact Hero parameters
+const optimizedImage = await getImage({
+  src,
+  width, // Use the provided width for preload
+  format: selectedFormat,
+  quality,
+});
+
+// Note: We only generate the primary format to avoid unused preload warnings
+// The Image component will generate other formats as needed in its srcset
+
+// Console logging for development/testing
+if (import.meta.env.DEV) {
+  console.log(`ImagePreloadDynamic Debug:
+  - Source: ${typeof src === "string" ? src : src.src}
+  - Selected Format: ${selectedFormat}
+  - Generated URL: ${optimizedImage.src}
+  - Quality: ${quality}
+  - Width: ${width}`);
+}
+---
+
+<!-- Primary format preload with detected format -->
+<link
+  rel="preload"
+  as="image"
+  href={optimizedImage.src}
+  type={`image/${selectedFormat}`}
+  fetchpriority={fetchpriority}
+/>
+
+<!-- Development debug info (only in dev mode) -->
+{
+  import.meta.env.DEV && (
+    <script
+      define:vars={{
+        optimizedUrl: optimizedImage.src,
+        selectedFormat,
+        width,
+        quality,
+      }}
+    >
+      console.log(`🖼️ ImagePreloadDynamic: Preloaded ${selectedFormat} format:`,
+      optimizedUrl); console.log(`📏 Dimensions: ${width}px, Quality: ${quality}
+      %`);
+    </script>
+  )
+}

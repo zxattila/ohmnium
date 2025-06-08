@@ -7,7 +7,7 @@ import HeadSeo from "../components/HeadSeo.astro";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import type { AccordionItem } from "../components/Faq.astro";
 import type { GooglePlacesReview } from "../data/reviews";
-import ImagePreload from "../components/ImagePreload.astro";
+import ImagePreloadDynamic from "../components/ImagePreloadDynamic.astro";
 import noisier from "../assets/noisier.png";
 
 // Get WordPress site URL for DNS prefetch
@@ -101,12 +101,12 @@ const {
     <!-- DNS prefetch for WordPress API (client-side API calls) -->
     <link rel="dns-prefetch" href={new URL(WP_SITE).origin} />
 
-    <!-- Preload critical hero background image -->
-    <ImagePreload
+    <!-- Preload critical hero background image with dynamic format detection -->
+    <ImagePreloadDynamic
       src={noisier}
       width={400}
-      format="webp"
       quality={65}
+      formats={["webp", "avif"]}
       fetchpriority="high"
     />
 

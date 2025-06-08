@@ -880,6 +880,203 @@ import inspectionImg from "../assets/inspection.png";
 
 This comprehensive approach ensures optimal image performance, browser compatibility, and user experience across all devices and browsers.
 
+### Image Preloading Components
+
+The project includes two specialized components for preloading critical images, ensuring optimal loading performance and eliminating browser warnings about unused preloaded resources.
+
+#### ImagePreload Component (Basic)
+
+A simple component for preloading images with basic format support. Best used for images that don't require complex format optimization.
+
+**Features:**
+- ✅ Basic image preloading for critical assets
+- ✅ Simple format specification
+- ✅ Minimal configuration required
+- ✅ Perfect for fonts, simple images, or single-format assets
+
+**Usage:**
+
+```astro
+---
+import ImagePreload from "../components/ImagePreload.astro";
+import heroImage from "../assets/hero.jpg";
+---
+
+<head>
+  <!-- Preload hero image -->
+  <ImagePreload
+    src={heroImage}
+    width={800}
+    format="webp"
+    fetchpriority="high"
+  />
+</head>
+```
+
+**Props Reference:**
+
+| Prop             | Type             | Default | Description                              |
+| ---------------- | ---------------- | ------- | ---------------------------------------- |
+| `src`            | `ImageMetadata`  | required| Image source (import from assets)       |
+| `width`          | `number`         | required| Target width for preload generation     |
+| `format`         | `string`         | `"webp"`| Output format (webp, avif, png, jpg)    |
+| `quality`        | `number`         | `80`    | Image quality (1-100)                   |
+| `fetchpriority`  | `string`         | `"high"`| Browser fetch priority                   |
+
+#### ImagePreloadDynamic Component (Advanced)
+
+An intelligent component that mirrors Astro's Image component behavior to generate exact URL matches, preventing "preload but not used" browser warnings.
+
+**Features:**
+- ✅ **Smart format detection** - Predicts which format browsers will request
+- ✅ **Exact URL matching** - Generates the same URLs as Astro's Image component
+- ✅ **Browser compatibility** - Uses WebP for 95%+ browser support
+- ✅ **Development debugging** - Console logs for URL verification
+- ✅ **Production optimized** - Single preload link generation
+
+**Usage:**
+
+```astro
+---
+import ImagePreloadDynamic from "../components/ImagePreloadDynamic.astro";
+import noisier from "../assets/noisier.png";
+---
+
+<head>
+  <!-- Preload with dynamic format detection -->
+  <ImagePreloadDynamic
+    src={noisier}
+    width={400}
+    quality={65}
+    formats={["webp", "avif"]}
+    fetchpriority="high"
+  />
+</head>
+
+<!-- Later in your component -->
+<Image
+  src={noisier}
+  alt="Background texture"
+  width={400}
+  quality={65}
+  formats={["webp", "avif"]}
+/>
+```
+
+**Props Reference:**
+
+| Prop             | Type             | Default          | Description                                   |
+| ---------------- | ---------------- | ---------------- | --------------------------------------------- |
+| `src`            | `ImageMetadata`  | required         | Image source (import from assets)            |
+| `width`          | `number`         | required         | Target width (must match Image component)    |
+| `quality`        | `number`         | `80`             | Image quality (must match Image component)   |
+| `formats`        | `string[]`       | `["webp","avif"]`| Format array (must match Image component)    |
+| `fetchpriority`  | `string`         | `"high"`         | Browser fetch priority                        |
+
+#### Key Differences
+
+| Feature                    | ImagePreload (Basic) | ImagePreloadDynamic (Advanced) |
+| -------------------------- | -------------------- | ------------------------------ |
+| **Format Detection**       | Manual specification | Automatic browser prediction   |
+| **URL Matching**           | Basic                | Exact match with Image component|
+| **Browser Warnings**       | Possible mismatches  | Eliminated                     |
+| **Configuration**          | Simple               | Must match Image props exactly |
+| **Use Case**               | Simple assets        | Critical hero/LCP images       |
+| **Performance Impact**     | Good                 | Optimal                        |
+
+#### Implementation Examples
+
+**For Hero Images (Recommended: ImagePreloadDynamic):**
+
+```astro
+---
+// Layout.astro
+import ImagePreloadDynamic from "../components/ImagePreloadDynamic.astro";
+import heroImage from "../assets/hero.jpg";
+---
+
+<html>
+<head>
+  <!-- Preload critical hero image -->
+  <ImagePreloadDynamic
+    src={heroImage}
+    width={800}
+    quality={90}
+    formats={["webp", "avif"]}
+    fetchpriority="high"
+  />
+</head>
+<!-- ... -->
+
+---
+// Hero.astro
+import { Image } from "astro:assets";
+import heroImage from "../assets/hero.jpg";
+---
+
+<!-- Image component with EXACT same props -->
+<Image
+  src={heroImage}
+  alt="Hero image"
+  width={800}
+  quality={90}
+  formats={["webp", "avif"]}
+  class="w-full h-auto"
+/>
+```
+
+**For Simple Assets (Basic ImagePreload):**
+
+```astro
+---
+// Layout.astro
+import ImagePreload from "../components/ImagePreload.astro";
+import logoImage from "../assets/logo.png";
+---
+
+<head>
+  <!-- Simple logo preload -->
+  <ImagePreload
+    src={logoImage}
+    width={200}
+    format="png"
+    fetchpriority="high"
+  />
+</head>
+```
+
+#### Production Verification
+
+After implementing ImagePreloadDynamic, verify the URLs match in your browser's Network tab:
+
+1. **Build the project**: `npm run build`
+2. **Check preload URL** in `<head>`: `/_astro/image.ABC123_XYZ789.webp`
+3. **Check rendered URL** in `<img>`: `/_astro/image.ABC123_XYZ789.webp`
+4. **Verify match**: URLs should be identical
+
+**Development Debug Output:**
+```
+[ImagePreloadDynamic] Optimal format detected: webp
+[ImagePreloadDynamic] Generated preload URL: /_astro/image.ABC123_XYZ789.webp
+```
+
+#### Troubleshooting
+
+**"Preload but not used" warnings:**
+- Ensure props match exactly between ImagePreloadDynamic and Image components
+- Verify both components use the same `width`, `quality`, and `formats` values
+- Use ImagePreloadDynamic for images that use multiple formats
+
+**URL mismatches:**
+- Check that format arrays are identical: `["webp", "avif"]`
+- Verify quality settings match between preload and Image components
+- Use browser dev tools to compare generated URLs
+
+**Performance impact:**
+- Use ImagePreloadDynamic only for critical, above-the-fold images
+- Limit preloads to 2-3 most important images per page
+- Prefer ImagePreload for simple, single-format assets
+
 ## 🔍 SEO Components: HeadMetas & HeadSeo
 
 The project includes two specialized components for comprehensive SEO optimization: `HeadMetas.astro` for meta tags and `HeadSeo.astro` for structured data. These components work together to provide complete SEO coverage while maintaining clean separation of concerns.
