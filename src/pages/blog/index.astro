@@ -2,11 +2,17 @@
 import Layout from "../../layouts/Layout.astro";
 import PageHeader from "../../components/PageHeader.astro";
 import PostItem from "../../components/PostItem.astro";
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import { WP_API_URL } from "../../config";
 
-// const WP_SITE = "https://techcrunch.com";
-// const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
+// Blog configuration
+const blogConfig = {
+  comingSoon: {
+    title: "Blog Posts Coming Soon",
+    description:
+      "We're preparing insightful electrical content and expert tips. Check back soon for quality posts about electrical safety, maintenance, and industry updates.",
+  },
+};
 
 let posts = [];
 try {
@@ -28,24 +34,43 @@ const blogUrl = new URL("/blog", Astro.url.origin).pathname;
   pageType="blog"
   schemaType="Blog"
 >
+  <!-- Prevent indexing when no blog posts are available -->
+  {
+    posts.length === 0 && (
+      <meta name="robots" content="noindex, nofollow" slot="head" />
+    )
+  }
   <PageHeader
     title="Blog Posts"
     description="The pulse of practical electrical work"
     useNoise={true}
   />
-  <ViewTransitions />
+  <ClientRouter />
 
-  <div class="max-w-4xl mx-auto md:px-4">
+  <section class="max-w-4xl mx-auto md:px-4">
     <div id="posts-container" class="space-y-8">
       {posts.map((post) => <PostItem post={post} blogUrl={blogUrl} />)}
     </div>
 
-    <div class="text-center mt-8 mb-12">
-      <button id="load-more" class="button button-primary md:w-auto w-full">
-        View More
-      </button>
-    </div>
-  </div>
+    {
+      posts.length > 0 ? (
+        <div class="text-center mt-8 mb-12">
+          <button id="load-more" class="button button-primary md:w-auto w-full">
+            View More
+          </button>
+        </div>
+      ) : (
+        <div class="text-center mt-12 mb-12">
+          <div class="bg-surface-card rounded-xl px-4 py-8 shadow-sm">
+            <h3 class="text-2xl mb-4">{blogConfig.comingSoon.title}</h3>
+            <p class="text-gray-700 max-w-md mx-auto">
+              {blogConfig.comingSoon.description}
+            </p>
+          </div>
+        </div>
+      )
+    }
+  </section>
 </Layout>
 
 <script define:vars={{ WP_API_URL }}>
