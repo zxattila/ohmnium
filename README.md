@@ -772,10 +772,52 @@ import inspectionImage from "../assets/inspection.png";
 
 #### Performance Benefits
 
-- **Responsive Images**: Multiple sizes (400px to 2000px) for different screens
+- **Responsive Images**: Multiple sizes (412px to 1536px) for different screens
 - **Modern Formats**: WebP and AVIF for 60-80% smaller file sizes
 - **Smart Loading**: No lazy loading for above-the-fold content
-- **Quality Optimization**: Balanced quality (80%) for fast loading
+- **Quality Optimization**: Balanced quality (65-85%) for fast loading
+
+#### Components Using Image.astro
+
+The optimized Image component is used throughout the site for consistent performance:
+
+**🏠 Hero Components:**
+- **`Hero.astro`** - Homepage hero background (noisier texture)
+  - Mobile-first: `[240, 320, 480, 640, 800]`
+  - Quality: 65 (background texture)
+  - Formats: `['webp', 'avif']`
+
+- **`PageHeader.astro`** - Inner page headers (all service pages)
+  - Mobile-first: `[412, 640, 768, 1024, 1280]`
+  - Quality: 65 (consistent across backgrounds)
+  - Formats: `['webp', 'avif']`
+
+**🎴 Content Components:**
+- **`Card.astro`** - Service cards with responsive images
+  - Card-optimized: `[412, 500, 612]`
+  - Quality: 85 (higher for content images)
+  - Formats: `['webp', 'avif']`
+
+- **`CardColumns.astro`** - Uses Card component for service grids
+  - Inherits Card.astro image settings
+  - Grid layout: `lg:grid-cols-4 sm:grid-cols-2`
+
+**🔧 Utility Components:**
+- **`ImageText.astro`** - Text/image layout combinations
+- **`PostItem.astro`** - Blog post thumbnails (when available)
+
+**📱 Mobile-First Optimization:**
+All components now use consistent mobile-first approach:
+```astro
+// Standard mobile-first pattern
+widths={[412, 640, 768, 1024, 1280]}
+sizes="(max-width: 639px) 412px, (max-width: 767px) 640px, (max-width: 1023px) 768px, 1024px"
+```
+
+**🎯 PageSpeed Benefits:**
+- **412px optimization**: Perfect for PageSpeed Insights mobile testing
+- **Consistent breakpoints**: Aligned with Tailwind's mobile-first approach
+- **Format consistency**: WebP-first for maximum browser compatibility
 
 ### API Optimization Methods
 
@@ -997,12 +1039,13 @@ import heroImage from "../assets/hero.jpg";
 
 #### ImagePreloadDynamic Component (Advanced)
 
-An intelligent component that mirrors Astro's Image component behavior to generate exact URL matches, preventing "preload but not used" browser warnings.
+An intelligent component that mirrors Astro's Image component behavior to generate exact URL matches, preventing "preload but not used" browser warnings. **Updated for mobile-first optimization.**
 
 **Features:**
 - ✅ **Smart format detection** - Predicts which format browsers will request
-- ✅ **Exact URL matching** - Generates the same URLs as Astro's Image component
-- ✅ **Browser compatibility** - Uses WebP for 95%+ browser support
+- ✅ **Exact URL matching** - Generates the same URLs as Astro's Image component  
+- ✅ **Mobile-first optimization** - 412px default for PageSpeed Insights
+- ✅ **Browser compatibility** - Uses WebP for 97%+ browser support
 - ✅ **Development debugging** - Console logs for URL verification
 - ✅ **Production optimized** - Single preload link generation
 
@@ -1015,10 +1058,10 @@ import noisier from "../assets/noisier.png";
 ---
 
 <head>
-  <!-- Preload with dynamic format detection -->
+  <!-- Preload with mobile-first dynamic format detection -->
   <ImagePreloadDynamic
     src={noisier}
-    width={400}
+    width={412}
     quality={65}
     formats={["webp", "avif"]}
     fetchpriority="high"
@@ -1029,21 +1072,36 @@ import noisier from "../assets/noisier.png";
 <Image
   src={noisier}
   alt="Background texture"
-  width={400}
+  widths={[412, 640, 768, 1024, 1280]}
+  sizes="(max-width: 639px) 412px, (max-width: 767px) 640px, 1024px"
   quality={65}
   formats={["webp", "avif"]}
 />
 ```
 
+**🎯 Current Implementation (Layout.astro):**
+```astro
+<!-- Critical hero background preload -->
+<ImagePreloadDynamic
+  src={noisier}
+  width={412}        <!-- PageSpeed optimal mobile width -->
+  quality={65}       <!-- Balanced for background texture -->
+  formats={["webp", "avif"]}  <!-- WebP-first for compatibility -->
+  fetchpriority="high"
+/>
+```
+
 **Props Reference:**
 
-| Prop             | Type             | Default          | Description                                   |
-| ---------------- | ---------------- | ---------------- | --------------------------------------------- |
-| `src`            | `ImageMetadata`  | required         | Image source (import from assets)            |
-| `width`          | `number`         | required         | Target width (must match Image component)    |
-| `quality`        | `number`         | `80`             | Image quality (must match Image component)   |
-| `formats`        | `string[]`       | `["webp","avif"]`| Format array (must match Image component)    |
-| `fetchpriority`  | `string`         | `"high"`         | Browser fetch priority                        |
+| Prop             | Type             | Default                  | Description                                   |
+| ---------------- | ---------------- | ------------------------ | --------------------------------------------- |
+| `src`            | `ImageMetadata`  | required                 | Image source (import from assets)            |
+| `width`          | `number`         | `412`                    | Mobile-first width (PageSpeed optimal)       |
+| `quality`        | `number`         | `65`                     | Image quality (optimized for preload)        |
+| `formats`        | `string[]`       | `["webp","avif"]`        | WebP-first for maximum browser compatibility  |
+| `widths`         | `number[]`       | `[412,640,768,1024,1280]`| Mobile-first responsive breakpoints          |
+| `sizes`          | `string`         | Mobile-first responsive  | CSS sizes attribute (Tailwind aligned)       |
+| `fetchpriority`  | `string`         | `"high"`                 | Browser fetch priority                        |
 
 #### Key Differences
 

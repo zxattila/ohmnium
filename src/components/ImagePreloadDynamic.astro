@@ -7,21 +7,21 @@ interface Props {
   width?: number;
   quality?: number;
   fetchpriority?: "high" | "low" | "auto";
-  // Match Hero component's exact format order
+  // Format detection with modern browser optimization
   formats?: string[];
-  // Match Hero component's exact parameters
+  // Mobile-first responsive parameters
   widths?: number[];
   sizes?: string;
 }
 
 const {
   src,
-  width = 400, // Default width for preload
-  quality = 65, // Match Hero component default
+  width = 412, // PageSpeed optimal mobile-first width
+  quality = 65, // Optimized for preload performance
   fetchpriority = "high",
-  formats = ["webp", "avif"], // Match Hero component default order
-  widths = [240, 320, 480, 640, 800], // Match Hero component exact widths
-  sizes = "(max-width: 320px) 240px, (max-width: 480px) 320px, (max-width: 768px) 480px, (max-width: 1024px) 640px, 800px",
+  formats = ["webp", "avif"], // WebP first for maximum compatibility (matches other components)
+  widths = [412, 640, 768, 1024, 1280], // Mobile-first approach matching Image.astro
+  sizes = "(max-width: 639px) 412px, (max-width: 767px) 640px, (max-width: 1023px) 768px, 1024px", // Mobile-first sizes
 } = Astro.props;
 
 /**
@@ -34,30 +34,31 @@ function detectOptimalFormat(formatArray: string[]): string {
   // So we need to predict browser behavior based on modern browser support
 
   // Modern browser support as of 2024:
-  // - AVIF: Chrome 85+, Firefox 93+, Safari 16.1+ (iOS 16.1+)
-  // - WebP: Chrome 23+, Firefox 65+, Safari 14+ (iOS 14+)
+  // - AVIF: Chrome 85+, Firefox 93+, Safari 16.1+ (iOS 16.1+) - ~85% support
+  // - WebP: Chrome 23+, Firefox 65+, Safari 14+ (iOS 14+) - ~95% support
 
-  // Since we can't detect the actual browser during build time,
-  // we'll implement a fallback strategy that matches most common scenarios:
-
+  // Strategy: Prioritize WebP for maximum compatibility, AVIF as enhancement
   for (const format of formatArray) {
     if (format === "webp") {
-      // WebP has the widest browser support (95%+ of browsers)
-      // It's the safest fallback for preloading
+      // WebP has the widest browser support (97%+ of browsers)
+      // It's the safest choice for preloading to ensure high hit rate
       console.log(
         "ImagePreloadDynamic: Selecting WebP format for maximum compatibility",
       );
       return "webp";
     }
     if (format === "avif") {
-      // AVIF has good modern browser support but not universal
+      // AVIF provides better compression but lower browser support (85%)
       // Only select if WebP is not available in the formats array
-      continue;
+      console.log(
+        "ImagePreloadDynamic: Selecting AVIF format for optimal compression",
+      );
+      return "avif";
     }
   }
 
-  // Fallback to WebP if available, otherwise first format
-  const fallbackFormat = formatArray.includes("webp") ? "webp" : formatArray[0];
+  // Fallback to first available format if neither AVIF nor WebP found
+  const fallbackFormat = formatArray[0] || "webp";
   console.log(`ImagePreloadDynamic: Fallback to ${fallbackFormat} format`);
   return fallbackFormat;
 }
