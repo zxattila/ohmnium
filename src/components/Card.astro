@@ -28,9 +28,9 @@ const {
   showSvg = false,
   svgContent = "",
   svgClasses = "",
-  // Default card-optimized image settings based on actual viewport measurements
-  cardWidths = [320, 500, 612], // Accurate card sizes: lg=320px, sm=500px, mobile=612px
-  cardSizes = "(min-width: 1024px) 320px, (min-width: 640px) 500px, 612px", // Matches real card dimensions
+  // Default card-optimized image settings - mobile-first approach
+  cardWidths = [480, 640, 800, 1024], // Mobile: 480px, sm: 640px, lg: 800px, xl: 1024px
+  cardSizes = "(max-width: 639px) 480px, (max-width: 1023px) 320px, 280px", // Mobile-first: full-width mobile, 2-col tablet, 4-col desktop
 } = Astro.props;
 
 // Determine if we should use optimized images

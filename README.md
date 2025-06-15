@@ -510,7 +510,7 @@ import inspectionImg from "../assets/inspection.png";
 | `alt`        | `string`                  | required                       | Alt text for accessibility                |
 | `usePicture` | `boolean`                 | `true`                         | Use picture element for responsive images |
 | `lazy`       | `boolean`                 | `true`                         | Enable lazy loading                       |
-| `widths`     | `number[]`                | `[640, 768, 1024, 1280, 1536]` | Responsive breakpoint widths              |
+| `widths`     | `number[]`                | `[412, 640, 768, 1024, 1280, 1536]` | Mobile-first responsive breakpoint widths |
 | `sizes`      | `string`                  | Tailwind responsive            | CSS sizes attribute                       |
 | `formats`    | `string[]`                | `['avif', 'webp']`             | Output formats (with fallback)            |
 | `quality`    | `number`                  | `80`                           | Image quality (1-100)                     |
@@ -559,49 +559,57 @@ import heroImage from "../assets/hero.jpg";
 - **False**: Loads immediately (use for above-the-fold/hero images)
 - **Mobile tip**: Always use `lazy={false}` for LCP (Largest Contentful Paint) images
 
-**`widths` - Responsive Breakpoints (Default: [640, 768, 1024, 1280, 1536])**
+**`widths` - Responsive Breakpoints (Default: [412, 640, 768, 1024, 1280, 1536])**
 ```astro
-<!-- Mobile-first optimization -->
+<!-- Mobile-first optimization (recommended) -->
 <Image 
   src={heroImage} 
   alt="Hero"
-  widths={[240, 320, 480, 640, 800]} 
+  widths={[412, 640, 768, 1024, 1280]} 
 />
 
-<!-- Desktop-focused -->
+<!-- Card/component optimization -->
 <Image 
-  src={heroImage} 
-  alt="Hero"
-  widths={[800, 1024, 1280, 1920]} 
+  src={cardImage} 
+  alt="Service"
+  widths={[480, 640, 800, 1024]} 
 />
 ```
-- **Array of pixel widths** - Astro generates these sizes automatically
-- **Mobile-first approach**: Start with smaller widths (240px, 320px)
-- **Performance impact**: More widths = more variants, better optimization
-- **Rule of thumb**: 3-5 breakpoints cover most use cases
+- **What it does**: Tells Astro to **generate** these specific image variants
+- **Astro automatically creates**: `image_412w.webp`, `image_640w.webp`, etc.
+- **Mobile-first approach**: Start with 412px (PageSpeed Insights optimal width)
+- **Sharp processing**: Each variant is optimized with different compression settings
+- **Build-time generation**: All variants created during `astro build`
+- **Performance tip**: More widths = better optimization but longer build times
+- **Rule of thumb**: 4-6 breakpoints cover most use cases efficiently
 
-**`sizes` - CSS Sizes Attribute (Default: Tailwind responsive)**
+**`sizes` - CSS Sizes Attribute (Mobile-First)**
 ```astro
-<!-- Mobile-first responsive -->
+<!-- Mobile-first responsive (recommended) -->
 <Image 
   src={heroImage} 
   alt="Hero"
-  sizes="(max-width: 768px) 100vw, 50vw" 
+  sizes="(max-width: 639px) 480px, (max-width: 767px) 640px, 1024px" 
 />
 
-<!-- Complex layout -->
+<!-- Card component sizing -->
 <Image 
-  src={heroImage} 
-  alt="Hero"
-  sizes="(max-width: 320px) 280px, (max-width: 768px) 720px, 500px" 
+  src={cardImage} 
+  alt="Service"
+  sizes="(max-width: 639px) 480px, (max-width: 1023px) 320px, 280px" 
 />
 ```
-- **Tells browser which image size to download** based on viewport
-- **Critical for performance** - wrong sizes = downloading wrong image size
-- **Format**: `(media-query) size, fallback-size`
+- **What it does**: Tells the **browser** which image variant to download
+- **Mobile-first logic**: Use `max-width` for intuitive, safe fallbacks
+- **How it works together with widths**:
+  1. `widths` generates the variants at build time
+  2. `sizes` tells browser which variant to use at runtime
+  3. Browser picks first matching condition, downloads that variant
+- **Performance impact**: Wrong sizes = downloading oversized images
 - **Common patterns**:
   - Full width mobile: `(max-width: 768px) 100vw, 50vw`
-  - Fixed sidebar: `(max-width: 768px) 100vw, calc(100vw - 300px)`
+  - Card grids: `(max-width: 639px) 480px, (max-width: 1023px) 320px, 280px`
+  - Hero sections: `(max-width: 767px) 100vw, 1200px`
 
 **`formats` - Output Formats (Default: ['avif', 'webp'])**
 ```astro
@@ -669,6 +677,70 @@ import heroImage from "../assets/hero.jpg";
 - **Responsive loading**: Only loads appropriate size
 - **Lazy loading**: Improves initial page load
 - **Format negotiation**: Browser gets best supported format
+
+#### 🔧 How Astro Generates Images
+
+**Build-Time Process:**
+```bash
+# During astro build, Sharp processes images
+Input:  hero.jpg (2400×1600px, 1.2MB)
+Output: hero_412w.webp (412×275px, 45KB)
+        hero_640w.webp (640×427px, 72KB)  
+        hero_768w.webp (768×512px, 89KB)
+        hero_1024w.webp (1024×683px, 125KB)
+        hero_1280w.webp (1280×853px, 165KB)
+        hero_1536w.webp (1536×1024px, 210KB)
+```
+
+**Format Generation:**
+```astro
+formats={['avif', 'webp']}
+<!-- Generates both formats for each width -->
+hero_412w.avif   (smallest file, newest browsers)
+hero_412w.webp   (fallback, wide support)
+hero_412w.jpg    (final fallback, original format)
+```
+
+**Runtime Behavior:**
+```html
+<!-- Browser receives optimized HTML -->
+<picture>
+  <source srcset="hero_412w.avif 412w, hero_640w.avif 640w..." type="image/avif">
+  <source srcset="hero_412w.webp 412w, hero_640w.webp 640w..." type="image/webp">
+  <img src="hero_1536w.jpg" 
+       srcset="hero_412w.jpg 412w, hero_640w.jpg 640w..."
+       sizes="(max-width: 639px) 412px, (max-width: 767px) 640px, 1024px">
+</picture>
+```
+
+#### ⚡ Mobile-First Best Practices
+
+**Why Mobile-First?**
+```astro
+<!-- ✅ Mobile-first: Safe fallbacks -->
+sizes="(max-width: 639px) 412px, (max-width: 1023px) 640px, 1024px"
+// Logic: Small screens get small images, unknown large screens get medium images
+
+<!-- ❌ Desktop-first: Risky fallbacks -->  
+sizes="(min-width: 1024px) 280px, (min-width: 640px) 640px, 1200px"
+// Logic: Large screens get small images, unknown small screens get huge images
+```
+
+**Performance Benefits:**
+- **PageSpeed Insights**: 412px optimized for mobile testing viewport
+- **Data savings**: Mobile users get appropriately sized images
+- **Safe fallbacks**: Unknown devices err on smaller, faster images
+- **Consistent with Tailwind**: Matches `sm:`, `md:`, `lg:` breakpoint logic
+
+**Tailwind Breakpoint Alignment:**
+```astro
+<!-- Matches Tailwind's mobile-first approach -->
+widths={[412, 640, 768, 1024, 1280]}        // sm, md, lg, xl
+sizes="(max-width: 639px) 412px,            // below sm:
+       (max-width: 767px) 640px,            // sm: to md:
+       (max-width: 1023px) 768px,           // md: to lg:
+       1024px"                              // lg: and above
+```
 
 ### PageHeader Component Optimization
 
