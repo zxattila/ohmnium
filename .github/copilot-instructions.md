@@ -1,24 +1,41 @@
-# GitHub Copilot Instructions
+## Breadcrumbs Component (Astro + DaisyUI + Tailwind)
 
-Do not make any changes until you have 95% confidence that you know what to build ask me follow up questions until you have the confidence to make the changes
+This component displays navigational breadcrumbs using DaisyUI + Heroicons mini (Home). It accepts an array of `{ name: string, url: string }` and:
 
-# If you are not sure about the changes, ask me to clarify
+- Renders accessible semantic HTML (`<nav>` with `aria-label="Breadcrumb"`)
+- Highlights the current page with `aria-current="page"`
+- Adds structured `BreadcrumbList` JSON-LD for SEO in a `<script>` tag
+- Supports automatic generation of paths via `generateBreadcrumbs()` from `Astro.url.pathname`
+- Label overrides are supported for slug-to-pretty-name mapping
 
-## Project Goal
+This is especially useful in single-level navigation setups without dropdown menus.
 
-This is a component-based Astro project that uses best practices to render a modern, performant frontend. The project fetches dynamic content from a WordPress backend via the WordPress REST API v2. The WordPress site URL is set using the `WP_SITE` environment variable and accessed within Astro through environment variables prefixed with `WP_`.
+Component depends on:
 
-Fetched data is mapped to Astro components to render the UI. The frontend makes extensive use of TailwindCSS utility classes, with DaisyUI components, and interactive behavior is powered by Alpine.js. The project also uses SASS for preprocessing and Prettier for code formatting.
+- Tailwind CSS + DaisyUI
+- Heroicons mini (`Home` icon inline SVG)
+- Optionally Alpine.js (for dropdowns later, but not required here)
 
-An important feature of the site is an AI-integrated form that leverages the OpenAI API. The API is accessed securely using the `OPENAI_API_KEY` environment variable.
+Place the component near the top of each `.astro` page or layout.
 
-## Tech Stack
+Example:
 
-- **Astro** v5.2.5
-- **Alpine.js** v3.13.3 (integrated via `@astrojs/alpinejs`)
-- **TailwindCSS** v3.4.0
-- **DaisyUI** v4.6.1
-- **WordPress REST API v2** (via `WP_SITE` environment variable)
-- **OpenAI API** integration (via `OPENAI_API_KEY` environment variable)
-- **SASS** for CSS preprocessing
-- **Prettier** with `prettier-plugin-astro` for code formatting
+```astro
+---
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { generateBreadcrumbs } from "../utils/generateBreadcrumbs";
+
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname);
+---
+
+<Breadcrumbs items={breadcrumbs} />
+```
+
+## Import from utils
+
+To use the `generateBreadcrumbs` function, import it from your utility file. This function takes a URL path and returns an array of breadcrumb items. Here's how you can import and use it in your `.astro` files:
+
+```ts
+import { generateBreadcrumbs } from "../utils/generateBreadcrumbs";
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname);
+```

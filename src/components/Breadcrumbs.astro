@@ -1,0 +1,66 @@
+---
+interface Breadcrumb {
+  name: string;
+  url: string;
+}
+
+interface Props {
+  items: Breadcrumb[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumbs text-sm mb-4" aria-label="Breadcrumb">
+  <ul class="flex flex-wrap items-center gap-2">
+    {
+      items.map((item, index) => (
+        <li class="flex items-center gap-1">
+          {index === 0 ? (
+            <a
+              href={item.url}
+              class="inline-flex items-center gap-1 text-blue-600 hover:underline"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                class="size-5"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span>{item.name}</span>
+            </a>
+          ) : index === items.length - 1 ? (
+            <span class="font-semibold text-gray-800" aria-current="page">
+              {item.name}
+            </span>
+          ) : (
+            <a href={item.url} class="text-blue-600 hover:underline">
+              {item.name}
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<!-- SEO JSON-LD for breadcrumbs -->
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  })}
+/>
