@@ -11,9 +11,6 @@ const posts = mockPosts;
   currentIndex: 0,
   totalPosts: ${posts.length},
   visiblePosts: 1, // Default for mobile
-  touchStartX: null,
-  touchEndX: null,
-  swipeThreshold: 50,
   
   init() {
     this.updateVisiblePosts();
@@ -36,27 +33,6 @@ const posts = mockPosts;
   
   prev() {
     this.currentIndex = (this.currentIndex - 1 + this.totalPosts) % this.totalPosts;
-  },
-  
-  handleTouchStart(event) {
-    this.touchStartX = event.touches[0].clientX;
-  },
-  
-  handleTouchMove(event) {
-    this.touchEndX = event.touches[0].clientX;
-  },
-  
-  handleTouchEnd() {
-    if (this.touchEndX) {
-      if (this.touchStartX - this.touchEndX > this.swipeThreshold) {
-        this.next();
-      }
-      if (this.touchStartX - this.touchEndX < -this.swipeThreshold) {
-        this.prev();
-      }
-      this.touchStartX = null;
-      this.touchEndX = null;
-    }
   },
   
   shouldShowPost(index) {
@@ -118,12 +94,7 @@ const posts = mockPosts;
     </div>
   </div>
 
-  <div
-    class="grid gap-5 lg:grid-cols-3 md:grid-cols-2 min-h-64 md:min-h-72"
-    x-on:touchstart="handleTouchStart($event)"
-    x-on:touchmove="handleTouchMove($event)"
-    x-on:touchend="handleTouchEnd()"
-  >
+  <div class="grid gap-5 lg:grid-cols-3 md:grid-cols-2 min-h-64 md:min-h-72">
     {
       posts.map((post, index) => (
         <div
