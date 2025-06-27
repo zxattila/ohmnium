@@ -1834,40 +1834,31 @@ The HeadMetas component supports custom social sharing images for individual pag
 
 **Adding Custom Social Images:**
 
-1. **Store images in `/public/social/` folder:**
-   ```
-   /public
-     /social
-       about-us.jpg
-       contact.jpg
-       services.jpg
-       home.jpg
-   ```
-
-2. **Add the `image` prop to your Layout component:**
+1. **For Imported Assets (RECOMMENDED - Gets Optimized):**
    ```astro
+   ---
+   import Layout from "../layouts/Layout.astro";
+   import customSocialImg from "../assets/my-social-image.jpg";
+   ---
    <Layout
      title="Your Page Title"
      description="Your page description"
-     image="/social/your-page-image.jpg"
+     image={customSocialImg}
      imageWidth={1200}
      imageHeight={630}
      // ...other props
    >
    ```
 
-3. **Example implementation:**
+2. **For String Paths (Not Optimized):**
    ```astro
    ---
-   // src/pages/about.astro
    import Layout from "../layouts/Layout.astro";
    ---
    <Layout
-     title="Our Story | Ohmnium Electricians"
-     description="Meet the founder of Ohmnium Electricians and discover the values driving our trusted electrical services."
-     pageType="about"
-     schemaType="AboutPage"
-     image="/social/about-us.jpg"
+     title="Your Page Title"
+     description="Your page description"
+     image="/social/my-image.jpg"
      imageWidth={1200}
      imageHeight={630}
    >
@@ -1875,14 +1866,69 @@ The HeadMetas component supports custom social sharing images for individual pag
    </Layout>
    ```
 
+3. **Example implementation:**
+   ```astro
+   ---
+   // src/pages/about.astro
+   import Layout from "../layouts/Layout.astro";
+   import aboutSocialImg from "../assets/about-social.jpg";
+   ---
+   <Layout
+     title="Our Story | Ohmnium Electricians"
+     description="Meet the founder of Ohmnium Electricians and discover the values driving our trusted electrical services."
+     pageType="about"
+     schemaType="AboutPage"
+     image={aboutSocialImg}
+     imageWidth={1200}
+     imageHeight={630}
+   >
+     <!-- Page content -->
+   </Layout>
+   ```
+
+**Directory Structure for Social Images:**
+
+```
+src/
+  assets/                    ← ADD YOUR IMAGES HERE (RECOMMENDED)
+    fallback.jpg            ← Default social image (optimized)
+    about-social.jpg        ← Custom social image for about page
+    services-social.jpg     ← Custom social image for services page
+    blog-social.jpg         ← Custom social image for blog
+    your-custom-image.jpg   ← Your custom images
+    
+public/                     ← Alternative (not optimized)
+  social/                   ← Optional directory for public images
+    my-image.jpg           ← Public images (not optimized by Astro)
+```
+
+**Optimization Behavior:**
+
+✅ **Imported from `/src/assets/`** (RECOMMENDED):
+- **Automatically optimized** using Astro + Sharp
+- **Format**: Converted to JPEG for social media compatibility
+- **File size**: Optimized (typically 80-90% reduction)
+- **Quality**: 85% (perfect balance for social media)
+- **Dimensions**: Resized to specified width/height
+- **Example**: `1137kB → 253kB` (77% reduction)
+
+❌ **String paths** (like `"/social/my-image.jpg"`):
+- **Not optimized** - used as-is
+- **File size**: Original size (may be too large for WhatsApp)
+- **Format**: Original format (may not be compatible)
+- Use only for external URLs or when optimization isn't needed
+
 **Image Specifications:**
 - **Recommended size:** 1200x630px (optimal for all platforms including Facebook)
-- **Format:** JPG or PNG
-- **File size:** Under 1MB for optimal loading
-- **Fallback:** If no image is specified, automatically uses `/fallback.jpg`
+- **Format:** JPG or PNG (source) → automatically converted to JPEG for social media
+- **File size:** Under 300KB for optimal social media loading (especially WhatsApp)
+- **Fallback:** If no image is specified, automatically uses an optimized version of `/fallback.jpg`
 
 **What happens automatically:**
-- Custom image is used for Open Graph and Twitter meta tags
-- Falls back to `/fallback.jpg` when no custom image is provided
-- Proper image dimensions are applied to meta tags
-- Works across all major social media platforms
+- Custom images imported from assets are automatically optimized for social media
+- Custom images are converted to JPEG format for maximum compatibility
+- Falls back to an optimized JPEG version of the fallback image when no custom image is provided
+- Fallback image is automatically compressed from 1.1MB to ~250KB using Astro's Sharp optimization
+- Proper image dimensions (1200x630) are applied to meta tags
+- JPEG format ensures maximum compatibility across all social media platforms
+- Works reliably across Facebook, LinkedIn, Twitter, and WhatsApp
