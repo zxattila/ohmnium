@@ -40,7 +40,18 @@ const {
 
 const canonicalURL = url || Astro.url.href;
 const siteUrl = Astro.site?.href || "https://ohmnium.co.uk";
-const defaultImage = image || `${siteUrl}/fallback.jpg`;
+
+// Generate dynamic OG image URL if no custom image provided
+let defaultImage: string;
+if (image) {
+  defaultImage = image;
+} else {
+  const ogParams = new URLSearchParams({
+    title: title,
+    description: description,
+  });
+  defaultImage = `${siteUrl}/api/og-image.png?${ogParams.toString()}`;
+}
 ---
 
 <!-- Basic Meta Tags -->
@@ -85,18 +96,10 @@ const defaultImage = image || `${siteUrl}/fallback.jpg`;
 <meta property="og:description" content={description} />
 <meta property="og:image" content={defaultImage} />
 <meta property="og:image:secure_url" content={defaultImage} />
-<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:image:alt" content={title} />
-{
-  imageWidth && (
-    <meta property="og:image:width" content={imageWidth.toString()} />
-  )
-}
-{
-  imageHeight && (
-    <meta property="og:image:height" content={imageHeight.toString()} />
-  )
-}
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 
 <!-- Twitter Meta Tags -->
 <meta name="twitter:card" content="summary_large_image" />
