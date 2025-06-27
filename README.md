@@ -9,6 +9,7 @@ A modern, component-based static website built with Astro, Alpine.js, and Tailwi
 - [💻 Component Architecture](#-component-architecture)
 - [🔧 Configuration](#-configuration)
 - [🎯 SEO & Search Engine Optimization](#-seo--search-engine-optimization)
+- [🧭 Breadcrumbs Navigation](#-breadcrumbs-navigation)
 - [Tailwind Snippets](#tailwind-snippets)
 - [📏 Tailwind Sizing Pattern](#-tailwind-sizing-pattern)
 - [🖼️ Image Optimization & Browser Compatibility](#️-image-optimization--browser-compatibility)
@@ -16,7 +17,8 @@ A modern, component-based static website built with Astro, Alpine.js, and Tailwi
 - [🔧 Font Optimization & Performance](#-font-optimization--performance)
 - [📦 Installation](#-installation)
 - [🏃‍♂️ Getting Started](#️-getting-started)
-- [📚 Additional Resources](#-additional-resources)
+- [� URL Parameters for Testing & Cache-Busting](#-url-parameters-for-testing--cache-busting)
+- [�📚 Additional Resources](#-additional-resources)
 
 ## 🚀 Project Overview
 
@@ -371,6 +373,233 @@ Template features:
 - Logo and welcome image integration ✅
 - Proper security with HTML escaping ✅
 
+## 🧭 Breadcrumbs Navigation
+
+The Breadcrumbs component provides semantic, accessible navigation using DaisyUI + Tailwind styling with SEO-optimized structured data.
+
+### Component Overview
+
+The Breadcrumbs component (`src/components/Breadcrumbs.astro`) displays navigational breadcrumbs that:
+
+- Render accessible semantic HTML (`<nav>` with `aria-label="Breadcrumb"`)
+- Highlight the current page with `aria-current="page"`
+- Add structured `BreadcrumbList` JSON-LD for SEO
+- Support automatic path generation via `generateBreadcrumbs()` utility
+- Include a home icon using Heroicons mini inline SVG
+
+### Parameters
+
+The component accepts a single prop:
+
+#### `items` (required)
+**Type:** `Array<{ name: string, url: string }>`
+
+An array of breadcrumb objects, each containing:
+- `name`: Display text for the breadcrumb
+- `url`: Navigation URL for the breadcrumb
+
+**Example:**
+```typescript
+const breadcrumbs = [
+  { name: "Home", url: "/" },
+  { name: "Services", url: "/services" },
+  { name: "EV Charging", url: "/services/ev-charging" }
+];
+```
+
+### Usage Examples
+
+#### Basic Usage
+```astro
+---
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+
+const breadcrumbs = [
+  { name: "Home", url: "/" },
+  { name: "About", url: "/about" }
+];
+---
+
+<Breadcrumbs items={breadcrumbs} />
+```
+
+#### Automatic Generation (Recommended)
+```astro
+---
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { generateBreadcrumbs } from "../utils/generateBreadcrumbs";
+
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname);
+---
+
+<Breadcrumbs items={breadcrumbs} />
+```
+
+### Automatic Breadcrumb Generation
+
+The `generateBreadcrumbs()` utility (`src/utils/generateBreadcrumbs.ts`) automatically creates breadcrumbs from URL paths:
+
+#### Parameters
+- `pathname` (string): The URL pathname (e.g., from `Astro.url.pathname`)
+
+#### Features
+- **Automatic Home Link**: Always includes "Home" as the first breadcrumb
+- **Slug Transformation**: Converts URL slugs to readable names (e.g., `"ev-charging"` → `"Ev Charging"`)
+- **Label Overrides**: Custom mappings for specific slugs via `labelOverrides` object
+
+#### Label Overrides
+Customize how specific URL segments appear in breadcrumbs:
+
+```typescript
+const labelOverrides: Record<string, string> = {
+  "ev-charging": "EV Charging",
+  "about": "About Us",
+  "contact": "Contact",
+  // Add more overrides as needed
+};
+```
+
+#### Example Transformations
+| URL Path | Generated Breadcrumbs |
+|----------|----------------------|
+| `/` | Home |
+| `/about` | Home → About Us |
+| `/services` | Home → Services |
+| `/services/ev-charging` | Home → Services → EV Charging |
+| `/blog/latest-news` | Home → Blog → Latest News |
+
+### SEO Features
+
+The component automatically generates structured data for search engines:
+
+#### JSON-LD Schema
+- **Type**: `BreadcrumbList`
+- **Position**: Sequential numbering for each breadcrumb
+- **Item**: Full URL for each breadcrumb step
+
+#### Accessibility
+- Semantic `<nav>` element with `aria-label="Breadcrumb"`
+- Current page marked with `aria-current="page"`
+- Keyboard navigation support
+- Screen reader friendly
+
+### Styling & Design
+
+#### Default Styling
+- Uses DaisyUI `.breadcrumbs` base class
+- Text size: `text-sm`
+- Margin bottom: `mb-4`
+- Flex layout with gap: `gap-2`
+
+#### Visual Elements
+- **Home Icon**: Heroicons mini house icon for first breadcrumb
+- **Current Page**: Bold text (`font-semibold`) in gray (`text-gray-800`)
+- **Links**: Blue color (`text-blue-600`) with hover underline
+- **Separators**: Handled automatically by flex layout and gaps
+
+#### Responsive Behavior
+- Wraps on small screens (`flex-wrap`)
+- Maintains consistent spacing across breakpoints
+
+### Implementation in Layouts
+
+Add breadcrumbs to your page layouts for consistent navigation:
+
+#### Layout.astro Example
+```astro
+---
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { generateBreadcrumbs } from "../utils/generateBreadcrumbs";
+
+interface Props {
+  title: string;
+  // ... other props
+}
+
+const { title } = Astro.props;
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname);
+---
+
+<html>
+  <head>
+    <!-- ... head content -->
+  </head>
+  <body>
+    <Navigation />
+    <main>
+      <Breadcrumbs items={breadcrumbs} />
+      <slot />
+    </main>
+  </body>
+</html>
+```
+
+#### Page-Specific Implementation
+```astro
+---
+// src/pages/services/ev-charging.astro
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { generateBreadcrumbs } from "../../utils/generateBreadcrumbs";
+
+const breadcrumbs = generateBreadcrumbs(Astro.url.pathname);
+// Results in: Home → Services → EV Charging
+---
+
+<Layout title="EV Charging Services">
+  <Breadcrumbs items={breadcrumbs} />
+  <!-- Page content -->
+</Layout>
+```
+
+### Testing & Debugging
+
+#### Testing Breadcrumb Generation
+```javascript
+// Test in browser console or development
+import { generateBreadcrumbs } from "./src/utils/generateBreadcrumbs";
+
+console.log(generateBreadcrumbs("/services/ev-charging"));
+// Output: [
+//   { name: "Home", url: "/" },
+//   { name: "Services", url: "/services" },
+//   { name: "EV Charging", url: "/services/ev-charging" }
+// ]
+```
+
+#### Verifying SEO Output
+1. View page source in browser
+2. Look for JSON-LD script tag:
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [...]
+}
+</script>
+```
+
+#### Testing Accessibility
+- Use screen reader to verify navigation announcements
+- Test keyboard navigation (Tab key)
+- Verify ARIA attributes in browser developer tools
+
+### Performance Considerations
+
+- **Static Generation**: Breadcrumbs are generated at build time
+- **No JavaScript**: Pure HTML/CSS implementation (no client-side JS)
+- **Minimal Bundle Impact**: Component adds ~1KB to page size
+- **SEO Optimized**: Structured data improves search engine understanding
+
+### Best Practices
+
+1. **Consistent Placement**: Add breadcrumbs to the same location on all pages
+2. **Label Overrides**: Use descriptive names for technical slugs
+3. **URL Structure**: Design URL hierarchy to create logical breadcrumb paths
+4. **Testing**: Verify breadcrumbs work correctly across all page types
+5. **Accessibility**: Always include in layout templates for consistent UX
+
 ## Tailwind Snippets
 
 Custom utility classes for common design patterns:
@@ -718,12 +947,12 @@ hero_412w.jpg    (final fallback, original format)
 **Why Mobile-First?**
 ```astro
 <!-- ✅ Mobile-first: Safe fallbacks -->
-sizes="(max-width: 639px) 412px, (max-width: 767px) 640px, 1024px"
-// Logic: Small screens get small images, unknown large screens get medium images
+sizes="(max-width: 639px) 480px, (max-width: 767px) 640px, 1024px"
+<!-- Logic: Small screens get small images, unknown large screens get medium images -->
 
 <!-- ❌ Desktop-first: Risky fallbacks -->  
 sizes="(min-width: 1024px) 280px, (min-width: 640px) 640px, 1200px"
-// Logic: Large screens get small images, unknown small screens get huge images
+<!-- Logic: Large screens get small images, unknown small screens get huge images -->
 ```
 
 **Performance Benefits:**
@@ -965,852 +1194,6 @@ Safari can have rendering inconsistencies with SVG images and CSS sizing. Here a
 7. **Add explicit alt text** for accessibility
 8. **Test across browsers** especially Safari on mobile devices
 
-### Migration Guide
-
-#### Before (Performance Issues)
-
-```astro
-<img
-  src="/_astro/inspection.OwM58V36.png"
-  alt="Inspection"
-  class="w-full h-full object-cover"
-/>
-```
-
-#### After (Optimized)
-
-```astro
----
-import Image from "../components/Image.astro";
-import inspectionImg from "../assets/inspection.png";
----
-
-<Image
-  src={inspectionImg}
-  alt="Inspection & Testing"
-  class="w-full h-full object-cover"
-/>
-```
-
-This comprehensive approach ensures optimal image performance, browser compatibility, and user experience across all devices and browsers.
-
-### Image Preloading Components
-
-The project includes two specialized components for preloading critical images, ensuring optimal loading performance and eliminating browser warnings about unused preloaded resources.
-
-#### ImagePreload Component (Basic)
-
-A simple component for preloading images with basic format support. Best used for images that don't require complex format optimization.
-
-**Features:**
-- ✅ Basic image preloading for critical assets
-- ✅ Simple format specification
-- ✅ Minimal configuration required
-- ✅ Perfect for fonts, simple images, or single-format assets
-
-**Usage:**
-
-```astro
----
-import ImagePreload from "../components/ImagePreload.astro";
-import heroImage from "../assets/hero.jpg";
----
-
-<head>
-  <!-- Preload hero image -->
-  <ImagePreload
-    src={heroImage}
-    width={800}
-    format="webp"
-    fetchpriority="high"
-  />
-</head>
-```
-
-**Props Reference:**
-
-| Prop             | Type             | Default | Description                              |
-| ---------------- | ---------------- | ------- | ---------------------------------------- |
-| `src`            | `ImageMetadata`  | required| Image source (import from assets)       |
-| `width`          | `number`         | required| Target width for preload generation     |
-| `format`         | `string`         | `"webp"`| Output format (webp, avif, png, jpg)    |
-| `quality`        | `number`         | `80`    | Image quality (1-100)                   |
-| `fetchpriority`  | `string`         | `"high"`| Browser fetch priority                   |
-
-#### ImagePreloadDynamic Component (Advanced)
-
-An intelligent component that mirrors Astro's Image component behavior to generate exact URL matches, preventing "preload but not used" browser warnings. **Updated for mobile-first optimization.**
-
-**Features:**
-- ✅ **Smart format detection** - Predicts which format browsers will request
-- ✅ **Exact URL matching** - Generates the same URLs as Astro's Image component  
-- ✅ **Mobile-first optimization** - 412px default for PageSpeed Insights
-- ✅ **Browser compatibility** - Uses WebP for 97%+ browser support
-- ✅ **Development debugging** - Console logs for URL verification
-- ✅ **Production optimized** - Single preload link generation
-
-**Usage:**
-
-```astro
----
-import ImagePreloadDynamic from "../components/ImagePreloadDynamic.astro";
-import noisier from "../assets/noisier.png";
----
-
-<head>
-  <!-- Preload with mobile-first dynamic format detection -->
-  <ImagePreloadDynamic
-    src={noisier}
-    width={412}
-    quality={65}
-    formats={["webp", "avif"]}
-    fetchpriority="high"
-  />
-</head>
-
-<!-- Later in your component -->
-<Image
-  src={noisier}
-  alt="Background texture"
-  widths={[412, 640, 768, 1024, 1280]}
-  sizes="(max-width: 639px) 412px, (max-width: 767px) 640px, 1024px"
-  quality={65}
-  formats={["webp", "avif"]}
-/>
-```
-
-**🎯 Current Implementation (Layout.astro):**
-```astro
-<!-- Critical hero background preload -->
-<ImagePreloadDynamic
-  src={noisier}
-  width={412}        <!-- PageSpeed optimal mobile width -->
-  quality={65}       <!-- Balanced for background texture -->
-  formats={["webp", "avif"]}  <!-- WebP-first for compatibility -->
-  fetchpriority="high"
-/>
-```
-
-**Props Reference:**
-
-| Prop             | Type             | Default                  | Description                                   |
-| ---------------- | ---------------- | ------------------------ | --------------------------------------------- |
-| `src`            | `ImageMetadata`  | required                 | Image source (import from assets)            |
-| `width`          | `number`         | `412`                    | Mobile-first width (PageSpeed optimal)       |
-| `quality`        | `number`         | `65`                     | Image quality (optimized for preload)        |
-| `formats`        | `string[]`       | `["webp","avif"]`        | WebP-first for maximum browser compatibility  |
-| `widths`         | `number[]`       | `[412,640,768,1024,1280]`| Mobile-first responsive breakpoints          |
-| `sizes`          | `string`         | Mobile-first responsive  | CSS sizes attribute (Tailwind aligned)       |
-| `fetchpriority`  | `string`         | `"high"`                 | Browser fetch priority                        |
-
-#### Key Differences
-
-| Feature                    | ImagePreload (Basic) | ImagePreloadDynamic (Advanced) |
-| -------------------------- | -------------------- | ------------------------------ |
-| **Format Detection**       | Manual specification | Automatic browser prediction   |
-| **URL Matching**           | Basic                | Exact match with Image component|
-| **Browser Warnings**       | Possible mismatches  | Eliminated                     |
-| **Configuration**          | Simple               | Must match Image props exactly |
-| **Use Case**               | Simple assets        | Critical hero/LCP images       |
-| **Performance Impact**     | Good                 | Optimal                        |
-
-#### Implementation Examples
-
-**For Hero Images (Recommended: ImagePreloadDynamic):**
-
-```astro
----
-// Layout.astro
-import ImagePreloadDynamic from "../components/ImagePreloadDynamic.astro";
-import heroImage from "../assets/hero.jpg";
----
-
-<html>
-<head>
-  <!-- Preload critical hero image -->
-  <ImagePreloadDynamic
-    src={heroImage}
-    width={800}
-    quality={90}
-    formats={["webp", "avif"]}
-    fetchpriority="high"
-  />
-</head>
-<!-- ... -->
-
----
-// Hero.astro
-import { Image } from "astro:assets";
-import heroImage from "../assets/hero.jpg";
----
-
-<!-- Image component with EXACT same props -->
-<Image
-  src={heroImage}
-  alt="Hero image"
-  width={800}
-  quality={90}
-  formats={["webp", "avif"]}
-  class="w-full h-auto"
-/>
-```
-
-**For Simple Assets (Basic ImagePreload):**
-
-```astro
----
-// Layout.astro
-import ImagePreload from "../components/ImagePreload.astro";
-import logoImage from "../assets/logo.png";
----
-
-<head>
-  <!-- Simple logo preload -->
-  <ImagePreload
-    src={logoImage}
-    width={200}
-    format="png"
-    fetchpriority="high"
-  />
-</head>
-```
-
-#### Production Verification
-
-After implementing ImagePreloadDynamic, verify the URLs match in your browser's Network tab:
-
-1. **Build the project**: `npm run build`
-2. **Check preload URL** in `<head>`: `/_astro/image.ABC123_XYZ789.webp`
-3. **Check rendered URL** in `<img>`: `/_astro/image.ABC123_XYZ789.webp`
-4. **Verify match**: URLs should be identical
-
-**Development Debug Output:**
-```
-[ImagePreloadDynamic] Optimal format detected: webp
-[ImagePreloadDynamic] Generated preload URL: /_astro/image.ABC123_XYZ789.webp
-```
-
-#### Troubleshooting
-
-**"Preload but not used" warnings:**
-- Ensure props match exactly between ImagePreloadDynamic and Image components
-- Verify both components use the same `width`, `quality`, and `formats` values
-- Use ImagePreloadDynamic for images that use multiple formats
-
-**URL mismatches:**
-- Check that format arrays are identical: `["webp", "avif"]`
-- Verify quality settings match between preload and Image components
-- Use browser dev tools to compare generated URLs
-
-**Performance impact:**
-- Use ImagePreloadDynamic only for critical, above-the-fold images
-- Limit preloads to 2-3 most important images per page
-- Prefer ImagePreload for simple, single-format assets
-
-## 🔍 SEO Components: HeadMetas & HeadSeo
-
-The project includes two specialized components for comprehensive SEO optimization: `HeadMetas.astro` for meta tags and `HeadSeo.astro` for structured data. These components work together to provide complete SEO coverage while maintaining clean separation of concerns.
-
-### HeadMetas Component
-
-Handles all meta tags including Open Graph, Twitter Cards, and basic meta information.
-
-**Usage:**
-```astro
-<HeadMetas 
-  title="Page Title"
-  description="Page description for meta tags"
-  type="website"
-  image="/path/to/image.jpg"
-  imageWidth={1200}
-  imageHeight={630}
-  twitterHandle="@yourbusiness"
-/>
-```
-
-**Props:**
-- `title` (string): Page title for meta tags
-- `description` (string): Meta description
-- `type` (string): Open Graph type - 'website', 'article', 'product', etc.
-- `image` (string, optional): Social media image URL
-- `imageWidth` (number, optional): Image width for Open Graph
-- `imageHeight` (number, optional): Image height for Open Graph  
-- `twitterHandle` (string, optional): Twitter handle for Twitter Cards
-
-**Generated Meta Tags:**
-- Basic meta tags (title, description, viewport)
-- Open Graph tags for Facebook sharing
-- Twitter Card tags for Twitter sharing
-- Canonical URL for SEO
-
-### HeadSeo Component
-
-Generates JSON-LD structured data for search engines with support for multiple schema types.
-
-**Supported Schema Types:**
-- `WebPage` - Standard web pages
-- `ContactPage` - Contact/form pages
-- `AboutPage` - About/company pages
-- `Organization` - Business/company data
-- `Blog` - Blog listing pages
-- `BlogPosting` - Individual blog posts
-- `FAQPage` - Pages with FAQ sections
-
-**Basic Usage:**
-```astro
-<HeadSeo 
-  title="Page Title"
-  description="Page description"
-  schemaType="WebPage"
-/>
-```
-
-**Blog Post Usage:**
-```astro
-<HeadSeo 
-  title="Blog Post Title"
-  description="Blog post description"
-  schemaType="BlogPosting"
-  datePublished="2025-01-15"
-  dateModified="2025-01-16"
-  author="Author Name"
-/>
-```
-
-**FAQ Page Usage:**
-```astro
----
-import { defaultElectricalFaqItems } from "../components/Faq.astro";
----
-<HeadSeo 
-  title="FAQ - Electrical Services"
-  description="Frequently asked questions about our electrical services"
-  schemaType="FAQPage"
-  faqItems={defaultElectricalFaqItems}
-/>
-```
-
-**Custom FAQ Usage:**
-```astro
----
-const customFaqItems = [
-  {
-    title: "What services do you offer?",
-    content: "We offer comprehensive electrical services including..."
-  },
-  {
-    title: "How much do you charge?",
-    content: "Our pricing depends on the scope of work..."
-  }
-];
----
-<HeadSeo 
-  title="Service FAQ"
-  description="Common questions about our services"
-  schemaType="FAQPage"
-  faqItems={customFaqItems}
-/>
-```
-
-### Integration with Layout Component
-
-Both components are automatically integrated into the main `Layout.astro` component:
-
-```astro
----
-// src/layouts/Layout.astro
-import HeadMetas from "../components/HeadMetas.astro";
-import HeadSeo from "../components/HeadSeo.astro";
-import type { AccordionItem } from "../components/Faq.astro";
-
-export interface Props {
-  title?: string;
-  description?: string;
-  pageType?: "default" | "blog" | "contact" | "about";
-  type?: 'website' | 'article' | 'product';
-  schemaType?: "WebPage" | "ContactPage" | "AboutPage" | "Organization" | "Blog" | "BlogPosting" | "FAQPage";
-  image?: string;
-  imageWidth?: number;
-  imageHeight?: number;
-  twitterHandle?: string;
-  datePublished?: string;
-  dateModified?: string;
-  author?: string;
-  faqItems?: AccordionItem[];
-}
----
-
-<html lang="en">
-  <head>
-    <!-- Meta Tags Component -->
-    <HeadMetas 
-      title={title}
-      description={description}
-      type={type}
-      image={image}
-      imageWidth={imageWidth}
-      imageHeight={imageHeight}
-      twitterHandle={twitterHandle}
-    />
-    
-    <!-- SEO Schema Component -->
-    <HeadSeo 
-      title={title}
-      description={description}
-      schemaType={schemaType}
-      datePublished={datePublished}
-      dateModified={dateModified}
-      author={author}
-      faqItems={faqItems}
-    />
-  </head>
-  <!-- ... -->
-</html>
-```
-
-### Page Implementation Examples
-
-**Standard Page:**
-```astro
----
-// src/pages/services.astro
-import Layout from "../layouts/Layout.astro";
----
-<Layout 
-  title="Electrical Services - Inspections, Rewiring & Repairs"
-  description="Professional electrical services including inspections, fault finding, rewiring, and consumer unit upgrades."
-  pageType="default"
-  schemaType="WebPage"
->
-  <!-- Page content -->
-</Layout>
-```
-
-**Contact Page:**
-```astro
----
-// src/pages/contact.astro
-import Layout from "../layouts/Layout.astro";
----
-<Layout 
-  title="Contact Ohmnium Electricians - Get Your Free Quote"
-  description="Contact our qualified electricians for a free quote on electrical work in Staffordshire."
-  pageType="contact"
-  schemaType="ContactPage"
->
-  <!-- Contact form and content -->
-</Layout>
-```
-
-**FAQ Page with Schema:**
-```astro
----
-// src/pages/index.astro
-import Layout from "../layouts/Layout.astro";
-import { defaultElectricalFaqItems } from "../components/Faq.astro";
----
-<Layout 
-  title="Ohmnium Electricians - Professional Electrical Services"
-  description="Professional electrical services in Staffordshire. Qualified electricians for inspections, fault finding, rewiring."
-  pageType="default"
-  schemaType="FAQPage"
-  faqItems={defaultElectricalFaqItems}
->
-  <!-- Page content including FAQ component -->
-</Layout>
-```
-
-**Blog Post:**
-```astro
----
-// src/pages/blog/[slug].astro
-import Layout from "../../layouts/Layout.astro";
-
-// Get blog post data...
-const { title, content, date, author } = post;
----
-<Layout 
-  title={title}
-  description={excerpt}
-  pageType="blog"
-  type="article"
-  schemaType="BlogPosting"
-  datePublished={date}
-  author={author}
->
-  <!-- Blog post content -->
-</Layout>
-```
-
-### FAQ Schema Architecture
-
-The FAQ schema implementation follows a clean, reusable pattern:
-
-1. **FAQ data is defined once** in `Faq.astro` component
-2. **Interface is exported** for type safety across components
-3. **Schema requires explicit FAQ data** - no hidden fallbacks
-4. **Easy to extend** for different FAQ sets on different pages
-
-**Creating Custom FAQ Sets:**
-```astro
----
-// For a services page with specific FAQ
-import type { AccordionItem } from "../components/Faq.astro";
-
-const servicesFaqItems: AccordionItem[] = [
-  {
-    title: "Do you offer emergency repairs?",
-    content: "Yes, we provide 24/7 emergency electrical repair services..."
-  },
-  {
-    title: "Are your electricians certified?",
-    content: "All our electricians are fully qualified and NICEIC registered..."
-  }
-];
----
-<Layout 
-  schemaType="FAQPage"
-  faqItems={servicesFaqItems}
->
-```
-
-### SEO Benefits
-
-**Search Engine Optimization:**
-- Proper meta tags for search result snippets
-- Open Graph for social media sharing
-- Structured data for rich snippets
-- FAQ schema for FAQ rich results
-- LocalBusiness schema for business information and star ratings
-- Organization schema for business information
-
-**Rich Results Potential:**
-- FAQ sections may appear as expandable results in Google
-- Blog posts get proper article markup
-- Business information appears in knowledge panels with star ratings
-- LocalBusiness schema enables rich snippets with reviews and ratings
-- Social shares display proper previews
-
-### LocalBusiness Schema Implementation
-
-The project includes a comprehensive LocalBusiness schema implementation that enables star ratings and rich business information to appear in search engine results pages (SERPs).
-
-#### Key Features:
-
-**Star Ratings in Search Results:**
-- Aggregate rating calculation (5.0 average from reviews)
-- Individual review schema with author details
-- Professional service categorization for electrical services
-- Google Places API compatible review structure
-
-**Business Information Schema:**
-- Complete business contact details (name, phone, email)
-- Service area definition (geographic targeting)
-- Business hours and availability
-- Professional service categories
-- Location and address information
-
-#### Usage Example:
-
-```astro
----
-// src/pages/index.astro
-import Layout from '../layouts/Layout.astro';
-import { reviews, getAverageRating, getTotalReviews } from '../data/reviews';
-
-const businessDetails = {
-  schemaType: "LocalBusiness" as const,
-  businessName: "Ohmnium Electrical Services",
-  businessType: "ElectricalContractor",
-  reviews: reviews,
-  address: {
-    streetAddress: "123 Electric Avenue",
-    addressLocality: "Stafford",
-    addressRegion: "Staffordshire",
-    postalCode: "ST16 1AB",
-    addressCountry: "GB"
-  },
-  phoneNumber: "+44 1785 123456",
-  email: "info@ohmnium.co.uk"
-};
----
-
-<Layout {...businessDetails}>
-  <!-- Page content -->
-</Layout>
-```
-
-#### Review Data Structure:
-
-The project uses centralized review data in `/src/data/reviews.ts`:
-
-```typescript
-export interface Review {
-  author: string;
-  rating: number;
-  text: string;
-  datePublished: string;
-}
-
-export const reviews: Review[] = [
-  {
-    author: "Sarah Johnson",
-    rating: 5,
-    text: "Outstanding electrical work! Professional, punctual, and reasonably priced.",
-    datePublished: "2024-01-15"
-  },
-  // ... more reviews
-];
-
-export function getAverageRating(): number;
-export function getTotalReviews(): number;
-```
-
-This implementation ensures that search engines can display:
-- ⭐⭐⭐⭐⭐ 5.0 star rating in search results
-- Business name, phone, and service area
-- Individual customer reviews
-- Professional service categorization
-
-### Error Handling
-
-The components include proper error handling:
-
-```astro
-// HeadSeo.astro - FAQ schema validation
-if (schemaType === "FAQPage") {
-  if (!faqItems || faqItems.length === 0) {
-    throw new Error("FAQPage schema requires faqItems to be provided");
-  }
-  // Generate FAQ schema...
-}
-```
-
-This ensures that FAQ schema is only generated when proper FAQ data is provided, preventing empty or malformed structured data.
-
-## 🔧 Configuration
-
-### Config.ts and Environment Variables
-
-The project uses a centralized configuration system via `/src/config.ts` that interfaces with environment variables:
-
-```typescript
-// src/config.ts
-export const WP_SITE = import.meta.env.WP_SITE || "https://techcrunch.com";
-export const WP_API_URL = `${WP_SITE}/wp-json/wp/v2`;
-```
-
-**Purpose of config.ts:**
-- **Centralized Configuration**: Single source of truth for all site-wide settings
-- **Environment Variable Processing**: Safely handles environment variables with fallbacks
-- **API URL Construction**: Automatically builds WordPress REST API endpoints
-- **Type Safety**: Provides TypeScript support for configuration values
-- **Default Values**: Ensures the site works even without environment variables set
-
-**Relationship to .env Files:**
-- Environment variables are accessed via `import.meta.env` (Astro's environment variable system)
-- Variables prefixed with `WP_` are available in the browser (public variables)
-- Other variables like `OPENAI_API_KEY` are server-side only for security
-- The config.ts file processes these variables and provides sensible defaults
-
-**Key Environment Variables:**
-
-## Environment variables can be set in a `.env` file at the root of the project:
-
-```env
-# WordPress Configuration
-WP_SITE=https://techcrunch.com
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Contact Form Configuration (Required for netlify/functions/contact.js)
-RESEND_API_KEY=your_resend_api_key
-FROM_EMAIL=noreply@yourdomain.com
-BUSINESS_EMAIL=contact@yourdomain.com
-BUSINESS_NAME=Your Business Name
-DOMAIN=yourdomain.com
-SITE_URL=https://yourdomain.com
-NODE_ENV=production
-```
-
-## 🎯 SEO & Search Engine Optimization
-
-This project includes comprehensive SEO optimization with automated sitemap generation and search engine crawler guidance.
-
-### 🗺️ Sitemap
-
-**URL:** `https://ohmnium.co.uk/sitemap.xml`
-
-The sitemap automatically includes:
-- **Static Pages**: Homepage, About, Services, Contact, Blog Index
-- **Dynamic Blog Posts**: All WordPress posts via REST API (up to 100 posts)
-- **SEO Metadata**: Last modified dates, change frequency, and priority values
-- **Real-time Updates**: Fetches latest WordPress content on each request
-- **Caching**: 1-hour cache for optimal performance
-
-#### Sitemap Structure:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://ohmnium.co.uk</loc>
-    <lastmod>2025-06-06T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <!-- Static pages + Dynamic WordPress blog posts -->
-</urlset>
-```
-
-### 🤖 Robots.txt
-
-**URL:** `https://ohmnium.co.uk/robots.txt`
-
-Provides comprehensive crawler guidance:
-- **Allow**: All main content pages (`/`, `/about`, `/services`, `/contact`, `/blog/*`)
-- **Disallow**: API endpoints, admin areas, build files (`/api/`, `/.netlify/`, `/_astro/`)
-- **Sitemap Reference**: Points to the dynamic sitemap
-- **Crawl Delay**: Respectful 1-second delay between requests
-- **Bot Management**: Specific rules for Google, Bing, Yahoo, and blocks SEO crawlers
-
-#### Key Features:
-- ✅ **Search Engine Friendly**: Explicit guidance for major search engines
-- ✅ **Performance Optimized**: Prevents crawling of unnecessary files
-- ✅ **Security**: Blocks access to admin and private areas
-- ✅ **Bad Bot Protection**: Blocks known SEO tool crawlers
-
-### 📊 Google Search Console Setup
-
-1. **Verify Domain**: Add `https://ohmnium.co.uk` to Google Search Console
-2. **Submit Sitemap**: Navigate to Sitemaps → Add `https://ohmnium.co.uk/sitemap.xml`
-3. **Monitor**: Check indexing status and any crawl errors
-4. **Test**: Use robots.txt tester to verify crawler access
-
-### 🔧 Static SEO File Generation
-
-The project includes an optional script for generating static SEO files when needed:
-
-```bash
-# Generate static sitemap.xml and robots.txt files
-npm run generate:seo
-
-# Build project with SEO files generation
-npm run build:seo
-```
-
-#### When to Use Static Generation:
-
-**Use `npm run generate:seo` when:**
-- **Pre-deployment testing**: Generate files locally to preview exact sitemap content
-- **Build pipeline integration**: Some hosting providers require static files during build
-- **CDN caching**: Create static files for better caching on content delivery networks
-- **Backup/redundancy**: Generate fallback files if dynamic endpoints fail
-- **WordPress API down**: Ensure sitemap exists even if WordPress API is temporarily unavailable
-
-**Don't use static generation if:**
-- **Blog updates frequently**: Dynamic endpoints automatically include new posts
-- **Real-time accuracy needed**: Static files become outdated quickly
-- **Hosting supports dynamic routes**: Netlify/Vercel handle dynamic endpoints natively
-- **WordPress content changes often**: Static files won't reflect latest content
-
-#### Static vs Dynamic Files:
-
-| Feature | Dynamic Endpoints | Static Files |
-|---------|------------------|--------------|
-| **Content Updates** | ✅ Real-time WordPress posts | ❌ Requires regeneration |
-| **Performance** | ✅ Cached (1 hour) | ✅ Instant serving |
-| **Accuracy** | ✅ Always current | ❌ Can become outdated |
-| **Reliability** | ⚠️ Depends on WordPress API | ✅ Always available |
-| **Maintenance** | ✅ Zero maintenance | ❌ Manual updates needed |
-
-**Recommendation**: Use dynamic endpoints by default. Only generate static files for specific deployment requirements or as backup files.
-
-## 🔧 Font Optimization & Performance
-
-The project uses optimized web fonts for maximum performance while maintaining visual quality. All fonts have been converted from TTF to WOFF2 format for significant size reduction.
-
-### Font Files
-
-The project uses two custom font families:
-
-- **Francois One**: Used for headings (`--font-heading-family`)
-- **Source Sans 3**: Used for body text (`--font-body-family`)
-
-### Font Optimization Process
-
-#### Installation of WOFF2 Tools
-
-To optimize fonts, install the `woff2` compression tools via Homebrew:
-
-```bash
-brew install woff2
-```
-
-#### Converting TTF to WOFF2
-
-Convert your TTF fonts to WOFF2 format for better compression:
-
-```bash
-# Navigate to fonts directory
-cd src/fonts
-
-# Convert each font file
-woff2_compress FrancoisOne-Regular.ttf
-woff2_compress SourceSans3-Regular.ttf
-```
-
-#### Performance Results
-
-The WOFF2 conversion achieved significant file size reductions:
-
-| Font | TTF Size | WOFF2 Size | Reduction |
-|------|----------|------------|-----------|
-| **FrancoisOne-Regular** | 75KB | 31KB | **58%** |
-| **SourceSans3-Regular** | 381KB | 103KB | **73%** |
-| **Total Savings** | 456KB | 134KB | **70%** |
-
-#### CSS Implementation
-
-The optimized fonts are implemented with progressive enhancement:
-
-```scss
-@font-face {
-  font-family: 'Francois One';
-  src: url('../fonts/FrancoisOne-Regular.woff2') format('woff2'),
-       url('../fonts/FrancoisOne-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Source Sans 3';
-  src: url('../fonts/SourceSans3-Regular.woff2') format('woff2'),
-       url('../fonts/SourceSans3-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-```
-
-#### Key Benefits
-
-- ✅ **70% smaller downloads** for modern browsers (WOFF2)
-- ✅ **Backward compatibility** with TTF fallback for older browsers
-- ✅ **Faster page loads** especially on mobile/slower connections
-- ✅ **Better Core Web Vitals** scores (LCP, FCP)
-- ✅ **`font-display: swap`** prevents invisible text during font load
-
-#### Maintenance
-
-When adding new fonts:
-
-1. **Convert to WOFF2**: Use `woff2_compress filename.ttf`
-2. **Update CSS**: Add both WOFF2 and TTF sources
-3. **Test compatibility**: Verify fonts load correctly across browsers
-4. **Remove unused fonts**: Keep only fonts actually used in the project
-
-This optimization saves **322KB** in font downloads while maintaining identical visual appearance.
-
 ## 📦 Installation
 
 ## 🏃‍♂️ Getting Started
@@ -1932,3 +1315,377 @@ public/                     ← Alternative (not optimized)
 - Proper image dimensions (1200x630) are applied to meta tags
 - JPEG format ensures maximum compatibility across all social media platforms
 - Works reliably across Facebook, LinkedIn, Twitter, and WhatsApp
+
+### Testing Social Media Sharing
+
+After implementing custom social images, you'll need to test how they appear on different social media platforms. This section covers testing strategies and common troubleshooting methods.
+
+#### Testing Methods
+
+**1. Direct Platform Testing:**
+- **WhatsApp**: Send the URL to yourself or a test contact
+- **Facebook**: Create a test post (you can delete it afterward)
+- **LinkedIn**: Share as a post or in a message
+- **Twitter**: Create a tweet with the URL
+
+**2. Online Testing Tools:**
+- **Facebook Debugger**: https://developers.facebook.com/tools/debug/
+- **Twitter Card Validator**: https://cards-dev.twitter.com/validator
+- **LinkedIn Post Inspector**: https://www.linkedin.com/post-inspector/
+
+#### Cache Issues & Solutions
+
+Social media platforms aggressively cache link previews. If you see outdated information (like localhost URLs or old images), the platform likely has a cached version.
+
+**🚨 Common Cache Problems:**
+- Showing "localhost" instead of your domain
+- Displaying old images after you've updated them
+- Wrong titles or descriptions from previous versions
+
+**✅ Cache Busting Solutions:**
+
+**Method 1: URL Parameters (Recommended)**
+Add any parameter to create a "new" URL that bypasses cache:
+
+```
+https://ohmnium.co.uk/?v=2025
+https://ohmnium.co.uk/?test=1
+https://ohmnium.co.uk/?refresh=true
+https://ohmnium.co.uk/about/?updated=jan2025
+```
+
+**Why it works**: Social platforms cache based on the exact URL. Adding `?v=2025` makes it a completely new URL to their cache system, but doesn't affect your site.
+
+**Method 2: Facebook Debugger Force Refresh**
+1. Go to: https://developers.facebook.com/tools/debug/
+2. Enter your URL: `https://ohmnium.co.uk`
+3. Click "Debug"
+4. Click "Scrape Again" to force refresh
+5. This also updates WhatsApp's cache (same system)
+
+**Method 3: Test Different Pages**
+If the homepage is cached, try subpages:
+```
+https://ohmnium.co.uk/about/
+https://ohmnium.co.uk/services/
+https://ohmnium.co.uk/contact/
+```
+
+**Method 4: Wait for Natural Expiry**
+Cache typically expires in 24-48 hours, but this isn't practical for testing.
+
+#### Development vs Production Testing
+
+**⚠️ Important**: Always test social sharing using your **production URL**, not localhost.
+
+**Wrong**: 
+```
+❌ http://localhost:4321 → Will show "localhost" in previews
+```
+
+**Correct**:
+```
+✅ https://ohmnium.co.uk → Will show "ohmnium.co.uk" in previews
+```
+
+**Testing Workflow:**
+1. Make changes to social images/meta tags
+2. Build and deploy to production: `npm run build`
+3. Test with production URL + cache-busting parameter
+4. Example: `https://ohmnium.co.uk/?test=v2`
+
+#### Troubleshooting Checklist
+
+**If social previews aren't working:**
+
+1. **Check the URL you're testing**
+   - ✅ Using production URL (https://ohmnium.co.uk)
+   - ❌ Using localhost (http://localhost:4321)
+
+2. **Try cache busting**
+   - Add `?v=2025` to your URL
+   - Test with Facebook Debugger
+
+3. **Verify meta tags in source**
+   - View page source in browser
+   - Look for `<meta property="og:image"` tags
+   - Confirm URLs show production domain
+
+4. **Check image accessibility**
+   - Copy the `og:image` URL from meta tags
+   - Paste it directly in browser to verify it loads
+   - Should show optimized JPEG version
+
+5. **Test different platforms**
+   - WhatsApp (mobile app works best)
+   - Facebook (desktop or mobile)
+   - LinkedIn (desktop recommended)
+   - Twitter (any platform)
+
+#### Best Practices
+
+**For Development:**
+- Always test social sharing with production URLs
+- Use the parameter trick (`?test=1`) during active development
+- Keep Facebook Debugger bookmarked for quick testing
+
+**For Production:**
+- Test social sharing after every deployment
+- Use different parameters for different updates: `?v=jan2025`, `?v=feb2025`
+- Document which URLs you've tested to avoid confusion
+
+**Pro Tips:**
+- WhatsApp mobile app works better than WhatsApp Web for testing
+- Facebook Debugger shows the most detailed preview information
+- Cache issues are normal - don't panic, just use the solutions above
+- If you're still seeing localhost, double-check you're testing the production URL
+
+## 🔧 URL Parameters for Testing & Cache-Busting
+
+This section documents the various URL parameters that can be used for testing social media sharing, forcing cache refreshes, and debugging purposes.
+
+### Overview
+
+URL parameters are query strings added to the end of URLs that don't affect the actual page content but can be used to bypass caches, track sources, or trigger specific behaviors in testing tools.
+
+**Format**: `https://ohmnium.co.uk/page?parameter=value&another=value2`
+
+### Cache-Busting Parameters
+
+Use these parameters to force social media platforms to fetch fresh meta tags and images:
+
+#### Version Parameters
+**Purpose**: Mark different versions/updates of content
+```
+?v=2025          # Simple version number
+?version=1.2     # Semantic versioning
+?ver=jan2025     # Date-based versioning
+?update=latest   # Update indicator
+```
+
+#### Testing Parameters
+**Purpose**: Indicate testing/development context
+```
+?test=1          # Simple test flag
+?testing=true    # Boolean test flag
+?debug=social    # Debug specific feature
+?preview=share   # Preview sharing
+?dev=cache       # Development cache-bust
+```
+
+#### Timestamp Parameters
+**Purpose**: Unique identifiers using time
+```
+?t=1704067200    # Unix timestamp
+?ts=20250101     # Date timestamp (YYYYMMDD)
+?time=now        # Current time indicator
+?refresh=true    # Refresh indicator
+```
+
+### Platform-Specific Testing
+
+Different social media platforms may cache content differently. Use specific parameters for targeted testing:
+
+#### Facebook Testing
+```
+?fb=test         # Facebook-specific test
+?facebook=debug  # Facebook debugging
+?meta=refresh    # Meta platforms refresh
+```
+
+#### WhatsApp Testing
+```
+?wa=test         # WhatsApp-specific test
+?whatsapp=1      # WhatsApp indicator
+?mobile=share    # Mobile sharing test
+```
+
+#### LinkedIn Testing
+```
+?li=test         # LinkedIn-specific test
+?linkedin=debug  # LinkedIn debugging
+?business=share  # Business sharing test
+```
+
+#### Twitter/X Testing
+```
+?tw=test         # Twitter/X-specific test
+?twitter=debug   # Twitter debugging
+?x=share         # X platform test
+```
+
+### Development & Debugging Parameters
+
+Use these parameters during development and debugging:
+
+#### Environment Indicators
+```
+?env=dev         # Development environment
+?stage=test      # Staging environment
+?mode=debug      # Debug mode
+?local=false     # Not local (production test)
+```
+
+#### Feature Testing
+```
+?feature=og      # Test Open Graph tags
+?test_social=1   # Test social sharing
+?meta_debug=1    # Debug meta tags
+?seo_test=true   # SEO testing
+```
+
+#### Cache Control
+```
+?nocache=1       # No cache indicator
+?fresh=true      # Fresh content request
+?bust=cache      # Cache busting
+?reload=force    # Force reload
+```
+
+### Real-World Testing Examples
+
+#### After Updating Social Images
+```bash
+# Test with version parameter
+https://ohmnium.co.uk/?v=2025
+
+# Test specific page with update indicator
+https://ohmnium.co.uk/about/?updated=jan2025
+
+# Test with timestamp
+https://ohmnium.co.uk/services/?t=1704067200
+```
+
+#### During Active Development
+```bash
+# Test development changes
+https://ohmnium.co.uk/?dev=test&v=1
+
+# Debug social sharing
+https://ohmnium.co.uk/contact/?debug=social&test=1
+
+# Preview new feature
+https://ohmnium.co.uk/services/?preview=new&nocache=1
+```
+
+#### Platform-Specific Testing Workflow
+```bash
+# Facebook Debugger testing
+https://ohmnium.co.uk/?fb=debug&v=2025
+
+# WhatsApp mobile sharing
+https://ohmnium.co.uk/about/?wa=test&mobile=1
+
+# LinkedIn business sharing
+https://ohmnium.co.uk/services/?li=debug&business=1
+```
+
+### Parameter Best Practices
+
+#### Naming Conventions
+- **Use descriptive names**: `?test=social` instead of `?t=1`
+- **Be consistent**: Use same parameters across different pages
+- **Keep it simple**: Avoid overly complex parameter combinations
+
+#### Value Conventions
+- **Dates**: Use ISO format or readable formats (`20250101`, `jan2025`)
+- **Versions**: Use semantic versioning when possible (`1.2.3`)
+- **Booleans**: Use `true/false` or `1/0` consistently
+- **Flags**: Use simple names (`test`, `debug`, `preview`)
+
+#### Documentation
+- **Track what you test**: Document which parameters you've used
+- **Share with team**: Ensure everyone uses consistent parameters
+- **Clean up**: Remove old parameters after testing is complete
+
+### Testing Workflow with Parameters
+
+#### Step-by-Step Process
+
+1. **Make your changes** (update images, meta tags, content)
+2. **Build and deploy** to production
+3. **Choose parameter strategy**:
+   ```bash
+   # For major updates
+   ?v=2025
+   
+   # For specific features
+   ?test=social&v=1
+   
+   # For debugging
+   ?debug=og&refresh=true
+   ```
+
+4. **Test across platforms**:
+   - Facebook Debugger: `https://developers.facebook.com/tools/debug/?q=https://ohmnium.co.uk/?v=2025`
+   - WhatsApp: Share the URL with parameter in mobile app
+   - LinkedIn: Post the URL with parameter
+   - Twitter: Tweet the URL with parameter
+
+5. **Verify results**:
+   - Check that meta tags show production domain
+   - Confirm images load correctly
+   - Verify titles and descriptions are current
+
+6. **Clean up**: Once testing is complete, the original URL (without parameters) will work normally
+
+### Troubleshooting with Parameters
+
+#### If Parameters Don't Work
+1. **Check parameter format**: Ensure proper `?key=value` syntax
+2. **Try different parameter names**: Some platforms may ignore certain parameters
+3. **Use Facebook Debugger**: Most reliable way to force refresh
+4. **Wait**: Sometimes caches take time to clear even with parameters
+
+#### Common Issues
+```bash
+# ❌ Wrong format
+https://ohmnium.co.uk/&test=1     # Should use ? not &
+
+# ✅ Correct format  
+https://ohmnium.co.uk/?test=1
+
+# ❌ Multiple ? symbols
+https://ohmnium.co.uk/?v=1?test=2 # Should use & for second parameter
+
+# ✅ Correct multiple parameters
+https://ohmnium.co.uk/?v=1&test=2
+```
+
+#### When Parameters Aren't Enough
+If parameters don't work, try these alternatives:
+1. **Facebook Debugger**: Force refresh through developer tools
+2. **Different platforms**: Test on platforms that cache less aggressively
+3. **Wait longer**: Some caches may take hours to clear
+4. **Contact platform support**: For persistent issues
+
+### Advanced Parameter Strategies
+
+#### Conditional Testing
+```bash
+# Test different scenarios
+?scenario=new_user     # New user experience
+?scenario=returning    # Returning user test
+?context=mobile        # Mobile context
+?context=desktop       # Desktop context
+```
+
+#### A/B Testing Indicators
+```bash
+# Test different versions
+?variant=a             # Version A
+?variant=b             # Version B
+?test_group=control    # Control group
+?test_group=experiment # Experiment group
+```
+
+#### Analytics Tracking
+```bash
+# Track source of social sharing tests
+?utm_source=test       # Testing source
+?utm_medium=social     # Social medium
+?utm_campaign=debug    # Debug campaign
+?ref=cache_test        # Cache test reference
+```
+
+Remember: These parameters are tools for testing and development. In production, users will typically access the clean URLs without parameters, and the cached versions will eventually update naturally.
