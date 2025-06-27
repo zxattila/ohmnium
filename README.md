@@ -718,7 +718,7 @@ hero_412w.jpg    (final fallback, original format)
 **Why Mobile-First?**
 ```astro
 <!-- ✅ Mobile-first: Safe fallbacks -->
-sizes="(max-width: 639px) 412px, (max-width: 1023px) 640px, 1024px"
+sizes="(max-width: 639px) 412px, (max-width: 767px) 640px, 1024px"
 // Logic: Small screens get small images, unknown large screens get medium images
 
 <!-- ❌ Desktop-first: Risky fallbacks -->  
@@ -1827,3 +1827,62 @@ This optimization saves **322KB** in font downloads while maintaining identical 
 - [Alpine.js Documentation](https://alpinejs.dev/start-here)
 - [TailwindCSS Documentation](https://tailwindcss.com/docs)
 - [WordPress REST API Documentation](https://developer.wordpress.org/rest-api/)
+
+### Social Sharing Images
+
+The HeadMetas component supports custom social sharing images for individual pages. When sharing your pages on social media platforms (Facebook, Twitter, LinkedIn, WhatsApp), you can specify custom images for better engagement.
+
+**Adding Custom Social Images:**
+
+1. **Store images in `/public/social/` folder:**
+   ```
+   /public
+     /social
+       about-us.jpg
+       contact.jpg
+       services.jpg
+       home.jpg
+   ```
+
+2. **Add the `image` prop to your Layout component:**
+   ```astro
+   <Layout
+     title="Your Page Title"
+     description="Your page description"
+     image="/social/your-page-image.jpg"
+     imageWidth={1200}
+     imageHeight={600}
+     // ...other props
+   >
+   ```
+
+3. **Example implementation:**
+   ```astro
+   ---
+   // src/pages/about.astro
+   import Layout from "../layouts/Layout.astro";
+   ---
+   <Layout
+     title="Our Story | Ohmnium Electricians"
+     description="Meet the founder of Ohmnium Electricians and discover the values driving our trusted electrical services."
+     pageType="about"
+     schemaType="AboutPage"
+     image="/social/about-us.jpg"
+     imageWidth={1200}
+     imageHeight={600}
+   >
+     <!-- Page content -->
+   </Layout>
+   ```
+
+**Image Specifications:**
+- **Recommended size:** 1200x600px (or 1200x630px for Facebook)
+- **Format:** JPG or PNG
+- **File size:** Under 1MB for optimal loading
+- **Fallback:** If no image is specified, automatically uses `/fallback.jpg`
+
+**What happens automatically:**
+- Custom image is used for Open Graph and Twitter meta tags
+- Falls back to `/fallback.jpg` when no custom image is provided
+- Proper image dimensions are applied to meta tags
+- Works across all major social media platforms

@@ -39,6 +39,8 @@ const {
 } = Astro.props;
 
 const canonicalURL = url || Astro.url.href;
+const siteUrl = Astro.site?.href || "https://ohmnium.co.uk";
+const defaultImage = image || `${siteUrl}/fallback.jpg`;
 ---
 
 <!-- Basic Meta Tags -->
@@ -81,18 +83,15 @@ const canonicalURL = url || Astro.url.href;
 <meta property="og:title" content={title} />
 <meta property="og:type" content={type} />
 <meta property="og:description" content={description} />
-
+<meta property="og:image" content={defaultImage} />
 {
-  image && (
-    <>
-      <meta property="og:image" content={image} />
-      {imageWidth && (
-        <meta property="og:image:width" content={imageWidth.toString()} />
-      )}
-      {imageHeight && (
-        <meta property="og:image:height" content={imageHeight.toString()} />
-      )}
-    </>
+  imageWidth && (
+    <meta property="og:image:width" content={imageWidth.toString()} />
+  )
+}
+{
+  imageHeight && (
+    <meta property="og:image:height" content={imageHeight.toString()} />
   )
 }
 
@@ -101,4 +100,4 @@ const canonicalURL = url || Astro.url.href;
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 {twitterHandle && <meta name="twitter:site" content={`@${twitterHandle}`} />}
-{image && <meta name="twitter:image" content={image} />}
+<meta name="twitter:image" content={defaultImage} />
