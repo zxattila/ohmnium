@@ -42,8 +42,8 @@ const {
   businessAddress,
 } = Astro.props;
 
-const canonicalURL = url || Astro.url.href;
 const siteUrl = Astro.site?.href || "https://ohmnium.co.uk";
+const canonicalURL = url || `${siteUrl}${Astro.url.pathname}`;
 
 // Optimize images for social media sharing
 let defaultImage = image;
