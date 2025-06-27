@@ -84,6 +84,9 @@ const defaultImage = image || `${siteUrl}/fallback.jpg`;
 <meta property="og:type" content={type} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={defaultImage} />
+<meta property="og:image:secure_url" content={defaultImage} />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:alt" content={title} />
 {
   imageWidth && (
     <meta property="og:image:width" content={imageWidth.toString()} />
