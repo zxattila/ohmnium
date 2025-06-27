@@ -1851,7 +1851,7 @@ The HeadMetas component supports custom social sharing images for individual pag
      description="Your page description"
      image="/social/your-page-image.jpg"
      imageWidth={1200}
-     imageHeight={600}
+     imageHeight={630}
      // ...other props
    >
    ```
@@ -1869,14 +1869,14 @@ The HeadMetas component supports custom social sharing images for individual pag
      schemaType="AboutPage"
      image="/social/about-us.jpg"
      imageWidth={1200}
-     imageHeight={600}
+     imageHeight={630}
    >
      <!-- Page content -->
    </Layout>
    ```
 
 **Image Specifications:**
-- **Recommended size:** 1200x600px (or 1200x630px for Facebook)
+- **Recommended size:** 1200x630px (optimal for all platforms including Facebook)
 - **Format:** JPG or PNG
 - **File size:** Under 1MB for optimal loading
 - **Fallback:** If no image is specified, automatically uses `/fallback.jpg`
