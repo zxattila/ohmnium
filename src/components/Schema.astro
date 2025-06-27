@@ -21,8 +21,8 @@ const {
   author,
 } = Astro.props;
 
-const canonicalURL = url || Astro.url.href;
-const siteUrl = Astro.site?.href || "https://ohmnium.co.uk";
+const siteUrl = "https://ohmnium.co.uk";
+const canonicalURL = url || `${siteUrl}${Astro.url.pathname}`;
 const siteName = "Ohmnium Electricians";
 
 // Schema.org structured data
