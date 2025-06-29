@@ -11,7 +11,7 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<nav class="breadcrumbs text-sm mb-4" aria-label="Breadcrumb">
+<nav class="breadcrumbs text-sm" aria-label="Breadcrumb">
   <ul class="flex flex-wrap items-center gap-2">
     {
       items.map((item, index) => (
@@ -19,13 +19,13 @@ const { items } = Astro.props;
           {index === 0 ? (
             <a
               href={item.url}
-              class="inline-flex items-center gap-1 text-blue-600 hover:underline"
+              class="inline-flex items-center gap-1 text-white/90 hover:text-white transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                class="size-5"
+                class="size-4"
               >
                 <path
                   fill-rule="evenodd"
@@ -36,13 +36,22 @@ const { items } = Astro.props;
               <span>{item.name}</span>
             </a>
           ) : index === items.length - 1 ? (
-            <span class="font-semibold text-gray-800" aria-current="page">
-              {item.name}
-            </span>
+            <>
+              <span class="text-white/60 mx-1">/</span>
+              <span class="font-semibold text-white" aria-current="page">
+                {item.name}
+              </span>
+            </>
           ) : (
-            <a href={item.url} class="text-blue-600 hover:underline">
-              {item.name}
-            </a>
+            <>
+              <span class="text-white/60 mx-1">/</span>
+              <a
+                href={item.url}
+                class="text-white/90 hover:text-white transition-colors"
+              >
+                {item.name}
+              </a>
+            </>
           )}
         </li>
       ))

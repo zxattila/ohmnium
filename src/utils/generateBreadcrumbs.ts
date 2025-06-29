@@ -7,16 +7,19 @@ const labelOverrides: Record<string, string> = {
 
 export function generateBreadcrumbs(
   pathname: string,
-): { name: string; url: string }[] {
-  const segments = pathname.replace(/\/$/, "").split("/").filter(Boolean);
+  overrides: { [key: string]: string } = {},
+) {
+  const pathParts = pathname.split("/").filter((part) => part);
+  let currentPath = "";
+  const breadcrumbs = [{ name: "Home", url: "/" }];
 
-  const breadcrumbs = segments.map((slug, index) => {
+  for (const part of pathParts) {
+    currentPath += `/${part}`;
     const name =
-      labelOverrides[slug] ||
-      slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    const url = "/" + segments.slice(0, index + 1).join("/");
-    return { name, url };
-  });
+      overrides[part] ||
+      part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, " ");
+    breadcrumbs.push({ name, url: currentPath });
+  }
 
-  return [{ name: "Home", url: "/" }, ...breadcrumbs];
+  return breadcrumbs;
 }
