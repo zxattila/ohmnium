@@ -1194,6 +1194,217 @@ Safari can have rendering inconsistencies with SVG images and CSS sizing. Here a
 7. **Add explicit alt text** for accessibility
 8. **Test across browsers** especially Safari on mobile devices
 
+### Troubleshooting Image Preload Issues
+
+#### "Preloaded resource not used" Console Warning
+
+**Problem**: Browser console shows warnings like:
+```
+The resource /_astro/image.hash.webp was preloaded using link preload 
+but not used within a few seconds from the window's load event.
+```
+
+**Root Causes**:
+
+1. **Development Mode False Positive** (Most Common):
+   - In Astro development mode, image processing uses different URLs than production
+   - Preload and actual image URLs are identical, but Chrome still reports warnings
+   - This is a known Astro development quirk and can be safely ignored
+   - **Solution**: Check production build or ignore development warnings
+
+2. **Format Mismatch** (Production Issue):
+   - Mismatch between format preloaded by `ImagePreloadDynamic.astro` and `Image.astro` component
+   - **Solution**: Ensure format priority matches between components
+
+**Quick Check**: Build and inspect production HTML:
+```bash
+npm run build
+grep -A 3 -B 3 "noisier" dist/index.html
+```
+If preload and img src URLs match exactly, it's a development mode false positive.
+
+**✅ Correct Configuration:**
+```astro
+<!-- Layout.astro -->
+<ImagePreloadDynamic
+  src={heroImage}
+  formats={["webp", "avif"]}  <!-- WebP first to match Hero/PageHeader -->
+  width={412}
+  quality={65}
+  fetchpriority="high"
+/>
+
+<!-- Hero.astro component -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  widths={[240, 320, 412, 480, 640, 800]}  <!-- Include 412px -->
+  formats={["webp", "avif"]}  <!-- Same order: WebP first -->
+  quality={65}
+/>
+
+<!-- PageHeader.astro component -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  widths={[412, 640, 768, 1024, 1280]}  <!-- Include 412px -->
+  formats={["webp", "avif"]}  <!-- Same order: WebP first -->
+  quality={65}
+/>
+```
+
+**🔍 Development vs Production Behavior:**
+
+**Development Mode** (localhost):
+- Uses query-based URLs: `/_image?href=...&w=412&h=412&q=65&f=webp`
+- Chrome may show false positive warnings even when URLs match exactly
+- **Safe to ignore** - these warnings don't appear in production
+
+**Production Mode** (built site):
+- Uses static hashed files: `/_astro/image.hash.webp`
+- Accurate preload warnings - indicates real mismatches
+- Should be investigated and fixed
+
+<!-- Hero.astro component -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  widths={[240, 320, 412, 480, 640, 800]}  <!-- Include 412px -->
+  formats={["webp", "avif"]}  <!-- Same order: WebP first -->
+  quality={65}
+/>
+
+<!-- PageHeader.astro component -->
+<Image 
+  src={heroImage} 
+  alt="Hero"
+  widths={[412, 640, 768, 1024, 1280]}  <!-- Include 412px -->
+  formats={["webp", "avif"]}  <!-- Same order: WebP first -->
+  quality={65}
+/>
+```
+
+**❌ Incorrect Configuration:**
+```astro
+<!-- This causes preload mismatches -->
+<ImagePreloadDynamic
+  width={412}
+  formats={["webp", "avif"]}
+/>
+
+<!-- Hero component missing preload width -->
+<Image 
+  widths={[240, 320, 480, 640, 800]}  <!-- Missing 412px -->
+  formats={["avif", "webp"]}          <!-- Different format order -->
+/>
+```
+
+#### Modern vs Legacy Browser Format Selection
+
+**How Format Detection Works:**
+
+1. **Modern Browsers** (Chrome 85+, Firefox 93+, Safari 16.1+):
+   - Prefer AVIF for best compression (~50% smaller files)
+   - Fall back to WebP if AVIF not available
+   - Use original format as final fallback
+
+2. **Legacy Browsers**:
+   - Skip AVIF (not supported)
+   - Use WebP if supported (Chrome 23+, Firefox 65+)
+   - Fall back to original format
+
+**Component Alignment:**
+```astro
+<!-- ImagePreloadDynamic.astro defaults -->
+formats = ["webp", "avif"]  // Matches Hero.astro and PageHeader.astro
+
+<!-- Hero.astro and PageHeader.astro defaults -->
+formats = ["webp", "avif"]  // Same priority order for maximum compatibility
+```
+
+#### Debugging Steps
+
+1. **Check Console Logs** (development mode):
+   ```
+   ImagePreloadDynamic: Selecting WebP format to match Hero/PageHeader component priority
+   🖼️ ImagePreloadDynamic: Preloaded webp format: /_astro/image.hash.webp
+   ```
+
+2. **Inspect Generated HTML**:
+   ```html
+   <!-- Look for this in page source -->
+   <link rel="preload" as="image" href="/_astro/image.hash.webp" type="image/webp">
+   ```
+
+3. **Verify Image Component Output**:
+   ```html
+   <!-- Image component should generate matching format in srcset -->
+   <picture>
+     <source srcset="/_astro/image.hash.webp" type="image/webp">
+     <source srcset="/_astro/image.hash.avif" type="image/avif">
+     <img src="/_astro/image.hash.jpg" alt="Hero">
+   </picture>
+   ```
+
+4. **Network Tab Verification**:
+   - Open browser Developer Tools → Network tab
+   - Reload page and filter by "Images"
+   - Confirm the preloaded format matches the actually requested format
+   - Look for `(from preload cache)` indicator
+
+#### Common Fixes
+
+**Fix 1: Align Format Arrays**
+```astro
+// Both components should use the same format priority
+const sharedFormats = ["avif", "webp"];
+
+<ImagePreloadDynamic formats={sharedFormats} />
+<Image formats={sharedFormats} />
+```
+
+**Fix 2: Quality Consistency**
+```astro
+// Use similar quality settings to ensure cache hits
+<ImagePreloadDynamic quality={65} />  <!-- Preload quality -->
+<Image quality={80} />                <!-- Actual quality -->
+// Small differences are OK, but extreme differences may cause cache misses
+```
+
+**Fix 3: Width Matching**
+```astro
+// Ensure width parameters align for cache efficiency
+const preloadWidth = 412;
+
+<ImagePreloadDynamic width={preloadWidth} />
+<Image width={preloadWidth} />  <!-- Or include in widths array -->
+```
+
+#### Performance Impact
+
+**When Working Correctly:**
+- ✅ Preloaded images load instantly (0ms from cache)
+- ✅ No duplicate network requests
+- ✅ Improved Largest Contentful Paint (LCP)
+- ✅ Better Core Web Vitals scores
+
+**When Misconfigured:**
+- ❌ Browser downloads 2 versions of the same image
+- ❌ Wasted bandwidth and slower loading
+- ❌ Console warnings about unused preloads
+- ❌ Reduced performance benefits
+
+**Monitoring Success:**
+```bash
+# Build and check console output
+npm run build
+
+# Look for these success indicators:
+# ✅ "Selecting WebP format to match Hero/PageHeader component priority"
+# ✅ No "unused preload" warnings in browser console
+# ✅ Network tab shows "(from preload cache)"
+```
+
 ## 📦 Installation
 
 ## 🏃‍♂️ Getting Started

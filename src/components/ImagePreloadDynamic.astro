@@ -19,7 +19,7 @@ const {
   width = 412, // PageSpeed optimal mobile-first width
   quality = 65, // Optimized for preload performance
   fetchpriority = "high",
-  formats = ["webp", "avif"], // WebP first for maximum compatibility (matches other components)
+  formats = ["webp", "avif"], // Match Hero.astro and PageHeader.astro format priority
   widths = [412, 640, 768, 1024, 1280], // Mobile-first approach matching Image.astro
   sizes = "(max-width: 639px) 412px, (max-width: 767px) 640px, (max-width: 1023px) 768px, 1024px", // Mobile-first sizes
 } = Astro.props;
@@ -37,22 +37,20 @@ function detectOptimalFormat(formatArray: string[]): string {
   // - AVIF: Chrome 85+, Firefox 93+, Safari 16.1+ (iOS 16.1+) - ~85% support
   // - WebP: Chrome 23+, Firefox 65+, Safari 14+ (iOS 14+) - ~95% support
 
-  // Strategy: Prioritize WebP for maximum compatibility, AVIF as enhancement
+  // Strategy: Match Hero.astro and PageHeader.astro format priority (WebP first, then AVIF)
+  // This ensures preload hits match what these components actually serve
   for (const format of formatArray) {
     if (format === "webp") {
-      // WebP has the widest browser support (97%+ of browsers)
-      // It's the safest choice for preloading to ensure high hit rate
+      // WebP has wider browser support and is prioritized by Hero/PageHeader components
+      // Most browsers (95%+) will request this format first
       console.log(
-        "ImagePreloadDynamic: Selecting WebP format for maximum compatibility",
+        "ImagePreloadDynamic: Selecting WebP format to match Hero/PageHeader component priority",
       );
       return "webp";
     }
     if (format === "avif") {
-      // AVIF provides better compression but lower browser support (85%)
-      // Only select if WebP is not available in the formats array
-      console.log(
-        "ImagePreloadDynamic: Selecting AVIF format for optimal compression",
-      );
+      // AVIF fallback for when WebP is not in formats array
+      console.log("ImagePreloadDynamic: Selecting AVIF format as fallback");
       return "avif";
     }
   }
