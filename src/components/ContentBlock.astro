@@ -23,7 +23,7 @@ const {
 {
   showContent && (
     <div class={`prose prose-lg ${containerClass}`}>
-      {showTitle && <h2 class={titleClass}>{title}</h2>}
+      {showTitle && <h2 set:html={title} class={titleClass} />}
       <div
         set:html={description}
         class={`prose prose-lg first-child-spacing ${contentClass}`}
